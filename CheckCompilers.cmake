@@ -2,12 +2,10 @@
 # on whether a previous call to the project() macro was supplied either
 # language as a requirement.
 
-if (NOT CMAKE_C_COMPILER AND
-    "${CMAKE_C_COMPILER}" STREQUAL "CMAKE_C_COMPILER-NOTFOUND")
+if (NOT CMAKE_C_COMPILER AND DEFINED CMAKE_C_COMPILER)
     message(FATAL_ERROR "Could not find prerequisite C compiler")
 endif ()
 
-if (NOT CMAKE_CXX_COMPILER AND
-    "${CMAKE_CXX_COMPILER}" STREQUAL "CMAKE_CXX_COMPILER-NOTFOUND")
+if (NOT CMAKE_CXX_COMPILER AND DEFINED CMAKE_CXX_COMPILER)
     message(FATAL_ERROR "Could not find prerequisite C++ compiler")
 endif ()
