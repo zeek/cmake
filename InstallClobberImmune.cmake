@@ -13,13 +13,13 @@ macro(InstallClobberImmune _srcfile _dstfile)
                 ${_srcfile} ${_dstfile} RESULT_VARIABLE _diff)
             if (NOT \"\${_diff}\" STREQUAL \"0\")
                 message(STATUS \"Installing: ${_dstfile}.example\")
-                configure_file(${_srcfile} ${_dstfile}.example COPY_ONLY)
+                configure_file(${_srcfile} ${_dstfile}.example COPYONLY)
             endif ()
         else ()
             message(STATUS \"Installing: ${_dstfile}\")
             # install() is not scriptable within install(), and
             # configure_file() is the next best thing
-            configure_file(${_srcfile} ${_dstfile} COPY_ONLY)
+            configure_file(${_srcfile} ${_dstfile} COPYONLY)
             # TODO: create additional install_manifest files?
         endif ()
     ")
