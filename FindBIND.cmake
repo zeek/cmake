@@ -67,6 +67,7 @@ foreach (bindlib ${bind_libs})
         #include <resolv.h>
         int main() {
             int (*p)() = res_mkquery;
+            return 0;
         }
 " res_mkquery_works_${bindlib})
 
