@@ -18,7 +18,7 @@
 #
 #  PYTHONDEV_FOUND           System has Python dev headers/libraries
 #  PYTHON_INCLUDE_DIR        The Python include directories.
-#  PYTHON_LIBRARIES          The Python libraries.
+#  PYTHON_LIBRARIES          The Python libraries and linker flags.
 
 include(FindPackageHandleStandardArgs)
 
@@ -31,7 +31,7 @@ else ()
 endif ()
 
 if (PYTHON_CONFIG)
-    execute_process(COMMAND "${PYTHON_CONFIG}" --libs
+    execute_process(COMMAND "${PYTHON_CONFIG}" --ldflags
                     OUTPUT_VARIABLE PYTHON_LIBRARIES
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     ERROR_QUIET)
