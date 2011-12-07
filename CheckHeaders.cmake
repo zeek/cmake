@@ -2,7 +2,6 @@ include(CheckIncludeFiles)
 include(CheckStructHasMember)
 
 check_include_files(getopt.h HAVE_GETOPT_H)
-check_include_files(magic.h HAVE_MAGIC_H)
 check_include_files(memory.h HAVE_MEMORY_H)
 check_include_files("sys/socket.h;netinet/in.h;net/if.h;netinet/if_ether.h"
                     HAVE_NETINET_IF_ETHER_H)
