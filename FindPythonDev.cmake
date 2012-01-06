@@ -30,7 +30,9 @@ else ()
               python-config2.4 python-config2.3)
 endif ()
 
-if (PYTHON_CONFIG)
+# The OpenBSD python packages have python-config's that don't reliably
+# report linking flags that will work.
+if (PYTHON_CONFIG AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD")
     execute_process(COMMAND "${PYTHON_CONFIG}" --ldflags
                     OUTPUT_VARIABLE PYTHON_LIBRARIES
                     OUTPUT_STRIP_TRAILING_WHITESPACE

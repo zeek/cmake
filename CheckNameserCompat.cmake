@@ -3,6 +3,8 @@ include(CheckCSourceCompiles)
 # Check whether the namser compatibility header is required
 # This can be the case on the Darwin platform
 
+set(CMAKE_REQUIRED_INCLUDES ${BIND_INCLUDE_DIR})
+
 check_c_source_compiles("
     #include <arpa/nameser.h>
     int main() { HEADER *hdr; int d = NS_IN6ADDRSZ; return 0; }"
@@ -19,3 +21,5 @@ if (NOT have_nameser_header)
             "Asynchronous DNS support compatibility check failed.")
     endif ()
 endif ()
+
+set(CMAKE_REQUIRED_INCLUDES)
