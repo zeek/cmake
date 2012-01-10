@@ -19,12 +19,12 @@
 #                            ns_inittab and res_mkquery symbols
 
 find_path(BIND_ROOT_DIR
-    NAMES include/resolv.h
+    NAMES include/bind/resolv.h include/resolv.h
 )
 
 find_path(BIND_INCLUDE_DIR
     NAMES resolv.h
-    HINTS ${BIND_ROOT_DIR}/include
+    HINTS ${BIND_ROOT_DIR}/include/bind ${BIND_ROOT_DIR}/include
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")

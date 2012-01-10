@@ -9,6 +9,7 @@ check_include_files("sys/socket.h;netinet/in.h;net/if.h;netinet/ip6.h"
                     HAVE_NETINET_IP6_H)
 check_include_files("sys/socket.h;net/if.h;net/ethernet.h" HAVE_NET_ETHERNET_H)
 check_include_files(sys/ethernet.h HAVE_SYS_ETHERNET_H)
+check_include_files(net/ethertypes.h HAVE_NET_ETHERTYPES_H)
 check_include_files(sys/time.h HAVE_SYS_TIME_H)
 check_include_files("time.h;sys/time.h" TIME_WITH_SYS_TIME)
 check_include_files(os-proto.h HAVE_OS_PROTO_H)

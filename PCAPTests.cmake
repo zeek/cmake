@@ -1,4 +1,5 @@
 include(CheckFunctionExists)
+include(CheckSymbolExists)
 include(CheckCSourceCompiles)
 include(CheckIncludeFiles)
 
@@ -57,6 +58,11 @@ int main () {
         message(FATAL_ERROR
             "Can't determine if pcap_compile_nopcap takes an error parameter")
     endif ()
+endif ()
+
+check_symbol_exists(DLT_PPP_SERIAL pcap.h HAVE_DLT_PPP_SERIAL)
+if (NOT HAVE_DLT_PPP_SERIAL)
+    set(DLT_PPP_SERIAL 50)
 endif ()
 
 set(CMAKE_REQUIRED_INCLUDES)

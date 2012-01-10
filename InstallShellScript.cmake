@@ -37,7 +37,11 @@ macro(InstallShellScript _dstdir _srcfile)
         string(REGEX MATCH ${_regex} _match ${_srclines})
         if (_match)
             set(_shell ${CMAKE_MATCH_1})
-            find_program(${_shell}_interp ${_shell})
+            if (${_shell} STREQUAL "python" AND PYTHON_EXECUTABLE)
+                set(${_shell}_interp ${PYTHON_EXECUTABLE})
+            else ()
+                find_program(${_shell}_interp ${_shell})
+            endif ()
             if (NOT ${_shell}_interp)
                 message(FATAL_ERROR
                        "Absolute path to interpreter '${_shell}' not found, "
