@@ -22,7 +22,7 @@ find_path(GooglePerftools_ROOT_DIR
 )
 
 find_library(GooglePerftools_LIBRARIES
-    NAMES tcmalloc
+    NAMES tcmalloc_and_profiler
     HINTS ${GooglePerftools_ROOT_DIR}/lib
 )
 
