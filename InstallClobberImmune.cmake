@@ -7,19 +7,25 @@
 
 macro(InstallClobberImmune _srcfile _dstfile)
     install(CODE "
-        if (EXISTS ${_dstfile})
-            message(STATUS \"Skipping: ${_dstfile} (already exists)\")
+        set(_destfile \"${_dstfile}\")
+        if (NOT \$ENV{DESTDIR} STREQUAL \"\")
+            # replace install root prefix with install-time DESTDIR
+            string(REPLACE ${CMAKE_INSTALL_PREFIX} \$ENV{DESTDIR}
+                   _destfile \"${_dstfile}\")
+        endif ()
+        if (EXISTS \${_destfile})
+            message(STATUS \"Skipping: \${_destfile} (already exists)\")
             execute_process(COMMAND \"${CMAKE_COMMAND}\" -E compare_files
-                ${_srcfile} ${_dstfile} RESULT_VARIABLE _diff)
+                ${_srcfile} \${_destfile} RESULT_VARIABLE _diff)
             if (NOT \"\${_diff}\" STREQUAL \"0\")
-                message(STATUS \"Installing: ${_dstfile}.example\")
-                configure_file(${_srcfile} ${_dstfile}.example COPYONLY)
+                message(STATUS \"Installing: \${_destfile}.example\")
+                configure_file(${_srcfile} \${_destfile}.example COPYONLY)
             endif ()
         else ()
-            message(STATUS \"Installing: ${_dstfile}\")
+            message(STATUS \"Installing: \${_destfile}\")
             # install() is not scriptable within install(), and
             # configure_file() is the next best thing
-            configure_file(${_srcfile} ${_dstfile} COPYONLY)
+            configure_file(${_srcfile} \${_destfile} COPYONLY)
             # TODO: create additional install_manifest files?
         endif ()
     ")
