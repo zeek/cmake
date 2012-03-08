@@ -9,9 +9,8 @@ macro(InstallClobberImmune _srcfile _dstfile)
     install(CODE "
         set(_destfile \"${_dstfile}\")
         if (NOT \$ENV{DESTDIR} STREQUAL \"\")
-            # replace install root prefix with install-time DESTDIR
-            string(REPLACE ${CMAKE_INSTALL_PREFIX} \$ENV{DESTDIR}
-                   _destfile \"${_dstfile}\")
+            # prepend install root prefix with install-time DESTDIR
+            set(_destfile \"\$ENV{DESTDIR}/${_dstfile}\")
         endif ()
         if (EXISTS \${_destfile})
             message(STATUS \"Skipping: \${_destfile} (already exists)\")
