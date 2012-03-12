@@ -8,7 +8,7 @@
 macro(InstallClobberImmune _srcfile _dstfile)
     install(CODE "
         set(_destfile \"${_dstfile}\")
-        if (NOT \$ENV{DESTDIR} STREQUAL \"\")
+        if (NOT \"\$ENV{DESTDIR}\" STREQUAL \"\")
             # prepend install root prefix with install-time DESTDIR
             set(_destfile \"\$ENV{DESTDIR}/${_dstfile}\")
         endif ()
