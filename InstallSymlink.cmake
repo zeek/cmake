@@ -27,9 +27,15 @@ macro(InstallSymlink _filepath _sympath)
         # scripting the symlink installation at install time should work
         # for CMake 2.6.x and 2.8.x
         install(CODE "
-            execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
-                            ${_filepath}
-                            ${_installdir}/${_symname})
+            if (\"\$ENV{DESTDIR}\" STREQUAL \"\")
+                execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
+                                ${_filepath}
+                                ${_installdir}/${_symname})
+            else ()
+                execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
+                                ${_filepath}
+                                \$ENV{DESTDIR}/${_installdir}/${_symname})
+            endif ()
         ")
     endif ()
 endmacro(InstallSymlink)
