@@ -15,14 +15,20 @@
 #
 #  GOOGLEPERFTOOLS_FOUND              System has GooglePerftools libs/headers
 #  GooglePerftools_LIBRARIES          The GooglePerftools libraries
+#  GooglePerftools_LIBRARIES_DEBUG    The GooglePerftools libraries for heap checking.
 #  GooglePerftools_INCLUDE_DIR        The location of GooglePerftools headers
 
 find_path(GooglePerftools_ROOT_DIR
     NAMES include/google/heap-profiler.h
 )
 
-find_library(GooglePerftools_LIBRARIES
+find_library(GooglePerftools_LIBRARIES_DEBUG
     NAMES tcmalloc_and_profiler
+    HINTS ${GooglePerftools_ROOT_DIR}/lib
+)
+
+find_library(GooglePerftools_LIBRARIES
+    NAMES tcmalloc
     HINTS ${GooglePerftools_ROOT_DIR}/lib
 )
 
@@ -34,11 +40,13 @@ find_path(GooglePerftools_INCLUDE_DIR
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GooglePerftools DEFAULT_MSG
     GooglePerftools_LIBRARIES
+    GooglePerftools_LIBRARIES_DEBUG
     GooglePerftools_INCLUDE_DIR
 )
 
 mark_as_advanced(
     GooglePerftools_ROOT_DIR
     GooglePerftools_LIBRARIES
+    GooglePerftools_LIBRARIES_DEBUG
     GooglePerftools_INCLUDE_DIR
 )
