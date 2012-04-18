@@ -29,3 +29,8 @@ set(CMAKE_EXTRA_INCLUDE_FILES)
 set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
 CheckType(socklen_t int     socklen_t)
 set(CMAKE_EXTRA_INCLUDE_FILES)
+
+set(CMAKE_EXTRA_INCLUDE_FILES netinet/in.h netinet/ip6.h)
+check_type_size("struct ip6_opt" IP6_OPT)
+check_type_size("struct ip6_ext" IP6_EXT)
+set(CMAKE_EXTRA_INCLUDE_FILES)
