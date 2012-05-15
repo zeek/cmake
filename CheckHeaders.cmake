@@ -1,5 +1,6 @@
 include(CheckIncludeFiles)
 include(CheckStructHasMember)
+include(CheckSymbolExists)
 
 check_include_files(getopt.h HAVE_GETOPT_H)
 check_include_files(memory.h HAVE_MEMORY_H)
@@ -26,3 +27,17 @@ if (HAVE_READLINE_READLINE_H AND
 endif ()
 
 check_struct_has_member("struct sockaddr_in" sin_len "netinet/in.h" SIN_LEN)
+
+macro(CheckIPProto _proto)
+check_symbol_exists(IPPROTO_${_proto} netinet/in.h HAVE_IPPROTO_${_proto})
+endmacro(CheckIPProto _proto)
+
+CheckIPProto(HOPOPTS)
+CheckIPProto(IPV6)
+CheckIPProto(ROUTING)
+CheckIPProto(FRAGMENT)
+CheckIPProto(ESP)
+CheckIPProto(AH)
+CheckIPProto(ICMPV6)
+CheckIPProto(NONE)
+CheckIPProto(DSTOPTS)
