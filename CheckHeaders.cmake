@@ -34,6 +34,7 @@ endmacro(CheckIPProto _proto)
 
 CheckIPProto(HOPOPTS)
 CheckIPProto(IPV6)
+CheckIPProto(IPV4)
 CheckIPProto(ROUTING)
 CheckIPProto(FRAGMENT)
 CheckIPProto(ESP)
