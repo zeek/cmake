@@ -9,3 +9,4 @@ endif ()
 if (NOT CMAKE_CXX_COMPILER AND DEFINED CMAKE_CXX_COMPILER)
     message(FATAL_ERROR "Could not find prerequisite C++ compiler")
 endif ()
+
