@@ -118,8 +118,8 @@ endmacro(SetPackageFileName)
 
 # Sets up binary package metadata
 macro(SetPackageMetadata)
-    set(CPACK_PACKAGE_VENDOR "Lawrence Berkeley National Laboratory")
-    set(CPACK_PACKAGE_CONTACT "info@bro-ids.org")
+    set(CPACK_PACKAGE_VENDOR "International Computer Science Institute")
+    set(CPACK_PACKAGE_CONTACT "info@bro.org")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
         "The Bro Network Intrusion Detection System")
 
