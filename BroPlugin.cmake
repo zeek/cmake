@@ -52,6 +52,7 @@ function(bro_plugin_end)
 endfunction()
 
 function(bro_plugin_bif_create_loader target dstdir)
+     file(MAKE_DIRECTORY ${dstdir})
      add_custom_target(${target}
 			COMMAND "touch" "/tmp/a"
 			COMMAND "sh" "-c" "ls *.bif.bro \\| sed 's#\\\\\\(.*\\\\\\).bro#@load ./\\\\1#g' >__load__.bro"
