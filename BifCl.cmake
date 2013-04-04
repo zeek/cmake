@@ -78,3 +78,42 @@ macro(GET_BIF_OUTPUT_FILES_FOR_PLUGIN inputFile outputFileVar)
         ${inputFile}.init.cc
     )
 endmacro(GET_BIF_OUTPUT_FILES_FOR_PLUGIN)
+
+### Subdirectory versions.
+
+# A variant of BIF_TARGET that's tailored for sub-directory use.
+# The outputs are returned in BIF_OUTPUT_{C,H,BRO}.
+macro(BIF_TARGET_FOR_SUBDIR bifInput)
+    get_bif_output_files_for_subdir(${bifInput} bifOutputs)
+    add_custom_command(OUTPUT ${bifOutputs}
+                       COMMAND bifcl
+                       ARGS -s ${CMAKE_CURRENT_SOURCE_DIR}/${bifInput} || (rm -f ${bifOutputs} && exit 1)
+                       # In order be able to run bro from the build directory,
+                       # the generated bro script needs to be inside a
+                       # a directory tree named the same way it will be
+                       # referenced from an @load.
+                       COMMAND "${CMAKE_COMMAND}"
+                       ARGS -E copy ${bifInput}.bro ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInput}.bro
+                       COMMAND "${CMAKE_COMMAND}"
+                       ARGS -E remove -f ${bifInput}.bro
+                       DEPENDS ${bifInput}
+                       DEPENDS bifcl
+                       DEPENDS generate_standard_bifs
+                       COMMENT "[BIFCL] Processing ${bifInput} (subdir)"
+    )
+	set(BIF_OUTPUT_CC  ${bifInput}.cc)
+	set(BIF_OUTPUT_H   ${bifInput}.h)
+	set(BIF_OUTPUT_BRO ${CMAKE_CURRENT_BINARY_DIR}/scripts/base/${bifInput}.bro)
+endmacro(BIF_TARGET_FOR_SUBDIR)
+
+# A variant of GET_BIF_OUTPUT_FILES that's tailored for sub-directory use.
+# This returns the files produces from ${inputFile} by "bifcl -p".
+macro(GET_BIF_OUTPUT_FILES_FOR_SUBDIR inputFile outputFileVar)
+    set(${outputFileVar}
+        ${CMAKE_BINARY_DIR}/base/bif/${inputFile}.bro
+        ${inputFile}.h
+        ${inputFile}.cc
+        ${inputFile}.init.cc
+    )
+endmacro(GET_BIF_OUTPUT_FILES_FOR_SUBDIR)
+
