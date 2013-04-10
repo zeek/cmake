@@ -46,7 +46,7 @@ endmacro(GET_BIF_OUTPUT_FILES)
 # A variant of BIF_TARGET that's tailored for plugin use.
 # The outputs are returned in BIF_OUTPUT_{C,H,BRO}.
 macro(BIF_TARGET_FOR_PLUGIN pluginName bifInput)
-    get_bif_output_files_for_plugin(${bifInput} bifOutputs)
+    get_bif_output_files_for_plugin(${pluginName} ${bifInput} bifOutputs)
     add_custom_command(OUTPUT ${bifOutputs}
                        COMMAND bifcl
                        ARGS -p ${pluginName} ${CMAKE_CURRENT_SOURCE_DIR}/${bifInput} || (rm -f ${bifOutputs} && exit 1)
@@ -65,14 +65,14 @@ macro(BIF_TARGET_FOR_PLUGIN pluginName bifInput)
     )
 	set(BIF_OUTPUT_CC  ${bifInput}.cc ${bifInput}.init.cc)
 	set(BIF_OUTPUT_H   ${bifInput}.h)
-	set(BIF_OUTPUT_BRO ${CMAKE_CURRENT_BINARY_DIR}/scripts/base/plugin.${pluginName}.${bifInput}.bro)
+	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/plugin.${pluginName}.${bifInput}.bro)
 endmacro(BIF_TARGET_FOR_PLUGIN)
 
 # A variant of GET_BIF_OUTPUT_FILES that's tailored for plugin use.
 # This returns the files produces from ${inputFile} by "bifcl -p".
-macro(GET_BIF_OUTPUT_FILES_FOR_PLUGIN inputFile outputFileVar)
+macro(GET_BIF_OUTPUT_FILES_FOR_PLUGIN pluginName inputFile outputFileVar)
     set(${outputFileVar}
-        ${CMAKE_BINARY_DIR}/base/bif/plugins/${inputFile}.bro
+        ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${pluginName}.${inputFile}.bro
         ${inputFile}.h
         ${inputFile}.cc
         ${inputFile}.init.cc
@@ -83,6 +83,9 @@ endmacro(GET_BIF_OUTPUT_FILES_FOR_PLUGIN)
 
 # A variant of BIF_TARGET that's tailored for sub-directory use.
 # The outputs are returned in BIF_OUTPUT_{C,H,BRO}.
+# This also define a new target "generate_${bifInput}" that triggers
+# the generation; the target can be used to define dependencies if
+# other parts require the generated file to be built first.
 macro(BIF_TARGET_FOR_SUBDIR bifInput)
     get_bif_output_files_for_subdir(${bifInput} bifOutputs)
     add_custom_command(OUTPUT ${bifOutputs}
@@ -103,7 +106,7 @@ macro(BIF_TARGET_FOR_SUBDIR bifInput)
     )
 	set(BIF_OUTPUT_CC  ${bifInput}.cc)
 	set(BIF_OUTPUT_H   ${bifInput}.h)
-	set(BIF_OUTPUT_BRO ${CMAKE_CURRENT_BINARY_DIR}/scripts/base/${bifInput}.bro)
+	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/${bifInput}.bro)
     add_custom_target(generate_${bifInput} DEPENDS ${BIF_OUTPUT_H})
 endmacro(BIF_TARGET_FOR_SUBDIR)
 
@@ -111,7 +114,7 @@ endmacro(BIF_TARGET_FOR_SUBDIR)
 # This returns the files produces from ${inputFile} by "bifcl -p".
 macro(GET_BIF_OUTPUT_FILES_FOR_SUBDIR inputFile outputFileVar)
     set(${outputFileVar}
-        ${CMAKE_BINARY_DIR}/base/bif/${inputFile}.bro
+        ${CMAKE_BINARY_DIR}/scripts/base/bif/${inputFile}.bro
         ${inputFile}.h
         ${inputFile}.cc
         ${inputFile}.init.cc
