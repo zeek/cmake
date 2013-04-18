@@ -48,17 +48,21 @@ find_path(LibMagic_INCLUDE_DIR
 
 if (LibMagic_FILE_EXE)
     execute_process(COMMAND "${LibMagic_FILE_EXE}" --version
+                    ERROR_VARIABLE  LibMagic_VERSION
                     OUTPUT_VARIABLE LibMagic_VERSION)
     string(REGEX REPLACE "^file-([0-9.]+).*$" "\\1"
-           LibMagic_VERSION ${LibMagic_VERSION})
+           LibMagic_VERSION "${LibMagic_VERSION}")
+    message(STATUS "libmagic version: ${LibMagic_VERSION}")
 else ()
     set(LibMagic_VERSION NOTFOUND)
 endif ()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(LibMagic
-    REQUIRED_VARS LibMagic_LIBRARY LibMagic_FILE_EXE LibMagic_INCLUDE_DIR
-    VERSION_VAR LibMagic_VERSION
+find_package_handle_standard_args(LibMagic DEFAULT_MSG
+    LibMagic_LIBRARY
+    LibMagic_INCLUDE_DIR
+    LibMagic_FILE_EXE
+    LibMagic_VERSION
 )
 
 mark_as_advanced(
