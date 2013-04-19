@@ -59,3 +59,8 @@ function(bro_plugin_bif_create_loader target dstdir)
 			WORKING_DIRECTORY ${dstdir}
 			)
 endfunction()
+
+function(bro_plugin_dependencies name deps)
+    add_dependencies(plugin-${name} deps)
+endfunction()
+
