@@ -1,123 +1,94 @@
 
-### Default versions.
+# A macro to define a command that uses the BIF compiler to produce C++
+# segments and Bro language declarations from a .bif file. The outputs
+# are returned in BIF_OUTPUT_{CC,H,BRO}. By default, it runs bifcl in
+# alternative mode (-a; suitable for standalone compilation). If
+# an additional parameter "standard"is given, it runs it in standard mode
+# for inclusion in NetVar.*. If an additional parameter "plugin" is given,
+# it runs it in plugin mode (-p). In the latter case, one more argument
+# is required with the plugins name.
+#
+# TODO: Update description with target.
 
-# A macro to define a command that uses the BIF compiler to produce
-# C++ segments and Bro language declarations from .bif file
-# The outputs are appended to list ALL_BIF_OUTPUTS
-# Outputs that should be installed are appended to INSTALL_BIF_OUTPUTS
-macro(BIF_TARGET bifInput)
-    get_bif_output_files(${bifInput} bifOutputs)
+macro(bif_target bifInput)
+    set(target "")
+
+    if ( "${ARGV1}" STREQUAL "standard" )
+        set(bifcl_args "")
+        set(target "bif-std-${CMAKE_CURRENT_BINARY_DIR}/${bifInput}")
+        set(bifOutputs
+            ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInput}.bro
+            ${CMAKE_CURRENT_BINARY_DIR}/${bifInput}.func_def
+            ${CMAKE_CURRENT_BINARY_DIR}/${bifInput}.func_h
+            ${CMAKE_CURRENT_BINARY_DIR}/${bifInput}.func_init
+            ${CMAKE_CURRENT_BINARY_DIR}/${bifInput}.netvar_def
+            ${CMAKE_CURRENT_BINARY_DIR}/${bifInput}.netvar_h
+            ${CMAKE_CURRENT_BINARY_DIR}/${bifInput}.netvar_init)
+    	set(BIF_OUTPUT_CC  ${bifInput}.func_def
+                           ${bifInput}.func_init
+                           ${bifInput}.netvar_def
+                           ${bifInput}.netvar_init)
+        set(BIF_OUTPUT_H   ${bifInput}.func_h
+                           ${bifInput}.netvar_h)
+	    set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInput}.bro)
+
+    elseif ( "${ARGV1}" STREQUAL "plugin" )
+        set(plugin_name ${ARGV2})
+        set(target "bif-plugin-${plugin_name}-${bifInput}")
+        set(bifcl_args "-p ${plugin_name}")
+        set(bifOutputs
+            ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name}.${bifInput}.bro
+            ${bifInput}.h
+            ${bifInput}.cc
+            ${bifInput}.init.cc)
+    	set(BIF_OUTPUT_CC  ${bifInput}.cc
+                           ${bifInput}.init.cc)
+        set(BIF_OUTPUT_H   ${bifInput}.h)
+    	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name}.${bifInput}.bro)
+
+    else ()
+        # Alternative mode.
+        set(bifcl_args "-s")
+        set(target "bif-alt-${CMAKE_CURRENT_BINARY_DIR}/${bifInput}")
+        set(bifOutputs
+            ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInput}.bro
+            ${bifInput}.h
+            ${bifInput}.cc
+            ${bifInput}.init.cc)
+    	set(BIF_OUTPUT_CC  ${bifInput}.cc)
+        set(BIF_OUTPUT_H   ${bifInput}.h)
+	    set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInput}.bro)
+    endif ()
+
     add_custom_command(OUTPUT ${bifOutputs}
                        COMMAND bifcl
-                       ARGS ${CMAKE_CURRENT_SOURCE_DIR}/${bifInput} || (rm -f ${bifOutputs} && exit 1)
+                       ARGS ${bifcl_args} ${CMAKE_CURRENT_SOURCE_DIR}/${bifInput} || (rm -f ${bifOutputs} && exit 1)
                        # In order be able to run bro from the build directory,
                        # the generated bro script needs to be inside a
                        # a directory tree named the same way it will be
                        # referenced from an @load.
                        COMMAND "${CMAKE_COMMAND}"
-                       ARGS -E copy ${bifInput}.bro ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInput}.bro
+                       ARGS -E copy ${bifInput}.bro ${BIF_OUTPUT_BRO}
                        COMMAND "${CMAKE_COMMAND}"
                        ARGS -E remove -f ${bifInput}.bro
                        DEPENDS ${bifInput}
                        DEPENDS bifcl
                        COMMENT "[BIFCL] Processing ${bifInput}"
     )
-    list(APPEND ALL_BIF_OUTPUTS ${bifOutputs})
-    list(APPEND INSTALL_BIF_OUTPUTS
-         ${CMAKE_CURRENT_BINARY_DIR}/base/bif/${bifInput}.bro)
-endmacro(BIF_TARGET)
 
-# Returns a list of output files that bifcl will produce
-# for given input file in ${outputFileVar}.
-macro(GET_BIF_OUTPUT_FILES inputFile outputFileVar)
-    set(${outputFileVar}
-        ${CMAKE_BINARY_DIR}/scripts/base/bif/${inputFile}.bro
-        ${inputFile}.func_def
-        ${inputFile}.func_h
-        ${inputFile}.func_init
-        ${inputFile}.netvar_def
-        ${inputFile}.netvar_h
-        ${inputFile}.netvar_init
-    )
-endmacro(GET_BIF_OUTPUT_FILES)
+    string(REGEX REPLACE "${CMAKE_BINARY_DIR}/src/" "" target "${target}")
+    string(REGEX REPLACE "/" "-" target "${target}")
+    add_custom_target(${target} DEPENDS ${BIF_OUTPUT_H} ${BIF_OUTPUT_CC})
+    set_source_files_properties(${bifOutputs} PROPERTIES GENERATED 1)
 
-### Plugin versions.
+    set(bro_ALL_GENERATED_OUTPUTS ${bro_ALL_GENERATED_OUTPUTS} ${target}  CACHE INTERNAL "automatically generated files" FORCE) # Propagate to top-level.
+endmacro(bif_target)
 
-# A variant of BIF_TARGET that's tailored for plugin use.
-# The outputs are returned in BIF_OUTPUT_{C,H,BRO}.
-macro(BIF_TARGET_FOR_PLUGIN pluginName bifInput)
-    get_bif_output_files_for_plugin(${pluginName} ${bifInput} bifOutputs)
-    add_custom_command(OUTPUT ${bifOutputs}
-                       COMMAND bifcl
-                       ARGS -p ${pluginName} ${CMAKE_CURRENT_SOURCE_DIR}/${bifInput} || (rm -f ${bifOutputs} && exit 1)
-                       # In order be able to run bro from the build directory,
-                       # the generated bro script needs to be inside a
-                       # a directory tree named the same way it will be
-                       # referenced from an @load.
-                       COMMAND "${CMAKE_COMMAND}"
-                       ARGS -E copy ${bifInput}.bro ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${pluginName}.${bifInput}.bro
-                       COMMAND "${CMAKE_COMMAND}"
-                       ARGS -E remove -f ${bifInput}.bro
-                       DEPENDS ${bifInput}
-                       DEPENDS bifcl
-                       DEPENDS generate_bifs
-                       COMMENT "[BIFCL] Processing ${bifInput} (plugin)"
-    )
-	set(BIF_OUTPUT_CC  ${bifInput}.cc ${bifInput}.init.cc)
-	set(BIF_OUTPUT_H   ${bifInput}.h)
-	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/plugin.${pluginName}.${bifInput}.bro)
-endmacro(BIF_TARGET_FOR_PLUGIN)
-
-# A variant of GET_BIF_OUTPUT_FILES that's tailored for plugin use.
-# This returns the files produces from ${inputFile} by "bifcl -p".
-macro(GET_BIF_OUTPUT_FILES_FOR_PLUGIN pluginName inputFile outputFileVar)
-    set(${outputFileVar}
-        ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${pluginName}.${inputFile}.bro
-        ${inputFile}.h
-        ${inputFile}.cc
-        ${inputFile}.init.cc
-    )
-endmacro(GET_BIF_OUTPUT_FILES_FOR_PLUGIN)
-
-### Subdirectory versions.
-
-# A variant of BIF_TARGET that's tailored for sub-directory use.
-# The outputs are returned in BIF_OUTPUT_{C,H,BRO}.
-# This also define a new target "generate_${bifInput}" that triggers
-# the generation; the target can be used to define dependencies if
-# other parts require the generated file to be built first.
-macro(BIF_TARGET_FOR_SUBDIR bifInput)
-    get_bif_output_files_for_subdir(${bifInput} bifOutputs)
-    add_custom_command(OUTPUT ${bifOutputs}
-                       COMMAND bifcl
-                       ARGS -s ${CMAKE_CURRENT_SOURCE_DIR}/${bifInput} || (rm -f ${bifOutputs} && exit 1)
-                       # In order be able to run bro from the build directory,
-                       # the generated bro script needs to be inside a
-                       # a directory tree named the same way it will be
-                       # referenced from an @load.
-                       COMMAND "${CMAKE_COMMAND}"
-                       ARGS -E copy ${bifInput}.bro ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInput}.bro
-                       COMMAND "${CMAKE_COMMAND}"
-                       ARGS -E remove -f ${bifInput}.bro
-                       DEPENDS ${bifInput}
-                       DEPENDS bifcl
-                       DEPENDS generate_bifs
-                       COMMENT "[BIFCL] Processing ${bifInput} (subdir)"
-    )
-	set(BIF_OUTPUT_CC  ${bifInput}.cc)
-	set(BIF_OUTPUT_H   ${bifInput}.h)
-	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/${bifInput}.bro)
-    add_custom_target(generate_${bifInput} DEPENDS ${BIF_OUTPUT_H})
-endmacro(BIF_TARGET_FOR_SUBDIR)
-
-# A variant of GET_BIF_OUTPUT_FILES that's tailored for sub-directory use.
-# This returns the files produces from ${inputFile} by "bifcl -p".
-macro(GET_BIF_OUTPUT_FILES_FOR_SUBDIR inputFile outputFileVar)
-    set(${outputFileVar}
-        ${CMAKE_BINARY_DIR}/scripts/base/bif/${inputFile}.bro
-        ${inputFile}.h
-        ${inputFile}.cc
-        ${inputFile}.init.cc
-    )
-endmacro(GET_BIF_OUTPUT_FILES_FOR_SUBDIR)
-
+function(bro_bif_create_loader target dstdir)
+     file(MAKE_DIRECTORY ${dstdir})
+     add_custom_target(${target}
+			COMMAND "sh" "-c" "ls *.bif.bro \\| sed 's#\\\\\\(.*\\\\\\).bro#@load ./\\\\1#g' >__load__.bro"
+			WORKING_DIRECTORY ${dstdir}
+			)
+     add_dependencies(${target} generate_outputs)
+endfunction()

@@ -4,6 +4,9 @@
 # The outputs of the command are appended to list ALL_BINPAC_OUTPUTS
 # All arguments to this macro are appended to list ALL_BINPAC_INPUTS.
 # Additional dependencies are pulled from BINPAC_AUXSRC.
+#
+# TODO: Update description with target.
+
 macro(BINPAC_TARGET pacFile)
     get_filename_component(basename ${pacFile} NAME_WE)
     add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.h
@@ -17,8 +20,16 @@ macro(BINPAC_TARGET pacFile)
                                ${BINPAC_AUXSRC} ${ARGN}
                        COMMENT "[BINPAC] Processing ${pacFile}"
     )
-    list(APPEND ALL_BINPAC_INPUTS ${ARGV})
-    list(APPEND ALL_BINPAC_OUTPUTS
-         ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.h
-         ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.cc) 
+
+    set(BINPAC_OUTPUT_H ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.h)
+    set(BINPAC_OUTPUT_CC ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.cc)
+    set(pacOutputs ${BINPAC_OUTPUT_H} ${BINPAC_OUTPUT_CC})
+
+    set(target "pac-${CMAKE_CURRENT_BINARY_DIR}/${pacFile}")
+
+    string(REGEX REPLACE "${CMAKE_BINARY_DIR}/src/" "" target "${target}")
+    string(REGEX REPLACE "/" "-" target "${target}")
+    add_custom_target(${target} DEPENDS ${pacOutputs})
+
+    set(bro_ALL_GENERATED_OUTPUTS ${bro_ALL_GENERATED_OUTPUTS} ${target}  CACHE INTERNAL "automatically generated files" FORCE) # Propagate to top-level.
 endmacro(BINPAC_TARGET)
