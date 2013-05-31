@@ -1,6 +1,6 @@
 ## A set of functions for defining Bro plugins.
 ##
-## TODO: Currently, these support only plugins that are statically
+## Currently, these support only plugins that are statically
 ## compiled into the Bro binary. Eventually we'll extend them
 ## to alternatively produce shared libraries that can be loaded at
 ## run-time.
@@ -8,12 +8,7 @@
 include(BifCl)
 include(BinPAC)
 
-function(bro_plugin_add)
-    list(APPEND _plugin_objs ${ARGV})
-    set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
-endfunction()
-
-# Begin a plugin definition, given its name as the argument.
+# Begins a plugin definition, giving its namespace and name as the arguments.
 function(bro_plugin_begin ns name)
     _plugin_target_name(target "${ns}" "${name}")
     set(_plugin_lib  "${target}" PARENT_SCOPE)
@@ -28,8 +23,8 @@ function(bro_plugin_cc)
         set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
 endfunction()
 
-# Adds a *.pac files to a plugin. Further *.pac files may given as
-# dependencies.
+# Adds a *.pac file to a plugin. Further *.pac files may given that
+# it depends on.
 function(bro_plugin_pac)
     binpac_target(${ARGV})
     list(APPEND _plugin_objs ${BINPAC_OUTPUT_CC})
@@ -45,21 +40,22 @@ function(bro_plugin_bif)
     endforeach ()
 endfunction()
 
+# Ends a plugin definition.
 function(bro_plugin_end)
-    add_library(${_plugin_lib} OBJECT ${_plugin_objs})
+    if ( bro_HAVE_OBJECT_LIBRARIES )
+        add_library(${_plugin_lib} OBJECT ${_plugin_objs})
+        set(_target "$<TARGET_OBJECTS:${_plugin_lib}>")
+    else ()
+        add_library(${_plugin_lib} STATIC ${_plugin_objs})
+        set(_target "${_plugin_lib}")
+    endif ()
+
+    set(bro_PLUGIN_LIBS ${bro_PLUGIN_LIBS} "${_target}" CACHE INTERNAL "plugin libraries")
     add_dependencies(${_plugin_lib} generate_outputs)
-    set(bro_PLUGIN_OBJECT_LIBS ${bro_PLUGIN_OBJECT_LIBS} $<TARGET_OBJECTS:${_plugin_lib}> CACHE INTERNAL "plugin object libraries")
 endfunction()
 
-#function(bro_plugin_dependencies ns name deps)
-#    _plugin_target_name(target ${ns} ${name})
-#    add_dependencies(${target} deps)
-#endfunction()
-
+# Internal function to create a unique target name for a plugin.
 macro(_plugin_target_name target ns name)
-    # STRING(REGEX REPLACE "${CMAKE_BINARY_DIR}/src/" "" tmp "plugin-${CMAKE_CURRENT_BINARY_DIR}/${name}")
-    ### STRING(REGEX REPLACE "-[^-]+$" "" tmp "${tmp}") # FIXME: Doesn't work.
-    # STRING(REGEX REPLACE "/" "-" ${target} "${tmp}")
     set(${target} "plugin-${ns}-${name}")
 endmacro()
 

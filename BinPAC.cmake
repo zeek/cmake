@@ -1,12 +1,13 @@
 
 # A macro to define a command that uses the BinPac compiler to
 # produce C++ code that implements a protocol parser/analyzer.
-# The outputs of the command are appended to list ALL_BINPAC_OUTPUTS
-# All arguments to this macro are appended to list ALL_BINPAC_INPUTS.
+# The outputs are returned in BINPAC_OUTPUT_{CC,H}.
 # Additional dependencies are pulled from BINPAC_AUXSRC.
 #
-# TODO: Update description with target.
-
+# The macro also creates a target that can be used to define depencencies on
+# the generated files. The name of the target includes a normalized path to
+# the input pac to make it unique. The target is added automatically to
+# bro_ALL_GENERATED_OUTPUTS.
 macro(BINPAC_TARGET pacFile)
     get_filename_component(basename ${pacFile} NAME_WE)
     add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.h

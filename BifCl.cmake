@@ -3,13 +3,15 @@
 # segments and Bro language declarations from a .bif file. The outputs
 # are returned in BIF_OUTPUT_{CC,H,BRO}. By default, it runs bifcl in
 # alternative mode (-a; suitable for standalone compilation). If
-# an additional parameter "standard"is given, it runs it in standard mode
+# an additional parameter "standard" is given, it runs it in standard mode
 # for inclusion in NetVar.*. If an additional parameter "plugin" is given,
 # it runs it in plugin mode (-p). In the latter case, one more argument
-# is required with the plugins name.
+# is required with the plugin's name.
 #
-# TODO: Update description with target.
-
+# The macro also creates a target that can be used to define depencencies on
+# the generated files. The name of the target depends on the mode and includes
+# a normalized path to the input bif to make it unique. The target is added
+# automatically to bro_ALL_GENERATED_OUTPUTS.
 macro(bif_target bifInput)
     set(target "")
 
@@ -84,6 +86,9 @@ macro(bif_target bifInput)
     set(bro_ALL_GENERATED_OUTPUTS ${bro_ALL_GENERATED_OUTPUTS} ${target}  CACHE INTERNAL "automatically generated files" FORCE) # Propagate to top-level.
 endmacro(bif_target)
 
+# A macro to create a __load__.bro file for all *.bif.bro files found
+# in a given directory. It creates a corresponding target to trigger
+# the generation.
 function(bro_bif_create_loader target dstdir)
      file(MAKE_DIRECTORY ${dstdir})
      add_custom_target(${target}
