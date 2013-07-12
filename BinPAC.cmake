@@ -9,6 +9,13 @@
 # the input pac to make it unique. The target is added automatically to
 # bro_ALL_GENERATED_OUTPUTS.
 macro(BINPAC_TARGET pacFile)
+    if ( NOT BRO_PLUGIN_EXTERNAL_BUILD )
+        set(binpacDep "${BinPAC_EXE}")
+    else ()
+        set(BinPAC_EXE "${BRO_PLUGIN_BRO_BUILD}/aux/binpac/src/binpac")
+        set(BinPAC_addl_args "-I;${BRO_PLUGIN_BRO_SRC}/src")
+    endif ()
+
     get_filename_component(basename ${pacFile} NAME_WE)
     add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.h
                               ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.cc
@@ -16,8 +23,9 @@ macro(BINPAC_TARGET pacFile)
                        ARGS -q -d ${CMAKE_CURRENT_BINARY_DIR}
                             -I ${CMAKE_CURRENT_SOURCE_DIR}
                             -I ${CMAKE_SOURCE_DIR}/src
+                            ${BinPAC_addl_args}
                             ${CMAKE_CURRENT_SOURCE_DIR}/${pacFile}
-                       DEPENDS ${BinPAC_EXE} ${pacFile}
+                       DEPENDS ${binpacDep} ${pacFile}
                                ${BINPAC_AUXSRC} ${ARGN}
                        COMMENT "[BINPAC] Processing ${pacFile}"
     )
@@ -31,6 +39,7 @@ macro(BINPAC_TARGET pacFile)
     string(REGEX REPLACE "${CMAKE_BINARY_DIR}/src/" "" target "${target}")
     string(REGEX REPLACE "/" "-" target "${target}")
     add_custom_target(${target} DEPENDS ${pacOutputs})
+    set(BINPAC_BUILD_TARGET ${target})
 
     set(bro_ALL_GENERATED_OUTPUTS ${bro_ALL_GENERATED_OUTPUTS} ${target}  CACHE INTERNAL "automatically generated files" FORCE) # Propagate to top-level.
 endmacro(BINPAC_TARGET)
