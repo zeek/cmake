@@ -11,6 +11,30 @@ cmake_minimum_required(VERSION 2.6.3 FATAL_ERROR)
 
 include(CommonCMakeConfig)
 
+if ( NOT BRO_DIST )
+    message(FATAL_ERROR "BRO_DIST not set")
+endif ()
+
+if ( NOT EXISTS "${BRO_DIST}/build/CMakeCache.txt" )
+    message(FATAL_ERROR "${BRO_DIST}/build/CMakeCache.txt; has Bro been built?")
+endif ()
+
+load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_ CMAKE_INSTALL_PREFIX Bro_BINARY_DIR Bro_SOURCE_DIR)
+
+set(BRO_PLUGIN_SRC                "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
+set(BRO_PLUGIN_BUILD              "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "" FORCE)
+set(BRO_PLUGIN_BRO_INSTALL_PREFIX "${bro_cache_CMAKE_INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
+set(BRO_PLUGIN_BRO_SRC            "${bro_cache_Bro_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
+set(BRO_PLUGIN_BRO_BUILD          "${bro_cache_Bro_BINARY_DIR}" CACHE INTERNAL "" FORCE)
+set(BRO_PLUGIN_INTERNAL_BUILD     false CACHE INTERNAL "" FORCE)
+
+message(STATUS "Bro source        : ${BRO_PLUGIN_BRO_SRC}")
+message(STATUS "Bro build         : ${BRO_PLUGIN_BRO_BUILD}")
+message(STATUS "Bro install prefix: ${BRO_PLUGIN_BRO_INSTALL_PREFIX}")
+
+set(CMAKE_MODULE_PATH ${BRO_PLUGIN_SRC}/cmake)
+set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_SRC}/cmake)
+
 include_directories(BEFORE ${BRO_PLUGIN_BRO_SRC}/src
                            ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
                            ${BRO_PLUGIN_BRO_BUILD}
@@ -26,7 +50,7 @@ set(ENV{PATH} "${BRO_PLUGIN_BRO_BUILD}/build/src:$ENV{PATH}")
 
 set(bro_PLUGIN_LIBS CACHE INTERNAL "plugin libraries" FORCE)
 
-add_definitions(-DBRO_PLUGIN_EXTERNAL_BUILD=true)
+add_definitions(-DBRO_PLUGIN_INTERNAL_BUILD=false)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/scripts/bif)
 

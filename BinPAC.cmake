@@ -9,7 +9,7 @@
 # the input pac to make it unique. The target is added automatically to
 # bro_ALL_GENERATED_OUTPUTS.
 macro(BINPAC_TARGET pacFile)
-    if ( NOT BRO_PLUGIN_EXTERNAL_BUILD )
+    if ( BRO_PLUGIN_INTERNAL_BUILD )
         set(binpacDep "${BinPAC_EXE}")
     else ()
         set(BinPAC_EXE "${BRO_PLUGIN_BRO_BUILD}/aux/binpac/src/binpac")
