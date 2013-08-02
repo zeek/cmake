@@ -19,7 +19,7 @@ if ( NOT EXISTS "${BRO_DIST}/build/CMakeCache.txt" )
     message(FATAL_ERROR "${BRO_DIST}/build/CMakeCache.txt; has Bro been built?")
 endif ()
 
-load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_ CMAKE_INSTALL_PREFIX Bro_BINARY_DIR Bro_SOURCE_DIR)
+load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_ CMAKE_INSTALL_PREFIX Bro_BINARY_DIR Bro_SOURCE_DIR ENABLE_DEBUG)
 
 set(BRO_PLUGIN_SRC                "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
 set(BRO_PLUGIN_BUILD              "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "" FORCE)
@@ -27,6 +27,7 @@ set(BRO_PLUGIN_BRO_INSTALL_PREFIX "${bro_cache_CMAKE_INSTALL_PREFIX}" CACHE INTE
 set(BRO_PLUGIN_BRO_SRC            "${bro_cache_Bro_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
 set(BRO_PLUGIN_BRO_BUILD          "${bro_cache_Bro_BINARY_DIR}" CACHE INTERNAL "" FORCE)
 set(BRO_PLUGIN_INTERNAL_BUILD     false CACHE INTERNAL "" FORCE)
+set(BRO_PLUGIN_ENABLE_DEBUG       "${bro_cache_ENABLE_DEBUG}"   CACHE INTERNAL "" FORCE)
 
 message(STATUS "Bro source        : ${BRO_PLUGIN_BRO_SRC}")
 message(STATUS "Bro build         : ${BRO_PLUGIN_BRO_BUILD}")
