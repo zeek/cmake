@@ -94,8 +94,9 @@ endmacro(bif_target)
 function(bro_bif_create_loader target dstdir)
      file(MAKE_DIRECTORY ${dstdir})
      add_custom_target(${target}
-			COMMAND "sh" "-c" "ls *.bif.bro \\| sed 's#\\\\\\(.*\\\\\\).bro#@load ./\\\\1#g' >__load__.bro"
+			COMMAND "sh" "-c" "find . -name \\*\\.bif\\.bro | sort -f | sed 's#\\(.*\\).bro#@load \\1#g' >__load__.bro"
 			WORKING_DIRECTORY ${dstdir}
+			VERBATIM
 			)
      add_dependencies(${target} generate_outputs)
 endfunction()
