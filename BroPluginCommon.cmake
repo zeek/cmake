@@ -43,6 +43,14 @@ function(bro_plugin_bif)
     endforeach ()
 endfunction()
 
+# Add an additional object file to the plugin's library.
+function(bro_plugin_obj)
+    foreach ( bif ${ARGV} )
+        list(APPEND _plugin_objs ${bif})
+        set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
+    endforeach ()
+endfunction()
+
 # Internal function to create a unique target name for a plugin.
 macro(_plugin_target_name target ns name)
     set(${target} "plugin-${ns}-${name}")
