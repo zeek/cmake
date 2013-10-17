@@ -64,8 +64,8 @@ function(bro_plugin_end)
     add_dependencies(${_plugin_lib} ${_plugin_deps})
     set_target_properties(${_plugin_lib} PROPERTIES PREFIX "")
 
-    # Create scripts/bif/__init__.bro.
-    bro_bif_create_loader(bif-init-${_plugin_ns} ${CMAKE_BINARY_DIR}/scripts/bif)
+    # Create bif/__init__.bro.
+    bro_bif_create_loader(bif-init-${_plugin_ns} ${CMAKE_CURRENT_BINARY_DIR}/bif)
     add_dependencies(bif-init-${_plugin_ns} ${_plugin_deps})
     add_dependencies(${_plugin_lib} bif-init-${_plugin_ns})
 

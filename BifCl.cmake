@@ -48,7 +48,7 @@ macro(bif_target bifInput)
         if ( BRO_PLUGIN_INTERNAL_BUILD )
         	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name}.${bifInputBasename}.bro)
         else ()
-        	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/bif/${bifInputBasename}.bro)
+        	set(BIF_OUTPUT_BRO ${CMAKE_CURRENT_BINARY_DIR}/bif/${bifInputBasename}.bro)
         endif()
 
     else ()
