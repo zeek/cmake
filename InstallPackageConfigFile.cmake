@@ -52,10 +52,11 @@ macro(InstallPackageConfigFile _srcfile _dstdir _dstfilename)
     # '/' is invalid in target names, so replace w/ '.'
     string(REGEX REPLACE "/" "." _flatsrc ${_srcfile})
 
+    set(_example ${_dstfile}.example)
+
     add_custom_target(install-example-config-${_flatsrc}
-        COMMAND "${CMAKE_COMMAND}" -E copy ${_srcfile} ${_dstfile}.example
-        COMMENT "Installing ${_dstfile}.example"
-        VERBATIM)
+        COMMAND "${CMAKE_COMMAND}" -E copy ${_srcfile} \${DESTDIR}${_example}
+        COMMENT "Installing ${_example}")
 
     add_dependencies(install-example-configs install-example-config-${_flatsrc})
 
