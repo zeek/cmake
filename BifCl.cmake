@@ -76,7 +76,7 @@ macro(bif_target bifInput)
         set(BifCl_EXE "${BRO_PLUGIN_BRO_BUILD}/src/bifcl")
     endif ()
 
-    add_custom_command(OUTPUT ${bifOutputs}
+    add_custom_command(OUTPUT ${bifOutputs} ${BIF_OUTPUT_BRO}
                        COMMAND ${BifCl_EXE}
                        ARGS ${bifcl_args} ${CMAKE_CURRENT_SOURCE_DIR}/${bifInput} || (rm -f ${bifOutputs} && exit 1)
                        # In order be able to run bro from the build directory,
@@ -91,11 +91,6 @@ macro(bif_target bifInput)
                        DEPENDS ${bifclDep}
                        COMMENT "[BIFCL] Processing ${bifInput}"
     )
-
-    # Make sure the copied *.bro files get deleted on "make clean".
-    get_directory_property(clean ADDITIONAL_MAKE_CLEAN_FILES)
-    list(APPEND clean ${BIF_OUTPUT_BRO})
-    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean}")
 
     string(REGEX REPLACE "${CMAKE_BINARY_DIR}/src/" "" target "${target}")
     string(REGEX REPLACE "/" "-" target "${target}")
