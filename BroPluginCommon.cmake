@@ -33,17 +33,6 @@ function(bro_plugin_pac)
     set(_plugin_deps "${_plugin_deps}" PARENT_SCOPE)
 endfunction()
 
-# Adds *.bif files to a plugin.
-function(bro_plugin_bif)
-    foreach ( bif ${ARGV} )
-        bif_target(${bif} "plugin" ${_plugin_name_canon})
-        list(APPEND _plugin_objs ${BIF_OUTPUT_CC})
-        list(APPEND _plugin_deps ${BIF_BUILD_TARGET})
-        set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
-        set(_plugin_deps "${_plugin_deps}" PARENT_SCOPE)
-    endforeach ()
-endfunction()
-
 # Add an additional object file to the plugin's library.
 function(bro_plugin_obj)
     foreach ( bif ${ARGV} )
@@ -52,8 +41,30 @@ function(bro_plugin_obj)
     endforeach ()
 endfunction()
 
-# Internal function to create a unique target name for a plugin.
+# Adds *.bif files to a plugin.
+macro(bro_plugin_bif)
+    if ( BRO_PLUGIN_BUILD_DYNAMIC )
+        bro_plugin_bif_dynamic(${ARGV})
+    else ()
+        bro_plugin_bif_static(${ARGV})
+    endif ()
+endmacro()
+
+# Ends a plugin definition.
+macro(bro_plugin_end)
+    if ( BRO_PLUGIN_BUILD_DYNAMIC )
+        bro_plugin_end_dynamic(${ARGV})
+    else ()
+        bro_plugin_end_static(${ARGV})
+    endif ()
+endmacro()
+
+# Internal macro to create a unique target name for a plugin.
 macro(_plugin_target_name target ns name)
-    set(${target} "plugin-${ns}-${name}")
+    if ( BRO_PLUGIN_BUILD_DYNAMIC )
+        _plugin_target_name_dynamic(${ARGV})
+    else ()
+        _plugin_target_name_static(${ARGV})
+    endif ()
 endmacro()
 

@@ -36,19 +36,32 @@ macro(bif_target bifInput)
 
     elseif ( "${ARGV1}" STREQUAL "plugin" )
         set(plugin_name ${ARGV2})
-        set(target "bif-plugin-${plugin_name}-${bifInputBasename}")
-        set(bifcl_args "-p ${plugin_name}")
+        set(plugin_name_canon ${ARGV3})
+        set(plugin_is_static ${ARGV4})
+        set(target "bif-plugin-${plugin_name_canon}-${bifInputBasename}")
+        set(bifcl_args "-p;${plugin_name}")
         set(bifOutputs
             ${bifInputBasename}.h
             ${bifInputBasename}.cc
-            ${bifInputBasename}.init.cc)
-    	set(BIF_OUTPUT_CC  ${bifInputBasename}.cc
-                           ${bifInputBasename}.init.cc)
-        set(BIF_OUTPUT_H   ${bifInputBasename}.h)
-        if ( BRO_PLUGIN_INTERNAL_BUILD )
-        	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name}.${bifInputBasename}.bro)
+            ${bifInputBasename}.init.cc
+            ${bifInputBasename}.register.cc)
+
+        if ( plugin_is_static )
+        	set(BIF_OUTPUT_CC  ${bifInputBasename}.cc
+                               ${bifInputBasename}.init.cc)
+            set(bro_REGISTER_BIFS ${bro_REGISTER_BIFS} ${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename} CACHE INTERNAL "BIFs for automatic registering" FORCE) # Propagate to top-level.
         else ()
-        	set(BIF_OUTPUT_BRO ${CMAKE_CURRENT_BINARY_DIR}/bif/${bifInputBasename}.bro)
+        	set(BIF_OUTPUT_CC  ${bifInputBasename}.cc
+                               ${bifInputBasename}.init.cc
+                               ${bifInputBasename}.register.cc)
+        endif()
+
+        set(BIF_OUTPUT_H   ${bifInputBasename}.h)
+
+        if ( NOT BRO_PLUGIN_BUILD_DYNAMIC )
+        	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name_canon}.${bifInputBasename}.bro)
+        else ()
+        	set(BIF_OUTPUT_BRO ${BRO_PLUGIN_BIF}/${bifInputBasename}.bro)
         endif()
 
     else ()
@@ -61,6 +74,10 @@ macro(bif_target bifInput)
             ${bifInputBasename}.init.cc)
     	set(BIF_OUTPUT_CC  ${bifInputBasename}.cc)
         set(BIF_OUTPUT_H   ${bifInputBasename}.h)
+
+        # In order be able to run bro from the build directory, the
+        # generated bro script needs to be inside a directory tree
+        # named the same way it will be referenced from an @load.
 	    set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.bro)
 
         set(bro_AUTO_BIFS  ${bro_AUTO_BIFS} ${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename} CACHE INTERNAL "BIFs for automatic inclusion" FORCE) # Propagate to top-level.
@@ -79,10 +96,6 @@ macro(bif_target bifInput)
     add_custom_command(OUTPUT ${bifOutputs} ${BIF_OUTPUT_BRO}
                        COMMAND ${BifCl_EXE}
                        ARGS ${bifcl_args} ${CMAKE_CURRENT_SOURCE_DIR}/${bifInput} || (rm -f ${bifOutputs} && exit 1)
-                       # In order be able to run bro from the build directory,
-                       # the generated bro script needs to be inside a
-                       # a directory tree named the same way it will be
-                       # referenced from an @load.
                        COMMAND "${CMAKE_COMMAND}"
                        ARGS -E copy ${bifInputBasename}.bro ${BIF_OUTPUT_BRO}
                        COMMAND "${CMAKE_COMMAND}"
@@ -120,14 +133,17 @@ function(bro_bif_create_includes target dstdir bifinputs)
     file(MAKE_DIRECTORY ${dstdir})
 
     add_custom_target(${target}
-        COMMAND "sh" "-c" "rm -f ${dstdir}/__all__.bif.*.tmp"
+        COMMAND "sh" "-c" "rm -f ${dstdir}/__all__.bif.cc.tmp"
+        COMMAND "sh" "-c" "rm -f ${dstdir}/__all__.bif.init.cc.tmp"
+
         COMMAND for i in ${bifinputs}\; do echo \\\#include \\"\$\$i.cc\\"\; done >> ${dstdir}/__all__.bif.cc.tmp
         COMMAND for i in ${bifinputs}\; do echo \\\#include \\"\$\$i.init.cc\\"\; done >> ${dstdir}/__all__.bif.init.cc.tmp
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dstdir}/__all__.bif.cc.tmp" "${dstdir}/__all__.bif.cc"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dstdir}/__all__.bif.init.cc.tmp" "${dstdir}/__all__.bif.init.cc"
 
-        COMMAND "sh" "-c" "rm -f ${dstdir}/__all__.bif.*.tmp"
+        COMMAND "sh" "-c" "rm -f ${dstdir}/__all__.bif.cc.tmp"
+        COMMAND "sh" "-c" "rm -f ${dstdir}/__all__.bif.init.cc.tmp"
 
 	    WORKING_DIRECTORY ${dstdir}
 		)
@@ -136,3 +152,20 @@ function(bro_bif_create_includes target dstdir bifinputs)
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
 endfunction()
 
+function(bro_bif_create_register target dstdir bifinputs)
+    file(MAKE_DIRECTORY ${dstdir})
+
+    add_custom_target(${target}
+        COMMAND "sh" "-c" "rm -f ${dstdir}/__all__.bif.register.cc.tmp"
+        COMMAND for i in ${bifinputs}\; do echo \\\#include \\"\$\$i.register.cc\\"\; done >> ${dstdir}/__all__.bif.register.cc.tmp
+
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${dstdir}/__all__.bif.register.cc.tmp" "${dstdir}/__all__.bif.register.cc"
+
+        COMMAND "sh" "-c" "rm -f ${dstdir}/__all__.bif.register.cc.tmp"
+
+	    WORKING_DIRECTORY ${dstdir}
+		)
+
+    set(clean_files ${dstdir}/__all__.bif.cc ${dstdir}/__all__.bif.register.cc)
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${clean_files}")
+endfunction()

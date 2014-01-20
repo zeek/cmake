@@ -4,8 +4,16 @@
 # we're building as part of the main Bro source tree, or externally.
 
 if ( BRO_PLUGIN_INTERNAL_BUILD )
-    include(BroPluginStatic)
+    if ( "${BRO_PLUGIN_BUILD_DYNAMIC}" STREQUAL "" )
+        set(BRO_PLUGIN_BUILD_DYNAMIC FALSE)
+    endif()
 else ()
-    include(BroPluginDynamic)
+    set(BRO_PLUGIN_BUILD_DYNAMIC TRUE)
 endif ()
+
+#set( BRO_DIST "/Users/robin/bro/dynamic-plugins-2.3")
+
+include(BroPluginCommon)
+include(BroPluginStatic)
+include(BroPluginDynamic)
 

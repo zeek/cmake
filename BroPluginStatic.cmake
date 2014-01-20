@@ -3,10 +3,17 @@
 ## This set is for plugins compiled in statically.
 ## See BroPluginsDynamic.cmake for the dynamic version.
 
-include(BroPluginCommon)
+function(bro_plugin_bif_static)
+    foreach ( bif ${ARGV} )
+        bif_target(${bif} "plugin" ${_plugin_name} ${_plugin_name_canon} TRUE)
+        list(APPEND _plugin_objs ${BIF_OUTPUT_CC})
+        list(APPEND _plugin_deps ${BIF_BUILD_TARGET})
+        set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
+        set(_plugin_deps "${_plugin_deps}" PARENT_SCOPE)
+    endforeach ()
+endfunction()
 
-# Ends a plugin definition.
-function(bro_plugin_end)
+function(bro_plugin_end_static)
     if ( bro_HAVE_OBJECT_LIBRARIES )
         add_library(${_plugin_lib} OBJECT ${_plugin_objs})
         set(_target "$<TARGET_OBJECTS:${_plugin_lib}>")
@@ -24,7 +31,7 @@ function(bro_plugin_end)
     set(bro_PLUGIN_LIBS ${bro_PLUGIN_LIBS} "${_target}" CACHE INTERNAL "plugin libraries")
 endfunction()
 
-# Internal function to create a unique target name for a plugin.
-macro(_plugin_target_name target ns name)
+macro(_plugin_target_name_static target ns name)
     set(${target} "plugin-${ns}-${name}")
 endmacro()
+
