@@ -33,6 +33,7 @@ macro(bif_target bifInput)
         set(BIF_OUTPUT_H   ${bifInput}.func_h
                            ${bifInput}.netvar_h)
 	    set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInput}.bro)
+        set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Bro script stubs for BIFs in base distribution of Bro" FORCE) # Propogate to top-level
 
     elseif ( "${ARGV1}" STREQUAL "plugin" )
         set(plugin_name ${ARGV2})
@@ -47,6 +48,7 @@ macro(bif_target bifInput)
                            ${bifInput}.init.cc)
         set(BIF_OUTPUT_H   ${bifInput}.h)
     	set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name}.${bifInput}.bro)
+        set(bro_PLUGIN_BIF_SCRIPTS ${bro_PLUGIN_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Bro script stubs for BIFs in Bro plugins" FORCE) # Propogate to top-level
 
     else ()
         # Alternative mode. These will get compiled in automatically.
@@ -62,6 +64,8 @@ macro(bif_target bifInput)
 	    set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInput}.bro)
 
         set(bro_AUTO_BIFS ${bro_AUTO_BIFS} ${CMAKE_CURRENT_BINARY_DIR}/${bifInput} CACHE INTERNAL "BIFs for automatic inclusion" FORCE) # Propagate to top-level.
+        set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Bro script stubs for BIFs in base distribution of Bro" FORCE) # Propogate to top-level
+
     endif ()
 
     add_custom_command(OUTPUT ${bifOutputs}
@@ -88,16 +92,41 @@ macro(bif_target bifInput)
     set(bro_ALL_GENERATED_OUTPUTS ${bro_ALL_GENERATED_OUTPUTS} ${target}  CACHE INTERNAL "automatically generated files" FORCE) # Propagate to top-level.
 endmacro(bif_target)
 
-# A macro to create a __load__.bro file for all *.bif.bro files found
-# in a given directory. It creates a corresponding target to trigger
-# the generation.
-function(bro_bif_create_loader target dstdir)
-     file(MAKE_DIRECTORY ${dstdir})
-     add_custom_target(${target}
-			COMMAND "sh" "-c" "find . -name \\*\\.bif\\.bro | sort -f | sed 's#\\(.*\\).bro#@load \\1#g' >__load__.bro"
-			WORKING_DIRECTORY ${dstdir}
-			VERBATIM
-			)
+# A macro to create a __load__.bro file for all *.bif.bro files in
+# a given collection (which should all be in the same directory).
+# It creates a corresponding target to trigger the generation.
+function(bro_bif_create_loader target bifinputs)
+    set(_bif_loader_dir "")
+
+    foreach ( _bro_file ${bifinputs} )
+        get_filename_component(_bif_loader_dir_tmp ${_bro_file} PATH)
+        get_filename_component(_bro_file_name ${_bro_file} NAME)
+
+        if ( _bif_loader_dir )
+            if ( NOT _bif_loader_dir_tmp STREQUAL _bif_loader_dir )
+                message(FATAL_ERROR "Directory of Bro script BIF stub ${_bro_file} differs from expected: ${_bif_loader_dir}")
+            endif ()
+        else ()
+            set(_bif_loader_dir ${_bif_loader_dir_tmp})
+        endif ()
+
+        set(_bif_loader_content "${_bif_loader_content} ${_bro_file_name}")
+    endforeach ()
+
+    if ( NOT _bif_loader_dir )
+        return ()
+    endif ()
+
+    file(MAKE_DIRECTORY ${_bif_loader_dir})
+
+    set(_bif_loader_file ${_bif_loader_dir}/__load__.bro)
+    add_custom_target(${target}
+        COMMAND "sh" "-c" "rm -f ${_bif_loader_file}"
+        COMMAND "sh" "-c" "for i in ${_bif_loader_content}; do echo @load ./$i >> ${_bif_loader_file}; done"
+        WORKING_DIRECTORY ${_bif_loader_dir}
+        VERBATIM
+    )
+
      add_dependencies(${target} generate_outputs)
 endfunction()
 
