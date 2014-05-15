@@ -70,6 +70,7 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    set(ENV{PATH} "${BRO_PLUGIN_BRO_BUILD}/build/src:$ENV{PATH}")
 
    set(bro_PLUGIN_LIBS CACHE INTERNAL "plugin libraries" FORCE)
+   set(bro_PLUGIN_BIF_SCRIPTS CACHE INTERNAL "Bro script stubs for BIFs in Bro plugins" FORCE)
 
    add_definitions(-DBRO_PLUGIN_INTERNAL_BUILD=false)
 
@@ -96,7 +97,6 @@ function(bro_plugin_bif_dynamic)
 endfunction()
 
 function(bro_plugin_end_dynamic)
-
     # Create the dynamic library/bundle.
     add_library(${_plugin_lib} MODULE ${_plugin_objs})
     set_target_properties(${_plugin_lib} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${BRO_PLUGIN_LIB}")
@@ -106,6 +106,7 @@ function(bro_plugin_end_dynamic)
     if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         # Dy default Darwin's linker requires all symbols to be present at link time.
         set_target_properties(${_plugin_lib} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+        set_target_properties(${_plugin_lib} PROPERTIES LINK_FLAGS "-Wl,-bind_at_load")
     endif ()
 
     add_dependencies(${_plugin_lib} ${_plugin_deps})
@@ -117,7 +118,7 @@ function(bro_plugin_end_dynamic)
             COMMENT "${msg}")
 
     # Create bif/__init__.bro.
-    bro_bif_create_loader(bif-init-${_plugin_name_canon} ${BRO_PLUGIN_BIF})
+    bro_bif_create_loader(bif-init-${_plugin_name_canon} "${bro_PLUGIN_BIF_SCRIPTS}")
 
     # Copy scripts/ if it's not already at the right place inside the plugin directory.
     if ( NOT "${BRO_PLUGIN_SCRIPTS_SRC}" STREQUAL "${BRO_PLUGIN_SCRIPTS}" )
