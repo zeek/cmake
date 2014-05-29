@@ -24,7 +24,10 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_
    CMAKE_INSTALL_PREFIX Bro_BINARY_DIR Bro_SOURCE_DIR ENABLE_DEBUG BRO_PLUGIN_INSTALL_PATH BRO_EXE_PATH CMAKE_CXX_FLAGS CMAKE_C_FLAGS)
 
-   set(BRO_PLUGIN_BASE                    "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
+   if ( NOT BRO_PLUGIN_BASE )
+       set(BRO_PLUGIN_BASE                "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
+   endif ()
+
    set(BRO_PLUGIN_SCRIPTS                 "${BRO_PLUGIN_BASE}/scripts" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_SCRIPTS_SRC             "${BRO_PLUGIN_BASE}/scripts" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_BUILD                   "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "" FORCE)
@@ -134,7 +137,7 @@ function(bro_plugin_end_dynamic)
     add_dependencies(${_plugin_lib} bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
 
     # Create __bro_plugin__
-    string(REPLACE "${BRO_PLUGIN_BASE}/" "" msg "Creating ${BRO_PLUGIN_MAGIC} for ${_plugin_name}")
+    # string(REPLACE "${BRO_PLUGIN_BASE}/" "" msg "Creating ${BRO_PLUGIN_MAGIC} for ${_plugin_name}")
     add_custom_target(bro-plugin-${_plugin_name_canon}
 			COMMAND echo "${_plugin_name}" ">${BRO_PLUGIN_MAGIC}"
             COMMENT "${msg}")
