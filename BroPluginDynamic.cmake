@@ -59,6 +59,11 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${BRO_PLUGIN_BRO_C_FLAGS}")
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BRO_PLUGIN_BRO_CXX_FLAGS}")
 
+   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+       # By default Darwin's linker requires all symbols to be present at link time.
+       set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -undefined dynamic_lookup -Wl,-bind_at_load")
+   endif ()
+
    include_directories(BEFORE ${BRO_PLUGIN_BRO_SRC}/src
                               ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
                               ${BRO_PLUGIN_BRO_BUILD}
@@ -105,12 +110,6 @@ function(bro_plugin_end_dynamic)
     set_target_properties(${_plugin_lib} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${BRO_PLUGIN_LIB}")
     set_target_properties(${_plugin_lib} PROPERTIES PREFIX "")
     # set_target_properties(${_plugin_lib} PROPERTIES ENABLE_EXPORTS TRUE)
-
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-        # Dy default Darwin's linker requires all symbols to be present at link time.
-        set_target_properties(${_plugin_lib} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-        set_target_properties(${_plugin_lib} PROPERTIES LINK_FLAGS "-Wl,-bind_at_load")
-    endif ()
 
     add_dependencies(${_plugin_lib} ${_plugin_deps})
 
