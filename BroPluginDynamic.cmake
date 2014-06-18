@@ -77,6 +77,12 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
 
    add_definitions(-DBRO_PLUGIN_INTERNAL_BUILD=false)
 
+   if ( BRO_PLUGIN_ENABLE_DEBUG )
+       set(ENABLE_DEBUG true)
+   endif ()
+
+   include(SetDefaultCompileFlags)
+
 else ()
     set(BRO_PLUGIN_BASE        "${CMAKE_CURRENT_BINARY_DIR}"         CACHE INTERNAL "" FORCE)
     set(BRO_PLUGIN_LIB         "${CMAKE_CURRENT_BINARY_DIR}/lib"     CACHE INTERNAL "" FORCE)
