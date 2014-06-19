@@ -1,5 +1,5 @@
 if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-    set(bro_LINKER_FLAGS "${BRO_LINKER_FLAGS} -export-dynamic")
+    set(bro_LINKER_FLAGS "${bro_LINKER_FLAGS} -rdynamic")
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
 
