@@ -41,6 +41,15 @@ function(bro_plugin_obj)
     endforeach ()
 endfunction()
 
+# Link an additional library to the plugin's library.
+function(bro_plugin_link_library)
+    if ( BRO_PLUGIN_BUILD_DYNAMIC )
+        bro_plugin_link_library_dynamic(${ARGV})
+    else ()
+        bro_plugin_link_library_static(${ARGV})
+    endif ()
+endfunction()
+
 # Adds *.bif files to a plugin.
 macro(bro_plugin_bif)
     if ( BRO_PLUGIN_BUILD_DYNAMIC )

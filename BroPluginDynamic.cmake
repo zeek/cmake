@@ -64,6 +64,8 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
        set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -undefined dynamic_lookup -Wl,-bind_at_load")
    endif ()
 
+   set(_plugin_libs "")
+
    include_directories(BEFORE ${BRO_PLUGIN_BRO_SRC}/src
                               ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
                               ${BRO_PLUGIN_BRO_BUILD}
@@ -110,6 +112,12 @@ function(bro_plugin_bif_dynamic)
     endforeach ()
 endfunction()
 
+function(bro_plugin_link_library_dynamic)
+    foreach ( lib ${ARGV} )
+        list(APPEND _plugin_libs ${lib})
+    endforeach ()
+endfunction()
+
 function(bro_plugin_end_dynamic)
     # Create the dynamic library/bundle.
     add_library(${_plugin_lib} MODULE ${_plugin_objs})
@@ -118,6 +126,7 @@ function(bro_plugin_end_dynamic)
     # set_target_properties(${_plugin_lib} PROPERTIES ENABLE_EXPORTS TRUE)
 
     add_dependencies(${_plugin_lib} ${_plugin_deps})
+    link_libraries(${_plugin_lib} ${_plugin_libs})
 
     # Copy bif/*.bro.
     string(REPLACE "${BRO_PLUGIN_BASE}/" "" msg "Creating ${BRO_PLUGIN_BIF} for ${_plugin_name}")

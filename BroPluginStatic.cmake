@@ -13,6 +13,12 @@ function(bro_plugin_bif_static)
     endforeach ()
 endfunction()
 
+function(bro_plugin_link_library_static)
+    foreach ( lib ${ARGV} )
+        set(bro_SUBDIR_LIBS ${bro_SUBDIR_LIBS} "${lib}" CACHE INTERNAL "plugin libraries")
+    endforeach ()
+endfunction()
+
 function(bro_plugin_end_static)
     if ( bro_HAVE_OBJECT_LIBRARIES )
         add_library(${_plugin_lib} OBJECT ${_plugin_objs})
