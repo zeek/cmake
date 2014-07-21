@@ -84,6 +84,8 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
 
    add_definitions(-DBRO_PLUGIN_INTERNAL_BUILD=false)
 
+   add_custom_target(generate_outputs)
+
    if ( BRO_PLUGIN_ENABLE_DEBUG )
        set(ENABLE_DEBUG true)
    endif ()
@@ -125,6 +127,7 @@ function(bro_plugin_end_dynamic)
     set_target_properties(${_plugin_lib} PROPERTIES PREFIX "")
     # set_target_properties(${_plugin_lib} PROPERTIES ENABLE_EXPORTS TRUE)
 
+    add_dependencies(${_plugin_lib} generate_outputs)
     add_dependencies(${_plugin_lib} ${_plugin_deps})
     link_libraries(${_plugin_lib} ${_plugin_libs})
 
