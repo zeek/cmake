@@ -10,5 +10,5 @@ function(bro_add_subdir_library name)
         set(_target "bro_${name}")
     endif ()
 
-    set(bro_SUBDIR_LIBS ${bro_SUBDIR_LIBS} "${_target}" CACHE INTERNAL "subdir libraries")
+    set(bro_SUBDIR_LIBS "${_target}" ${bro_SUBDIR_LIBS} CACHE INTERNAL "subdir libraries")
 endfunction()
