@@ -134,7 +134,11 @@ function(bro_plugin_end_dynamic)
     # set_target_properties(${_plugin_lib} PROPERTIES ENABLE_EXPORTS TRUE)
 
     add_dependencies(${_plugin_lib} generate_outputs)
-    add_dependencies(${_plugin_lib} ${_plugin_deps})
+
+    if ( _plugin_deps )
+        add_dependencies(${_plugin_lib} ${_plugin_deps})
+    endif()
+
     link_libraries(${_plugin_lib} ${_plugin_libs})
 
     # Copy bif/*.bro.
@@ -154,10 +158,12 @@ function(bro_plugin_end_dynamic)
         add_dependencies(${_plugin_lib} copy-scripts-${_plugin_name_canon})
     endif()
 
-    add_dependencies(bif-init-${_plugin_name_canon} ${_plugin_deps})
-    add_dependencies(copy-bif-${_plugin_name_canon} ${_plugin_deps})
-    add_dependencies(bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
-    add_dependencies(${_plugin_lib} bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
+    if ( _plugin_deps )
+        add_dependencies(bif-init-${_plugin_name_canon} ${_plugin_deps})
+        add_dependencies(copy-bif-${_plugin_name_canon} ${_plugin_deps})
+        add_dependencies(bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
+        add_dependencies(${_plugin_lib} bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
+    endif()
 
     # Create __bro_plugin__
     # string(REPLACE "${BRO_PLUGIN_BASE}/" "" msg "Creating ${BRO_PLUGIN_MAGIC} for ${_plugin_name}")
@@ -165,7 +171,10 @@ function(bro_plugin_end_dynamic)
             COMMAND echo "${_plugin_name}" ">${BRO_PLUGIN_MAGIC}"
             COMMENT "${msg}")
 
-    add_dependencies(bro-plugin-${_plugin_name_canon} ${_plugin_deps})
+    if ( _plugin_deps )
+        add_dependencies(bro-plugin-${_plugin_name_canon} ${_plugin_deps})
+    endif()
+
     add_dependencies(${_plugin_lib} bro-plugin-${_plugin_name_canon})
 
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${BRO_PLUGIN_BIF})
