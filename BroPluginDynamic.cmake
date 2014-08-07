@@ -8,8 +8,7 @@
 ## included from its top-level CMake file.
 
 if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
-
-   include(CommonCMakeConfig)
+   include(${BRO_DIST}/cmake/CommonCMakeConfig.cmake)
 
    if ( NOT BRO_DIST )
        message(FATAL_ERROR "BRO_DIST not set")
@@ -18,8 +17,6 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    if ( NOT EXISTS "${BRO_DIST}/build/CMakeCache.txt" )
        message(FATAL_ERROR "${BRO_DIST}/build/CMakeCache.txt; has Bro been built?")
    endif ()
-
-   set(CMAKE_MODULE_PATH ${BRO_DIST}/cmake)
 
    load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_
    CMAKE_INSTALL_PREFIX Bro_BINARY_DIR Bro_SOURCE_DIR ENABLE_DEBUG BRO_PLUGIN_INSTALL_PATH BRO_EXE_PATH CMAKE_CXX_FLAGS CMAKE_C_FLAGS)
