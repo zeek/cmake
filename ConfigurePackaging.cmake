@@ -140,6 +140,9 @@ macro(SetPackageMetadata)
         ${CMAKE_CURRENT_BINARY_DIR}/MAC_PACKAGE_INTRO.txt)
 
     set(CPACK_RPM_PACKAGE_LICENSE "BSD")
+    set(CPACK_RPM_PACKAGE_GROUP "Applications/System")
+    set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION /opt /var /var/opt)
+    set(CPACK_RPM_PACKAGE_REQUIRES "libpcap, openssl-libs, bind-libs, zlib, bash, python, libcurl, gawk, GeoIP")
 endmacro(SetPackageMetadata)
 
 # Sets pre and post install scripts for PackageMaker packages.
