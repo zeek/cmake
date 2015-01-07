@@ -8,8 +8,7 @@
 ## included from its top-level CMake file.
 
 if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
-
-   include(CommonCMakeConfig)
+   include(${BRO_DIST}/cmake/CommonCMakeConfig.cmake)
 
    if ( NOT BRO_DIST )
        message(FATAL_ERROR "BRO_DIST not set")
@@ -18,8 +17,6 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    if ( NOT EXISTS "${BRO_DIST}/build/CMakeCache.txt" )
        message(FATAL_ERROR "${BRO_DIST}/build/CMakeCache.txt; has Bro been built?")
    endif ()
-
-   set(CMAKE_MODULE_PATH ${BRO_DIST}/cmake)
 
    load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_
    CMAKE_INSTALL_PREFIX Bro_BINARY_DIR Bro_SOURCE_DIR ENABLE_DEBUG BRO_PLUGIN_INSTALL_PATH BRO_EXE_PATH CMAKE_CXX_FLAGS CMAKE_C_FLAGS)
@@ -36,7 +33,7 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    set(BRO_PLUGIN_MAGIC                   "${BRO_PLUGIN_BASE}/__bro_plugin__" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_README                  "${BRO_PLUGIN_BASE}/README" CACHE INTERNAL "" FORCE)
 
-   set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH "$ENV{BRO_PLUGIN_INSTALL}" CACHE INTERNAL "" FORCE)
+   set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH "${BRO_PLUGIN_INSTALL_ROOT}" CACHE INTERNAL "" FORCE)
 
    if ( NOT BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH )
        set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH "${bro_cache_BRO_PLUGIN_INSTALL_PATH}" CACHE INTERNAL "" FORCE)
@@ -59,8 +56,8 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    message(STATUS "Bro install prefix  : ${BRO_PLUGIN_BRO_INSTALL_PREFIX}")
    message(STATUS "Bro plugin directory: ${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}")
 
-   set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BASE}/cmake)
-   set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_SRC}/cmake)
+   set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BASE}/cmake ${CMAKE_MODULE_PATH})
+   set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_SRC}/cmake ${CMAKE_MODULE_PATH})
 
    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${BRO_PLUGIN_BRO_C_FLAGS}")
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BRO_PLUGIN_BRO_CXX_FLAGS}")
@@ -69,8 +66,6 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
        # By default Darwin's linker requires all symbols to be present at link time.
        set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -undefined dynamic_lookup -Wl,-bind_at_load")
    endif ()
-
-   set(_plugin_libs "")
 
    include_directories(BEFORE ${BRO_PLUGIN_BRO_SRC}/src
                               ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
@@ -122,7 +117,7 @@ endfunction()
 
 function(bro_plugin_link_library_dynamic)
     foreach ( lib ${ARGV} )
-        list(APPEND _plugin_libs ${lib})
+        set(_plugin_libs ${_plugin_libs} ${lib} CACHE INTERNAL "dynamic plugin libraries")
     endforeach ()
 endfunction()
 
@@ -134,8 +129,12 @@ function(bro_plugin_end_dynamic)
     # set_target_properties(${_plugin_lib} PROPERTIES ENABLE_EXPORTS TRUE)
 
     add_dependencies(${_plugin_lib} generate_outputs)
-    add_dependencies(${_plugin_lib} ${_plugin_deps})
-    link_libraries(${_plugin_lib} ${_plugin_libs})
+
+    if ( _plugin_deps )
+        add_dependencies(${_plugin_lib} ${_plugin_deps})
+    endif()
+
+    target_link_libraries(${_plugin_lib} ${_plugin_libs})
 
     # Copy bif/*.bro.
     string(REPLACE "${BRO_PLUGIN_BASE}/" "" msg "Creating ${BRO_PLUGIN_BIF} for ${_plugin_name}")
@@ -154,10 +153,12 @@ function(bro_plugin_end_dynamic)
         add_dependencies(${_plugin_lib} copy-scripts-${_plugin_name_canon})
     endif()
 
-    add_dependencies(bif-init-${_plugin_name_canon} ${_plugin_deps})
-    add_dependencies(copy-bif-${_plugin_name_canon} ${_plugin_deps})
-    add_dependencies(bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
-    add_dependencies(${_plugin_lib} bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
+    if ( _plugin_deps )
+        add_dependencies(bif-init-${_plugin_name_canon} ${_plugin_deps})
+        add_dependencies(copy-bif-${_plugin_name_canon} ${_plugin_deps})
+        add_dependencies(bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
+        add_dependencies(${_plugin_lib} bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
+    endif()
 
     # Create __bro_plugin__
     # string(REPLACE "${BRO_PLUGIN_BASE}/" "" msg "Creating ${BRO_PLUGIN_MAGIC} for ${_plugin_name}")
@@ -165,7 +166,10 @@ function(bro_plugin_end_dynamic)
             COMMAND echo "${_plugin_name}" ">${BRO_PLUGIN_MAGIC}"
             COMMENT "${msg}")
 
-    add_dependencies(bro-plugin-${_plugin_name_canon} ${_plugin_deps})
+    if ( _plugin_deps )
+        add_dependencies(bro-plugin-${_plugin_name_canon} ${_plugin_deps})
+    endif()
+
     add_dependencies(${_plugin_lib} bro-plugin-${_plugin_name_canon})
 
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${BRO_PLUGIN_BIF})
