@@ -89,6 +89,7 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
 
    if ( BRO_PLUGIN_ENABLE_DEBUG )
        set(ENABLE_DEBUG true)
+       set(CMAKE_BUILD_TYPE Debug)
    endif ()
 
    include(SetDefaultCompileFlags)
