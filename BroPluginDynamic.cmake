@@ -55,6 +55,7 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    message(STATUS "Bro build           : ${BRO_PLUGIN_BRO_BUILD}")
    message(STATUS "Bro install prefix  : ${BRO_PLUGIN_BRO_INSTALL_PREFIX}")
    message(STATUS "Bro plugin directory: ${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}")
+   message(STATUS "Bro debug mode      : ${BRO_PLUGIN_ENABLE_DEBUG}")
 
    set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BASE}/cmake ${CMAKE_MODULE_PATH})
    set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_SRC}/cmake ${CMAKE_MODULE_PATH})
