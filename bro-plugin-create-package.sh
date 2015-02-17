@@ -15,15 +15,25 @@ name=$1
 shift
 addl=$@
 
+# Copy additional distribution files into build directory.
+for i in ${addl}; do
+    if [ -e ../$i ]; then
+        dir=`dirname $i`
+        mkdir -p ${dir}
+        cp -p ../$i ${dir}
+    fi
+done
+
 tgz=${name}-`(test -e ../VERSION && cat ../VERSION | head -1) || echo 0.0`.tar.gz
 
 rm -f MANIFEST ${name} ${name}.tgz ${tgz}
 
-for i in __bro_plugin__ lib scripts $@; do
+for i in __bro_plugin__ lib scripts ${addl}; do
     test -e $i && find -L $i -type f | sed "s%^%${name}/%g" >>MANIFEST
 done
 
 ln -s . ${name}
-tar czf ${tgz} -T MANIFEST
-ln -s ${tgz} ${name}.tgz
+mkdir -p dist
+tar czf dist/${tgz} -T MANIFEST
+ln -s dist/${tgz} ${name}.tgz
 rm -f ${name}

@@ -176,14 +176,6 @@ function(bro_plugin_end_dynamic)
 
     add_dependencies(${_plugin_lib} bro-plugin-${_plugin_name_canon})
 
-    # Copy any additional dist files the user specified.
-    add_custom_target(copy-dist-${_plugin_name_canon}
-            COMMAND for i in ${_plugin_dist}\; do test '!' -e $$i || install -D $$i ${CMAKE_CURRENT_BINARY_DIR}\; done
-            WORKING_DIRECTORY ${BRO_PLUGIN_BASE}
-            COMMENT "Copying additional files into distribution")
-
-    add_dependencies(${_plugin_lib} copy-dist-${_plugin_name_canon})
-
     # Create binary install package.
     add_custom_command(TARGET ${_plugin_lib} POST_BUILD
             COMMAND ${BRO_PLUGIN_BRO_SRC}/cmake/bro-plugin-create-package.sh ${_plugin_name_canon} ${_plugin_dist}
