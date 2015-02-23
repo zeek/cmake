@@ -15,6 +15,7 @@ function(bro_plugin_begin ns name)
     set(_plugin_ns         "${ns}" PARENT_SCOPE)
     set(_plugin_objs       "" PARENT_SCOPE)
     set(_plugin_deps       "" PARENT_SCOPE)
+    set(_plugin_dist       "" PARENT_SCOPE)
 endfunction()
 
 # Adds *.cc files to a plugin.
@@ -40,6 +41,18 @@ function(bro_plugin_obj)
         set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
     endforeach ()
 endfunction()
+
+# Add additional files that should be included into the binary plugin distribution.
+# Ignored for static plugins.
+macro(bro_plugin_dist_files)
+    foreach ( file ${ARGV} )
+        list(APPEND _plugin_dist ${file})
+        # Don't need this here, and generates an error that
+        # there is not parent scope. Not sure why it does that
+        # here but not for other macros doing something similar.
+        # set(_plugin_dist "${_plugin_dist}" PARENT_SCOPE)
+    endforeach ()
+endmacro()
 
 # Link an additional library to the plugin's library.
 function(bro_plugin_link_library)

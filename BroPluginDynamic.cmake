@@ -25,12 +25,12 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
        set(BRO_PLUGIN_BASE                "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
    endif ()
 
-   set(BRO_PLUGIN_SCRIPTS                 "${BRO_PLUGIN_BASE}/scripts" CACHE INTERNAL "" FORCE)
+   set(BRO_PLUGIN_SCRIPTS                 "${BRO_PLUGIN_BASE}/build/scripts" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_SCRIPTS_SRC             "${BRO_PLUGIN_BASE}/scripts" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_BUILD                   "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_LIB                     "${BRO_PLUGIN_BASE}/lib" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_BIF                     "${BRO_PLUGIN_BASE}/lib/bif" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_MAGIC                   "${BRO_PLUGIN_BASE}/__bro_plugin__" CACHE INTERNAL "" FORCE)
+   set(BRO_PLUGIN_LIB                     "${BRO_PLUGIN_BUILD}/lib" CACHE INTERNAL "" FORCE)
+   set(BRO_PLUGIN_BIF                     "${BRO_PLUGIN_LIB}/bif" CACHE INTERNAL "" FORCE)
+   set(BRO_PLUGIN_MAGIC                   "${BRO_PLUGIN_BUILD}/__bro_plugin__" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_README                  "${BRO_PLUGIN_BASE}/README" CACHE INTERNAL "" FORCE)
 
    set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH "${BRO_PLUGIN_INSTALL_ROOT}" CACHE INTERNAL "" FORCE)
@@ -55,6 +55,7 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    message(STATUS "Bro build           : ${BRO_PLUGIN_BRO_BUILD}")
    message(STATUS "Bro install prefix  : ${BRO_PLUGIN_BRO_INSTALL_PREFIX}")
    message(STATUS "Bro plugin directory: ${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}")
+   message(STATUS "Bro debug mode      : ${BRO_PLUGIN_ENABLE_DEBUG}")
 
    set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BASE}/cmake ${CMAKE_MODULE_PATH})
    set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_SRC}/cmake ${CMAKE_MODULE_PATH})
@@ -145,11 +146,14 @@ function(bro_plugin_end_dynamic)
     # Create bif/__init__.bro.
     bro_bif_create_loader(bif-init-${_plugin_name_canon} "${bro_PLUGIN_BIF_SCRIPTS}")
 
-    # Copy scripts/ if it's not already at the right place inside the plugin directory.
+    # Copy scripts/ if it's not already at the right place inside the
+    # plugin directory. (Actually, we create a symbolic link rather
+    # than copy so that edits to the scripts show up immediately.)
     if ( NOT "${BRO_PLUGIN_SCRIPTS_SRC}" STREQUAL "${BRO_PLUGIN_SCRIPTS}" )
         add_custom_target(copy-scripts-${_plugin_name_canon}
-            COMMAND "${CMAKE_COMMAND}" -E remove_directory ${BRO_PLUGIN_SCRIPTS}
-            COMMAND "${CMAKE_COMMAND}" -E copy_directory   ${BRO_PLUGIN_SCRIPTS_SRC} ${BRO_PLUGIN_SCRIPTS})
+            # COMMAND "${CMAKE_COMMAND}" -E remove_directory ${BRO_PLUGIN_SCRIPTS}
+            # COMMAND "${CMAKE_COMMAND}" -E copy_directory   ${BRO_PLUGIN_SCRIPTS_SRC} ${BRO_PLUGIN_SCRIPTS})
+            COMMAND test -d ${BRO_PLUGIN_SCRIPTS_SRC} && rm -f ${BRO_PLUGIN_SCRIPTS} && ln -s ${BRO_PLUGIN_SCRIPTS_SRC} ${BRO_PLUGIN_SCRIPTS})
         add_dependencies(${_plugin_lib} copy-scripts-${_plugin_name_canon})
     endif()
 
@@ -172,6 +176,13 @@ function(bro_plugin_end_dynamic)
 
     add_dependencies(${_plugin_lib} bro-plugin-${_plugin_name_canon})
 
+    # Create binary install package.
+    add_custom_command(TARGET ${_plugin_lib} POST_BUILD
+            COMMAND ${BRO_PLUGIN_BRO_SRC}/cmake/bro-plugin-create-package.sh ${_plugin_name_canon} ${_plugin_dist}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            DEPENDS ${_plugin_lib}
+            COMMENT "Building binary plugin package")
+
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${BRO_PLUGIN_BIF})
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${BRO_PLUGIN_LIB})
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${BRO_PLUGIN_MAGIC})
@@ -180,16 +191,11 @@ function(bro_plugin_end_dynamic)
 
     set(plugin_install "${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}/${_plugin_name_canon}")
 
-    install(DIRECTORY ${BRO_PLUGIN_LIB}        DESTINATION ${plugin_install})
-    install(FILES     ${BRO_PLUGIN_MAGIC}      DESTINATION ${plugin_install})
+    INSTALL(CODE "execute_process(
+        COMMAND ${BRO_PLUGIN_BRO_SRC}/cmake/bro-plugin-install-package.sh ${_plugin_name_canon} ${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )")
 
-    if ( EXISTS ${BRO_PLUGIN_SCRIPTS} )
-        install(DIRECTORY ${BRO_PLUGIN_SCRIPTS}    DESTINATION ${plugin_install})
-    endif ()
-
-    if ( EXISTS ${BRO_PLUGIN_README} )
-        install(FILES ${BRO_PLUGIN_README}     DESTINATION ${plugin_install})
-    endif ()
 
 endfunction()
 
