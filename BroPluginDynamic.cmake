@@ -25,7 +25,7 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
        set(BRO_PLUGIN_BASE                "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
    endif ()
 
-   set(BRO_PLUGIN_SCRIPTS                 "${BRO_PLUGIN_BASE}/build/scripts" CACHE INTERNAL "" FORCE)
+   set(BRO_PLUGIN_SCRIPTS                 "${CMAKE_CURRENT_BINARY_DIR}/scripts" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_SCRIPTS_SRC             "${BRO_PLUGIN_BASE}/scripts" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_BUILD                   "${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_LIB                     "${BRO_PLUGIN_BUILD}/lib" CACHE INTERNAL "" FORCE)
@@ -153,7 +153,7 @@ function(bro_plugin_end_dynamic)
         add_custom_target(copy-scripts-${_plugin_name_canon}
             # COMMAND "${CMAKE_COMMAND}" -E remove_directory ${BRO_PLUGIN_SCRIPTS}
             # COMMAND "${CMAKE_COMMAND}" -E copy_directory   ${BRO_PLUGIN_SCRIPTS_SRC} ${BRO_PLUGIN_SCRIPTS})
-            COMMAND test -d ${BRO_PLUGIN_SCRIPTS_SRC} && rm -f ${BRO_PLUGIN_SCRIPTS} && ln -s ${BRO_PLUGIN_SCRIPTS_SRC} ${BRO_PLUGIN_SCRIPTS})
+            COMMAND test -d ${BRO_PLUGIN_SCRIPTS_SRC} && rm -f ${BRO_PLUGIN_SCRIPTS} && ln -s ${BRO_PLUGIN_SCRIPTS_SRC} ${BRO_PLUGIN_SCRIPTS} || true)
         add_dependencies(${_plugin_lib} copy-scripts-${_plugin_name_canon})
     endif()
 
