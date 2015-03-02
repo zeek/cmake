@@ -3,12 +3,19 @@
 if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     set(EXTRA_COMPILE_FLAGS "-Wall -Wno-unused")
 
-    if (ENABLE_DEBUG)
-        set(CMAKE_BUILD_TYPE Debug)
+    if ( NOT CMAKE_BUILD_TYPE )
+        if ( ENABLE_DEBUG )
+            set(CMAKE_BUILD_TYPE Debug)
+        else ()
+            set(CMAKE_BUILD_TYPE RelWithDebInfo)
+        endif ()
+    endif ()
+
+    string(TOUPPER ${CMAKE_BUILD_TYPE} _build_type_upper)
+
+    if ( "${_build_type_upper}" STREQUAL "DEBUG" )
         # manual add of -g works around its omission in FreeBSD's CMake port
         set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -g -DDEBUG -DBRO_DEBUG")
-    else ()
-        set(CMAKE_BUILD_TYPE RelWithDebInfo)
     endif ()
 
     # Compiler flags may already exist in CMake cache (e.g. when specifying
