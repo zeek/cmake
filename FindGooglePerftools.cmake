@@ -14,6 +14,7 @@
 # Variables defined by this module:
 #
 #  GOOGLEPERFTOOLS_FOUND              System has GooglePerftools libs/headers
+#  TCMALLOC_FOUND                     System has GooglePerftools tcmalloc library
 #  GooglePerftools_LIBRARIES          The GooglePerftools libraries
 #  GooglePerftools_LIBRARIES_DEBUG    The GooglePerftools libraries for heap checking.
 #  GooglePerftools_INCLUDE_DIR        The location of GooglePerftools headers
@@ -42,6 +43,9 @@ find_package_handle_standard_args(GooglePerftools DEFAULT_MSG
     GooglePerftools_LIBRARIES
     GooglePerftools_LIBRARIES_DEBUG
     GooglePerftools_INCLUDE_DIR
+)
+find_package_handle_standard_args(tcmalloc DEFAULT_MSG
+    GooglePerftools_LIBRARIES
 )
 
 mark_as_advanced(
