@@ -193,7 +193,7 @@ function(bro_plugin_end_dynamic)
     set(plugin_install "${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}/${_plugin_name_canon}")
 
     INSTALL(CODE "execute_process(
-        COMMAND ${BRO_PLUGIN_BRO_SRC}/cmake/bro-plugin-install-package.sh ${_plugin_name_canon} ${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}
+        COMMAND ${BRO_PLUGIN_BRO_SRC}/cmake/bro-plugin-install-package.sh ${_plugin_name_canon} \$ENV{DESTDIR}/${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )")
 
