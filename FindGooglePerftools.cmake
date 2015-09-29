@@ -29,7 +29,7 @@ find_library(GooglePerftools_LIBRARIES_DEBUG
 )
 
 find_library(GooglePerftools_LIBRARIES
-    NAMES tcmalloc
+    NAMES tcmalloc tcmalloc_minimal
     HINTS ${GooglePerftools_ROOT_DIR}/lib
 )
 
