@@ -4,6 +4,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(HAVE_DARWIN true)
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(HAVE_LINUX true)
