@@ -3,6 +3,8 @@
 ## This set is used by both static and dynamic plugins via
 ## BroPluginsStatic and BroPluginsDynamic, respectively.
 
+include(RequireCXX11)
+
 include(BifCl)
 include(BinPAC)
 
