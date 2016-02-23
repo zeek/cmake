@@ -1,8 +1,12 @@
 include(CheckCSourceCompiles)
 include(CheckCXXSourceCompiles)
+include(CheckCSourceRuns)
 
-set(CMAKE_REQUIRED_LIBRARIES ${OpenSSL_LIBRARIES})
-set(CMAKE_REQUIRED_INCLUDES ${OpenSSL_INCLUDE_DIR})
+set(CMAKE_REQUIRED_LIBRARIES ${OPENSSL_LIBRARIES})
+# Use all includes, not just OpenSSL includes to see if there are
+# include files of different versions that do not match
+GET_DIRECTORY_PROPERTY(includes INCLUDE_DIRECTORIES)
+set(CMAKE_REQUIRED_INCLUDES ${includes})
 
 check_c_source_compiles("
     #include <openssl/ssl.h>
@@ -11,13 +15,13 @@ check_c_source_compiles("
 
 if (NOT including_ssl_h_works)
     # On Red Hat we may need to include Kerberos header.
-    set(CMAKE_REQUIRED_INCLUDES ${OpenSSL_INCLUDE_DIR} /usr/kerberos/include)
+    set(CMAKE_REQUIRED_INCLUDES ${OPENSSL_INCLUDE_DIR} /usr/kerberos/include)
     check_c_source_compiles("
         #include <krb5.h>
         #include <openssl/ssl.h>
         int main() { return 0; }
     " NEED_KRB5_H)
-    set(CMAKE_REQUIRED_INCLUDES ${OpenSSL_INCLUDE_DIR})
+    set(CMAKE_REQUIRED_INCLUDES ${OPENSSL_INCLUDE_DIR})
     if (NOT NEED_KRB5_H)
         message(FATAL_ERROR
             "OpenSSL test failure.  See CmakeError.log for details.")
@@ -66,6 +70,25 @@ if (NOT OPENSSL_D2I_X509_USES_CONST_CHAR)
         message(FATAL_ERROR
             "Can't determine if openssl_d2i_x509() takes const char parameter")
     endif ()
+endif ()
+
+check_c_source_runs("
+    #include <stdio.h>
+    #include <openssl/opensslv.h>
+    #include <openssl/crypto.h>
+    int main() {
+        printf(\"-- OpenSSL Library version: %s\\\\n\", SSLeay_version(SSLEAY_VERSION));
+        printf(\"-- OpenSSL Header version: %s\\\\n\", OPENSSL_VERSION_TEXT);
+        if (SSLeay() == OPENSSL_VERSION_NUMBER) {
+            return 0;
+        }
+        return -1;
+    }
+" OPENSSL_CORRECT_VERSION_NUMBER )
+
+if (NOT OPENSSL_CORRECT_VERSION_NUMBER)
+    message(FATAL_ERROR
+        "OpenSSL library version does not match headers")
 endif ()
 
 set(CMAKE_REQUIRED_INCLUDES)
