@@ -1,5 +1,6 @@
 include(CheckCXXSourceCompiles)
 include(CheckCSourceCompiles)
+include(RequireCXX11)
 
 # This autoconf variable is obsolete; it's portable to assume C89 and signal
 # handlers returning void
@@ -31,4 +32,21 @@ check_cxx_source_compiles("
 " SYSLOG_INT)
 if (SYSLOG_INT)
     message(STATUS "syslog prototypes need declaration")
+endif ()
+
+# test a header file that has to be present in C++11
+check_cxx_source_compiles("
+#include <array>
+#include <iostream>
+    int main() {
+			std::array<int, 2> a{ {1, 2} };
+			for (const auto& e: a)
+				std::cout << e << ' ';
+
+				std::cout << std::endl;
+    }
+" cxx11_header_works)
+
+if (NOT cxx11_header_works)
+    message(FATAL_ERROR "C++11 headers cannot be used for compilation")
 endif ()
