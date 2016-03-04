@@ -47,5 +47,22 @@ elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
     # TODO: don't seem to be any great/easy ways to get a clang version string.
 endif ()
 
+# test a header file that has to be present in C++11
+check_cxx_source_compiles("
+#include <array>
+#include <iostream>
+    int main() {
+			std::array<int, 2> a{ {1, 2} };
+			for (const auto& e: a)
+				std::cout << e << ' ';
+
+				std::cout << std::endl;
+    }
+" cxx11_header_works)
+
+if (NOT cxx11_header_works)
+    message(FATAL_ERROR "C++11 headers cannot be used for compilation")
+endif ()
+
 set(HAVE_CXX11 true)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
