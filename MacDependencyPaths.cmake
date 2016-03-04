@@ -2,6 +2,7 @@
 # default search prefix paths, but the nicer thing would be if they are
 # prepended to the default, so that is fixed here.
 if (APPLE AND "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-    list(INSERT CMAKE_SYSTEM_PREFIX_PATH 0 /opt/local) # MacPorts
-    list(INSERT CMAKE_SYSTEM_PREFIX_PATH 0 /sw)        # Fink
+    list(INSERT CMAKE_PREFIX_PATH 0 /opt/local) # MacPorts
+    list(INSERT CMAKE_PREFIX_PATH 0 /usr/local) # Homebrew, if linked
+    list(INSERT CMAKE_PREFIX_PATH 0 /sw)        # Fink
 endif ()
