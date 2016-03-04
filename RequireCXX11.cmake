@@ -9,6 +9,8 @@ if ( DEFINED HAVE_CXX11 )
     return()
 endif ()
 
+include(CheckCXXSourceCompiles)
+
 set(required_gcc_version 4.8)
 set(required_clang_version 3.3)
 
