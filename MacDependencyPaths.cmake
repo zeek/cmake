@@ -4,5 +4,6 @@
 if (APPLE AND "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     list(INSERT CMAKE_PREFIX_PATH 0 /opt/local) # MacPorts
     list(INSERT CMAKE_PREFIX_PATH 0 /usr/local) # Homebrew, if linked
+    list(INSERT CMAKE_PREFIX_PATH 0 /usr/local/opt/openssl) # Homebrew OpenSSL
     list(INSERT CMAKE_PREFIX_PATH 0 /sw)        # Fink
 endif ()
