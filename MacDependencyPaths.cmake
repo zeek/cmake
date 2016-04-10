@@ -11,8 +11,9 @@ if (APPLE AND "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     endif ()
     
     if (MAC_HBREW_BIN)
-        list(INSERT CMAKE_PREFIX_PATH 0 /usr/local) # Homebrew, if linked
-        list(INSERT CMAKE_PREFIX_PATH 0 /usr/local/opt/openssl) # Homebrew OpenSSL
+        execute_process(COMMAND ${MAC_HBREW_BIN} "--prefix" OUTPUT_VARIABLE BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+        list(INSERT CMAKE_PREFIX_PATH 0 ${BREW_PREFIX}) # Homebrew, if linked
+        list(INSERT CMAKE_PREFIX_PATH 0 ${BREW_PREFIX}/opt/openssl) # Homebrew OpenSSL
     endif ()
 
     if (MAC_FINK_BIN)
