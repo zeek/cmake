@@ -4,6 +4,7 @@ include(CheckSymbolExists)
 
 check_include_files(getopt.h HAVE_GETOPT_H)
 check_include_files(memory.h HAVE_MEMORY_H)
+check_include_files("netinet/ether.h" HAVE_NETINET_ETHER_H)
 check_include_files("sys/socket.h;netinet/in.h;net/if.h;netinet/if_ether.h"
                     HAVE_NETINET_IF_ETHER_H)
 check_include_files("sys/socket.h;netinet/in.h;net/if.h;netinet/ip6.h"
