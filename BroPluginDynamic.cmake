@@ -167,9 +167,11 @@ function(bro_plugin_end_dynamic)
 
     # Create __bro_plugin__
     # string(REPLACE "${BRO_PLUGIN_BASE}/" "" msg "Creating ${BRO_PLUGIN_MAGIC} for ${_plugin_name}")
+    get_filename_component(_magic_basename ${BRO_PLUGIN_MAGIC} NAME)
+
     add_custom_target(bro-plugin-${_plugin_name_canon}
             COMMAND echo "${_plugin_name}" ">${BRO_PLUGIN_MAGIC}"
-            COMMENT "${msg}")
+            COMMENT "Creating ${_magic_basename} for ${_plugin_name}")
 
     if ( _plugin_deps )
         add_dependencies(bro-plugin-${_plugin_name_canon} ${_plugin_deps})
@@ -177,12 +179,17 @@ function(bro_plugin_end_dynamic)
 
     add_dependencies(${_plugin_lib} bro-plugin-${_plugin_name_canon})
 
+    set(_dist_tarball_name ${_plugin_name_canon}.tar.gz)
+    set(_dist_output ${CMAKE_CURRENT_BINARY_DIR}/${_dist_tarball_name})
+
     # Create binary install package.
-    add_custom_command(TARGET ${_plugin_lib} POST_BUILD
+    add_custom_command(OUTPUT ${_dist_output}
             COMMAND ${BRO_PLUGIN_BRO_SRC}/cmake/bro-plugin-create-package.sh ${_plugin_name_canon} ${_plugin_dist}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             DEPENDS ${_plugin_lib}
-            COMMENT "Building binary plugin package")
+            COMMENT "Building binary plugin package: ${_dist_tarball_name}")
+
+    add_custom_target(dist ALL DEPENDS ${_dist_output})
 
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${BRO_PLUGIN_BIF})
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${BRO_PLUGIN_LIB})
