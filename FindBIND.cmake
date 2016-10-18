@@ -1,4 +1,4 @@
-# - Try to find libpcap include dirs and libraries 
+# - Try to find BIND include dirs and libraries
 #
 # Usage of this module as follows:
 #
@@ -45,7 +45,7 @@ foreach (bindlib ${bind_libs})
     if (NOT ${bindlib} MATCHES "none")
         find_library(BIND_LIBRARY
             NAMES ${bindlib}
-            HINTS ${BIND_ROOT_DIR}/lib
+            HINTS ${BIND_ROOT_DIR}/lib ${BIND_ROOT_DIR}/lib/libbind
         )
     endif ()
 
