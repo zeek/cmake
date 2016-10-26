@@ -22,6 +22,13 @@
 
 include(FindPackageHandleStandardArgs)
 
+if (PYTHON_EXECUTABLE)
+    # Get the real path so that we can reliably find the correct python-config
+    # (e.g. some systems may have a "python" symlink, but not a "python-config"
+    # symlink).
+    get_filename_component(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}" REALPATH)
+endif ()
+
 if (PYTHON_EXECUTABLE AND EXISTS ${PYTHON_EXECUTABLE}-config)
     set(PYTHON_CONFIG ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
 else ()
@@ -37,6 +44,8 @@ if (PYTHON_CONFIG AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD")
                     OUTPUT_VARIABLE PYTHON_LIBRARIES
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     ERROR_QUIET)
+    string(STRIP "${PYTHON_LIBRARIES}" PYTHON_LIBRARIES)
+
     execute_process(COMMAND "${PYTHON_CONFIG}" --includes
                     OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
                     OUTPUT_STRIP_TRAILING_WHITESPACE
