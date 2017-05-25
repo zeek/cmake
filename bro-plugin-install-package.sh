@@ -13,8 +13,8 @@ fi
 dst=$2
 
 if [ ! -d "${dst}" ]; then
-    echo "Error: ${dst} does not exist; has Bro been installed?"
-    exit 1
+    echo "Warning: ${dst} does not exist; has Bro been installed?"
+    mkdir -p ${dst}
 fi
 
 name=$1
