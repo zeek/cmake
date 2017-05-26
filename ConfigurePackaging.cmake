@@ -135,9 +135,18 @@ macro(SetPackageMetadata)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/README
                    ${CMAKE_CURRENT_BINARY_DIR}/README.txt
                     COPYONLY)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING
-                   ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
-                    COPYONLY)
+
+    if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/COPYING )
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING
+                       ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
+                        COPYONLY)
+    elseif ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.edit-me )
+        # Bro plugin skeletons have a placeholder file.  Just use
+        # it even if it hasn't actually been changed.
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING.edit-me
+                       ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
+                        COPYONLY)
+    endif ()
 
     if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/MAC_PACKAGE_INTRO )
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MAC_PACKAGE_INTRO
