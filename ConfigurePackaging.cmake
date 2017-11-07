@@ -118,20 +118,43 @@ endmacro(SetPackageFileName)
 
 # Sets up binary package metadata
 macro(SetPackageMetadata)
-    set(CPACK_PACKAGE_VENDOR "International Computer Science Institute")
-    set(CPACK_PACKAGE_CONTACT "info@bro.org")
-    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-        "The Bro Network Intrusion Detection System")
+    if ( NOT CPACK_PACKAGE_VENDOR )
+        set(CPACK_PACKAGE_VENDOR "International Computer Science Institute")
+    endif ()
+
+    if ( NOT CPACK_PACKAGE_CONTACT )
+        set(CPACK_PACKAGE_CONTACT "info@bro.org")
+    endif ()
+
+    if ( NOT CPACK_PACKAGE_DESCRIPTION_SUMMARY )
+        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
+            "The Bro Network Intrusion Detection System")
+    endif ()
 
     # CPack may enforce file name extensions for certain package generators
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/README
                    ${CMAKE_CURRENT_BINARY_DIR}/README.txt
                     COPYONLY)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING
-                   ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
-                    COPYONLY)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MAC_PACKAGE_INTRO
-                   ${CMAKE_CURRENT_BINARY_DIR}/MAC_PACKAGE_INTRO.txt)
+
+    if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/COPYING )
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING
+                       ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
+                        COPYONLY)
+    elseif ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.edit-me )
+        # Bro plugin skeletons have a placeholder file.  Just use
+        # it even if it hasn't actually been changed.
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING.edit-me
+                       ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
+                        COPYONLY)
+    endif ()
+
+    if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/MAC_PACKAGE_INTRO )
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MAC_PACKAGE_INTRO
+                       ${CMAKE_CURRENT_BINARY_DIR}/MAC_PACKAGE_INTRO.txt)
+    else ()
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/README
+                       ${CMAKE_CURRENT_BINARY_DIR}/MAC_PACKAGE_INTRO.txt)
+    endif ()
 
     set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_BINARY_DIR}/README.txt)
     set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt)
@@ -139,8 +162,14 @@ macro(SetPackageMetadata)
     set(CPACK_RESOURCE_FILE_WELCOME
         ${CMAKE_CURRENT_BINARY_DIR}/MAC_PACKAGE_INTRO.txt)
 
-    set(CPACK_RPM_PACKAGE_LICENSE "BSD")
-    set(CPACK_RPM_PACKAGE_GROUP "Applications/System")
+    if ( NOT CPACK_RPM_PACKAGE_LICENSE )
+        set(CPACK_RPM_PACKAGE_LICENSE "BSD")
+    endif ()
+
+    if ( NOT CPACK_RPM_PACKAGE_GROUP )
+        set(CPACK_RPM_PACKAGE_GROUP "Applications/System")
+    endif ()
+
     set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION /opt /var /var/opt)
 endmacro(SetPackageMetadata)
 

@@ -34,6 +34,10 @@ done
 
 ln -s . ${name}
 mkdir -p dist
-tar czf dist/${tgz} -T MANIFEST
+
+flag="-T"
+test `uname` = "OpenBSD" && flag="-I"
+tar czf dist/${tgz} ${flag} MANIFEST
+
 ln -s dist/${tgz} ${name}.tgz
 rm -f ${name}
