@@ -3,11 +3,9 @@
 # shell script's hashbang (#!) line to use the absolute path to the
 # interpreter in the path of the user running ./configure (or CMake equiv.).
 #
-# Hashbangs are not transformed when in binary packaging mode because,
-# if NMI systems are to be used in creating binary packages, that could
-# result in picking up a python interpreter in a non-standard location for
-# a given distro. (NMI tends to install non-essential prerequisite packages
-# in atypical locations).
+# Hashbangs are not transformed when in binary packaging or cross-compiling
+# mode because that can result in inserting paths on the build system
+# that are not valid on the target system.
 #
 # _dstdir: absolute path to the directory in which to install the transformed
 #     source file
@@ -32,7 +30,7 @@ macro(InstallShellScript _dstdir _srcfile)
     file(READ ${configed_file} _srclines)
     file(WRITE ${dehashbanged_file} "")
 
-    if (NOT BINARY_PACKAGING_MODE)
+    if (NOT BINARY_PACKAGING_MODE AND NOT CMAKE_CROSSCOMPILING)
         set(_regex "^#![ ]*/usr/bin/env[ ]+([^\n ]*)")
         string(REGEX MATCH ${_regex} _match ${_srclines})
         if (_match)

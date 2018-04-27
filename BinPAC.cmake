@@ -10,6 +10,10 @@
 # bro_ALL_GENERATED_OUTPUTS.
 macro(BINPAC_TARGET pacFile)
     if ( BRO_PLUGIN_INTERNAL_BUILD )
+        if ( BINPAC_EXE_PATH )
+            set(BinPAC_EXE ${BINPAC_EXE_PATH})
+        endif ()
+
         set(binpacDep "${BinPAC_EXE}")
     else ()
         set(BinPAC_EXE "${BRO_PLUGIN_BRO_BUILD}/aux/binpac/src/binpac")

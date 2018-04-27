@@ -22,6 +22,19 @@
 
 include(FindPackageHandleStandardArgs)
 
+if ( CMAKE_CROSSCOMPILING )
+    find_package(PythonLibs)
+    if (PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIR)
+        set(PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}")
+    endif ()
+    find_package_handle_standard_args(PythonDev DEFAULT_MSG
+        PYTHON_INCLUDE_DIR
+        PYTHON_LIBRARIES
+    )
+
+    return()
+endif ()
+
 if (PYTHON_EXECUTABLE)
     # Get the real path so that we can reliably find the correct python-config
     # (e.g. some systems may have a "python" symlink, but not a "python-config"
