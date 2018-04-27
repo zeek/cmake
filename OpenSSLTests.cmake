@@ -71,23 +71,25 @@ if (NOT OPENSSL_D2I_X509_USES_CONST_CHAR)
     endif ()
 endif ()
 
-check_c_source_runs("
-    #include <stdio.h>
-    #include <openssl/opensslv.h>
-    #include <openssl/crypto.h>
-    int main() {
-        printf(\"-- OpenSSL Library version: %s\\\\n\", SSLeay_version(SSLEAY_VERSION));
-        printf(\"-- OpenSSL Header version: %s\\\\n\", OPENSSL_VERSION_TEXT);
-        if (SSLeay() == OPENSSL_VERSION_NUMBER) {
-            return 0;
+if (NOT CMAKE_CROSSCOMPILING)
+    check_c_source_runs("
+        #include <stdio.h>
+        #include <openssl/opensslv.h>
+        #include <openssl/crypto.h>
+        int main() {
+            printf(\"-- OpenSSL Library version: %s\\\\n\", SSLeay_version(SSLEAY_VERSION));
+            printf(\"-- OpenSSL Header version: %s\\\\n\", OPENSSL_VERSION_TEXT);
+            if (SSLeay() == OPENSSL_VERSION_NUMBER) {
+                return 0;
+            }
+            return -1;
         }
-        return -1;
-    }
-" OPENSSL_CORRECT_VERSION_NUMBER )
+    " OPENSSL_CORRECT_VERSION_NUMBER )
 
-if (NOT OPENSSL_CORRECT_VERSION_NUMBER)
-    message(FATAL_ERROR
-        "OpenSSL library version does not match headers")
+    if (NOT OPENSSL_CORRECT_VERSION_NUMBER)
+        message(FATAL_ERROR
+            "OpenSSL library version does not match headers")
+    endif ()
 endif ()
 
 set(CMAKE_REQUIRED_INCLUDES)
