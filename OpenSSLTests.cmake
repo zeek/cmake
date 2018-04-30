@@ -30,19 +30,13 @@ if (NOT including_ssl_h_works)
     endif ()
 endif ()
 
-# check for OPENSSL_add_all_algorithms_conf function
-# and thus OpenSSL >= v0.9.7
-check_c_source_compiles("
-    #include <openssl/evp.h>
-    int main() {
-        OPENSSL_add_all_algorithms_conf();
-        return 0;
-    }
-" openssl_greater_than_0_9_7)
-
-if (NOT openssl_greater_than_0_9_7)
+if (OPENSSL_VERSION VERSION_LESS "0.9.7")
     message(FATAL_ERROR "OpenSSL >= v0.9.7 required")
 endif ()
+
+if ( (OPENSSL_VERSION VERSION_EQUAL "1.1.0") OR (OPENSSL_VERSION VERSION_GREATER "1.1.0") )
+    message(FATAL_ERROR "OpenSSL 1.1 is not supported yet; please use OpenSSL 1.0")
+endif()
 
 check_cxx_source_compiles("
 #include <openssl/x509.h>
