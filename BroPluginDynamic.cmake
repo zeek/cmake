@@ -19,7 +19,7 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    endif ()
 
    load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_
-   CMAKE_INSTALL_PREFIX Bro_BINARY_DIR Bro_SOURCE_DIR ENABLE_DEBUG BRO_PLUGIN_INSTALL_PATH BRO_EXE_PATH CMAKE_CXX_FLAGS CMAKE_C_FLAGS)
+   CMAKE_INSTALL_PREFIX Bro_BINARY_DIR Bro_SOURCE_DIR ENABLE_DEBUG BRO_PLUGIN_INSTALL_PATH BRO_EXE_PATH CMAKE_CXX_FLAGS CMAKE_C_FLAGS CAF_INCLUDE_DIR_CORE CAF_INCLUDE_DIR_IO CAF_INCLUDE_DIR_OPENSSL)
 
    if ( NOT BRO_PLUGIN_BASE )
        set(BRO_PLUGIN_BASE                "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
@@ -50,6 +50,10 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    set(BRO_PLUGIN_INTERNAL_BUILD          false CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_BUILD_DYNAMIC           true CACHE INTERNAL "" FORCE)
 
+   set(BRO_PLUGIN_CAF_CORE                "${bro_cache_CAF_INCLUDE_DIR_CORE}" CACHE INTERNAL "" FORCE)
+   set(BRO_PLUGIN_CAF_IO                  "${bro_cache_CAF_INCLUDE_DIR_IO}" CACHE INTERNAL "" FORCE)
+   set(BRO_PLUGIN_CAF_OPENSSL             "${bro_cache_CAF_INCLUDE_DIR_OPENSSL}" CACHE INTERNAL "" FORCE)
+
    message(STATUS "Bro executable      : ${BRO_PLUGIN_BRO_EXE_PATH}")
    message(STATUS "Bro source          : ${BRO_PLUGIN_BRO_SRC}")
    message(STATUS "Bro build           : ${BRO_PLUGIN_BRO_BUILD}")
@@ -70,9 +74,14 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
 
    include_directories(BEFORE ${BRO_PLUGIN_BRO_SRC}/src
                               ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
+                              ${BRO_PLUGIN_BRO_SRC}/aux/broker
                               ${BRO_PLUGIN_BRO_BUILD}
                               ${BRO_PLUGIN_BRO_BUILD}/src
                               ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
+                              ${BRO_PLUGIN_BRO_BUILD}/aux/broker
+                              ${BRO_PLUGIN_CAF_CORE}
+                              ${BRO_PLUGIN_CAF_IO}
+                              ${BRO_PLUGIN_CAF_OPENSSL}
                               ${CMAKE_CURRENT_BINARY_DIR}
                               ${CMAKE_CURRENT_BINARY_DIR}/src
                               ${CMAKE_CURRENT_SOURCE_DIR}
