@@ -34,10 +34,6 @@ if (OPENSSL_VERSION VERSION_LESS "0.9.7")
     message(FATAL_ERROR "OpenSSL >= v0.9.7 required")
 endif ()
 
-if ( (OPENSSL_VERSION VERSION_EQUAL "1.1.0") OR (OPENSSL_VERSION VERSION_GREATER "1.1.0") )
-    message(FATAL_ERROR "OpenSSL 1.1 is not supported yet; please use OpenSSL 1.0")
-endif()
-
 check_cxx_source_compiles("
 #include <openssl/x509.h>
     int main() {
