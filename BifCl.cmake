@@ -89,10 +89,6 @@ macro(bif_target bifInput)
     endif ()
 
     if ( BRO_PLUGIN_INTERNAL_BUILD )
-       set(bifclDep "bifcl")
-    endif ()
-
-    if ( BRO_PLUGIN_INTERNAL_BUILD )
         if ( BIFCL_EXE_PATH )
             set(BifCl_EXE ${BIFCL_EXE_PATH})
         else ()
@@ -101,6 +97,8 @@ macro(bif_target bifInput)
     else ()
         set(BifCl_EXE "${BRO_PLUGIN_BRO_BUILD}/src/bifcl")
     endif ()
+
+    set(bifclDep ${BifCl_EXE})
 
     add_custom_command(OUTPUT ${bifOutputs} ${BIF_OUTPUT_BRO}
                        COMMAND ${BifCl_EXE}
