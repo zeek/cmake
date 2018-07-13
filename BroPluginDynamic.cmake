@@ -8,18 +8,129 @@
 ## included from its top-level CMake file.
 
 if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
-   include(${BRO_DIST}/cmake/CommonCMakeConfig.cmake)
+   set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH "${BRO_PLUGIN_INSTALL_ROOT}"
+       CACHE INTERNAL "" FORCE)
 
-   if ( NOT BRO_DIST )
-       message(FATAL_ERROR "BRO_DIST not set")
-   endif ()
+    if ( BRO_DIST )
+        include(${BRO_DIST}/cmake/CommonCMakeConfig.cmake)
 
-   if ( NOT EXISTS "${BRO_DIST}/build/CMakeCache.txt" )
-       message(FATAL_ERROR "${BRO_DIST}/build/CMakeCache.txt; has Bro been built?")
-   endif ()
+        if ( NOT EXISTS "${BRO_DIST}/build/CMakeCache.txt" )
+           message(FATAL_ERROR
+                   "${BRO_DIST}/build/CMakeCache.txt; has Bro been built?")
+        endif ()
 
-   load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_
-   CMAKE_INSTALL_PREFIX Bro_BINARY_DIR Bro_SOURCE_DIR ENABLE_DEBUG BRO_PLUGIN_INSTALL_PATH BRO_EXE_PATH CMAKE_CXX_FLAGS CMAKE_C_FLAGS CAF_INCLUDE_DIR_CORE CAF_INCLUDE_DIR_IO CAF_INCLUDE_DIR_OPENSSL)
+        load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_
+                   CMAKE_INSTALL_PREFIX
+                   Bro_BINARY_DIR
+                   Bro_SOURCE_DIR
+                   ENABLE_DEBUG
+                   BRO_PLUGIN_INSTALL_PATH
+                   BRO_EXE_PATH
+                   CMAKE_CXX_FLAGS
+                   CMAKE_C_FLAGS
+                   CAF_INCLUDE_DIR_CORE
+                   CAF_INCLUDE_DIR_IO
+                   CAF_INCLUDE_DIR_OPENSSL)
+
+        if ( NOT BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH )
+           set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH
+               "${bro_cache_BRO_PLUGIN_INSTALL_PATH}" CACHE INTERNAL "" FORCE)
+        endif ()
+
+        set(BRO_PLUGIN_BRO_INSTALL_PREFIX "${bro_cache_CMAKE_INSTALL_PREFIX}"
+            CACHE INTERNAL "" FORCE)
+        set(BRO_PLUGIN_ENABLE_DEBUG "${bro_cache_ENABLE_DEBUG}"
+            CACHE INTERNAL "" FORCE)
+        set(BRO_PLUGIN_BRO_SRC "${bro_cache_Bro_SOURCE_DIR}"
+            CACHE INTERNAL "" FORCE)
+        set(BRO_PLUGIN_BRO_BUILD "${bro_cache_Bro_BINARY_DIR}"
+            CACHE INTERNAL "" FORCE)
+        set(BRO_PLUGIN_BRO_EXE_PATH "${bro_cache_BRO_EXE_PATH}"
+            CACHE INTERNAL "" FORCE)
+
+        set(BRO_PLUGIN_BRO_CMAKE ${BRO_PLUGIN_BRO_SRC}/cmake)
+        set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+        set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_CMAKE} ${CMAKE_MODULE_PATH})
+        set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${bro_cache_CMAKE_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${bro_cache_CMAKE_CXX_FLAGS}")
+
+        include_directories(BEFORE
+                            ${BRO_PLUGIN_BRO_SRC}/src
+                            ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
+                            ${BRO_PLUGIN_BRO_SRC}/aux/broker
+                            ${BRO_PLUGIN_BRO_BUILD}
+                            ${BRO_PLUGIN_BRO_BUILD}/src
+                            ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
+                            ${BRO_PLUGIN_BRO_BUILD}/aux/broker
+                            ${bro_cache_CAF_INCLUDE_DIR_CORE}
+                            ${bro_cache_CAF_INCLUDE_DIR_IO}
+                            ${bro_cache_CAF_INCLUDE_DIR_OPENSSL}
+                            ${CMAKE_CURRENT_BINARY_DIR}
+                            ${CMAKE_CURRENT_BINARY_DIR}/src
+                            ${CMAKE_CURRENT_SOURCE_DIR}
+                            ${CMAKE_CURRENT_SOURCE_DIR}/src
+                            )
+
+        set(ENV{PATH} "${BRO_PLUGIN_BRO_BUILD}/build/src:$ENV{PATH}")
+
+    else ()
+        # Independent from BRO_DIST source tree
+
+        if ( NOT BRO_CONFIG_CMAKE_DIR )
+            message(FATAL_ERROR "CMake var. BRO_CONFIG_CMAKE_DIR must be set"
+                    " to the path where Bro installed its cmake modules")
+        endif ()
+
+        include(${BRO_CONFIG_CMAKE_DIR}/CommonCMakeConfig.cmake)
+
+        if ( NOT BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH )
+            if ( NOT BRO_CONFIG_PLUGIN_DIR )
+                message(FATAL_ERROR "CMake var. BRO_CONFIG_PLUGIN_DIR must be"
+                        " set to the path where Bro installs its plugins")
+            endif ()
+
+            set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH
+                "${BRO_CONFIG_PLUGIN_DIR}" CACHE INTERNAL "" FORCE)
+        endif ()
+
+        if ( NOT BRO_CONFIG_PREFIX )
+            message(FATAL_ERROR "CMake var. BRO_CONFIG_PREFIX must be set"
+                    " to the root installation path of Bro")
+        endif ()
+
+        if ( NOT BRO_CONFIG_INCLUDE_DIR )
+            message(FATAL_ERROR "CMake var. BRO_CONFIG_INCLUDE_DIR must be set"
+                    " to the installation path of Bro headers")
+        endif ()
+
+        set(BRO_PLUGIN_BRO_CONFIG_INCLUDE_DIR "${BRO_CONFIG_INCLUDE_DIR}"
+            CACHE INTERNAL "" FORCE)
+        set(BRO_PLUGIN_BRO_INSTALL_PREFIX "${BRO_CONFIG_PREFIX}"
+            CACHE INTERNAL "" FORCE)
+        set(BRO_PLUGIN_BRO_EXE_PATH "${BRO_CONFIG_PREFIX}/bin/bro"
+            CACHE INTERNAL "" FORCE)
+
+        set(BRO_PLUGIN_BRO_CMAKE ${BRO_CONFIG_CMAKE_DIR})
+        set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+        set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_CMAKE} ${CMAKE_MODULE_PATH})
+
+        find_package(BinPAC REQUIRED)
+        find_package(CAF COMPONENTS core io openssl REQUIRED)
+        find_package(Broker REQUIRED)
+
+        include_directories(BEFORE
+                            ${BRO_CONFIG_INCLUDE_DIR}
+                            ${BinPAC_INCLUDE_DIR}
+                            ${BROKER_INCLUDE_DIR}
+                            ${CAF_INCLUDE_DIR_CORE}
+                            ${CAF_INCLUDE_DIR_IO}
+                            ${CAF_INCLUDE_DIR_OPENSSL}
+                            ${CMAKE_CURRENT_BINARY_DIR}
+                            ${CMAKE_CURRENT_BINARY_DIR}/src
+                            ${CMAKE_CURRENT_SOURCE_DIR}
+                            ${CMAKE_CURRENT_SOURCE_DIR}/src
+                            )
+    endif ()
 
    if ( NOT BRO_PLUGIN_BASE )
        set(BRO_PLUGIN_BASE                "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
@@ -33,26 +144,8 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    set(BRO_PLUGIN_MAGIC                   "${BRO_PLUGIN_BUILD}/__bro_plugin__" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_README                  "${BRO_PLUGIN_BASE}/README" CACHE INTERNAL "" FORCE)
 
-   set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH "${BRO_PLUGIN_INSTALL_ROOT}" CACHE INTERNAL "" FORCE)
-
-   if ( NOT BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH )
-       set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH "${bro_cache_BRO_PLUGIN_INSTALL_PATH}" CACHE INTERNAL "" FORCE)
-   endif ()
-
-   set(BRO_PLUGIN_BRO_INSTALL_PREFIX      "${bro_cache_CMAKE_INSTALL_PREFIX}" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_BRO_SRC                 "${bro_cache_Bro_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_BRO_BUILD               "${bro_cache_Bro_BINARY_DIR}" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_BRO_EXE_PATH            "${bro_cache_BRO_EXE_PATH}" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_BRO_CXX_FLAGS           "${bro_cache_CMAKE_CXX_FLAGS}" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_BRO_C_FLAGS             "${bro_cache_CMAKE_C_FLAGS}" CACHE INTERNAL "" FORCE)
-
-   set(BRO_PLUGIN_ENABLE_DEBUG            "${bro_cache_ENABLE_DEBUG}"   CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_INTERNAL_BUILD          false CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_BUILD_DYNAMIC           true CACHE INTERNAL "" FORCE)
-
-   set(BRO_PLUGIN_CAF_CORE                "${bro_cache_CAF_INCLUDE_DIR_CORE}" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_CAF_IO                  "${bro_cache_CAF_INCLUDE_DIR_IO}" CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_CAF_OPENSSL             "${bro_cache_CAF_INCLUDE_DIR_OPENSSL}" CACHE INTERNAL "" FORCE)
 
    message(STATUS "Bro executable      : ${BRO_PLUGIN_BRO_EXE_PATH}")
    message(STATUS "Bro source          : ${BRO_PLUGIN_BRO_SRC}")
@@ -61,34 +154,10 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    message(STATUS "Bro plugin directory: ${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}")
    message(STATUS "Bro debug mode      : ${BRO_PLUGIN_ENABLE_DEBUG}")
 
-   set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BASE}/cmake ${CMAKE_MODULE_PATH})
-   set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_SRC}/cmake ${CMAKE_MODULE_PATH})
-
-   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${BRO_PLUGIN_BRO_C_FLAGS}")
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BRO_PLUGIN_BRO_CXX_FLAGS}")
-
    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
        # By default Darwin's linker requires all symbols to be present at link time.
        set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -undefined dynamic_lookup -Wl,-bind_at_load")
    endif ()
-
-   include_directories(BEFORE ${BRO_PLUGIN_BRO_SRC}/src
-                              ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
-                              ${BRO_PLUGIN_BRO_SRC}/aux/broker
-                              ${BRO_PLUGIN_BRO_BUILD}
-                              ${BRO_PLUGIN_BRO_BUILD}/src
-                              ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
-                              ${BRO_PLUGIN_BRO_BUILD}/aux/broker
-                              ${BRO_PLUGIN_CAF_CORE}
-                              ${BRO_PLUGIN_CAF_IO}
-                              ${BRO_PLUGIN_CAF_OPENSSL}
-                              ${CMAKE_CURRENT_BINARY_DIR}
-                              ${CMAKE_CURRENT_BINARY_DIR}/src
-                              ${CMAKE_CURRENT_SOURCE_DIR}
-                              ${CMAKE_CURRENT_SOURCE_DIR}/src
-                              )
-
-   set(ENV{PATH} "${BRO_PLUGIN_BRO_BUILD}/build/src:$ENV{PATH}")
 
    set(bro_PLUGIN_LIBS CACHE INTERNAL "plugin libraries" FORCE)
    set(bro_PLUGIN_BIF_SCRIPTS CACHE INTERNAL "Bro script stubs for BIFs in Bro plugins" FORCE)
@@ -193,7 +262,7 @@ function(bro_plugin_end_dynamic)
 
     # Create binary install package.
     add_custom_command(OUTPUT ${_dist_output}
-            COMMAND ${BRO_PLUGIN_BRO_SRC}/cmake/bro-plugin-create-package.sh ${_plugin_name_canon} ${_plugin_dist}
+            COMMAND ${BRO_PLUGIN_BRO_CMAKE}/bro-plugin-create-package.sh ${_plugin_name_canon} ${_plugin_dist}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             DEPENDS ${_plugin_lib}
             COMMENT "Building binary plugin package: ${_dist_tarball_name}")
@@ -209,7 +278,7 @@ function(bro_plugin_end_dynamic)
     set(plugin_install "${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}/${_plugin_name_canon}")
 
     INSTALL(CODE "execute_process(
-        COMMAND ${BRO_PLUGIN_BRO_SRC}/cmake/bro-plugin-install-package.sh ${_plugin_name_canon} \$ENV{DESTDIR}/${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}
+        COMMAND ${BRO_PLUGIN_BRO_CMAKE}/bro-plugin-install-package.sh ${_plugin_name_canon} \$ENV{DESTDIR}/${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )")
 
