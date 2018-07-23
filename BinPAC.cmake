@@ -37,6 +37,7 @@ macro(BINPAC_TARGET pacFile)
     set(BINPAC_OUTPUT_H ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.h)
     set(BINPAC_OUTPUT_CC ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.cc)
     set(pacOutputs ${BINPAC_OUTPUT_H} ${BINPAC_OUTPUT_CC})
+    set_property(SOURCE ${BINPAC_OUTPUT_CC} APPEND_STRING PROPERTY COMPILE_FLAGS "-Wno-tautological-compare")
 
     set(target "pac-${CMAKE_CURRENT_BINARY_DIR}/${pacFile}")
 
