@@ -20,7 +20,7 @@
 
 # look for BinPAC in standard locations or user-provided root
 find_path(BinPAC_ROOT_DIR
-    NAMES include/binpac.h
+    NAMES include/binpac.h include/binpac/binpac.h
 )
 
 find_file(BinPAC_EXE
@@ -35,7 +35,7 @@ find_library(BinPAC_LIBRARY
 
 find_path(BinPAC_INCLUDE_DIR
     NAMES binpac.h
-    HINTS ${BinPAC_ROOT_DIR}/include
+    HINTS ${BinPAC_ROOT_DIR}/include ${BinPAC_ROOT_DIR}/include/binpac
 )
 
 include(FindPackageHandleStandardArgs)
