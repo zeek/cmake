@@ -89,18 +89,26 @@ macro(bif_target bifInput)
     endif ()
 
     if ( BRO_PLUGIN_INTERNAL_BUILD )
-       set(bifclDep "bifcl")
-    endif ()
-
-    if ( BRO_PLUGIN_INTERNAL_BUILD )
         if ( BIFCL_EXE_PATH )
             set(BifCl_EXE ${BIFCL_EXE_PATH})
         else ()
             set(BifCl_EXE "bifcl")
         endif ()
     else ()
-        set(BifCl_EXE "${BRO_PLUGIN_BRO_BUILD}/src/bifcl")
+        if ( NOT BifCl_EXE )
+            if ( BRO_PLUGIN_BRO_BUILD )
+                set(BifCl_EXE "${BRO_PLUGIN_BRO_BUILD}/aux/bifcl/bifcl")
+            else ()
+                find_program(BifCl_EXE bifcl)
+
+                if ( NOT BifCl_EXE )
+                    message(FATAL_ERROR "Failed to find 'bifcl' program")
+                endif ()
+            endif ()
+        endif ()
     endif ()
+
+    set(bifclDep ${BifCl_EXE})
 
     add_custom_command(OUTPUT ${bifOutputs} ${BIF_OUTPUT_BRO}
                        COMMAND ${BifCl_EXE}
