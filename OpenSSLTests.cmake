@@ -2,7 +2,7 @@ include(CheckCSourceCompiles)
 include(CheckCXXSourceCompiles)
 include(CheckCSourceRuns)
 
-set(CMAKE_REQUIRED_LIBRARIES ${OPENSSL_LIBRARIES})
+set(CMAKE_REQUIRED_LIBRARIES ${OPENSSL_LIBRARIES} "-ldl")
 # Use all includes, not just OpenSSL includes to see if there are
 # include files of different versions that do not match
 GET_DIRECTORY_PROPERTY(includes INCLUDE_DIRECTORIES)
