@@ -13,7 +13,7 @@
 #
 # Variables defined by this module:
 #
-#  BROKER_FOUND              System has BinPAC binary and library
+#  BROKER_FOUND              System has Broker library
 #  BROKER_LIBRARY            The broker library
 #  BROKER_INCLUDE_DIR        The broker headers
 
@@ -32,7 +32,7 @@ find_path(BROKER_INCLUDE_DIR
 )
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(BinPAC DEFAULT_MSG
+find_package_handle_standard_args(Broker DEFAULT_MSG
     BROKER_LIBRARY
     BROKER_INCLUDE_DIR
 )
