@@ -6,7 +6,16 @@ include(CheckIncludeFiles)
 set(CMAKE_REQUIRED_INCLUDES ${PCAP_INCLUDE_DIR})
 set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY})
 
+cmake_policy(PUSH)
+
+if ( POLICY CMP0075 )
+    # It's fine that check_include_files links against CMAKE_REQUIRED_LIBRARIES
+    cmake_policy(SET CMP0075 NEW)
+endif ()
+
 check_include_files(pcap-int.h HAVE_PCAP_INT_H)
+
+cmake_policy(POP)
 
 check_function_exists(pcap_freecode HAVE_LIBPCAP_PCAP_FREECODE)
 if (NOT HAVE_LIBPCAP_PCAP_FREECODE)
