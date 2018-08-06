@@ -216,12 +216,6 @@ function(bro_plugin_end_dynamic)
 
     target_link_libraries(${_plugin_lib} ${_plugin_libs})
 
-    # Copy bif/*.bro.
-    string(REPLACE "${BRO_PLUGIN_BASE}/" "" msg "Creating ${BRO_PLUGIN_BIF} for ${_plugin_name}")
-    add_custom_target(copy-bif-${_plugin_name_canon}
-            COMMAND "${CMAKE_COMMAND}" -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/bif ${BRO_PLUGIN_BIF}
-            COMMENT "${msg}")
-
     # Create bif/__init__.bro.
     bro_bif_create_loader(bif-init-${_plugin_name_canon} "${bro_PLUGIN_BIF_SCRIPTS}")
 
@@ -238,9 +232,7 @@ function(bro_plugin_end_dynamic)
 
     if ( _plugin_deps )
         add_dependencies(bif-init-${_plugin_name_canon} ${_plugin_deps})
-        add_dependencies(copy-bif-${_plugin_name_canon} ${_plugin_deps})
-        add_dependencies(bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
-        add_dependencies(${_plugin_lib} bif-init-${_plugin_name_canon} copy-bif-${_plugin_name_canon})
+        add_dependencies(${_plugin_lib} bif-init-${_plugin_name_canon})
     endif()
 
     # Create __bro_plugin__
