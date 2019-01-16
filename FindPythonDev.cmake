@@ -40,10 +40,13 @@ if (PYTHON_EXECUTABLE)
     # (e.g. some systems may have a "python" symlink, but not a "python-config"
     # symlink).
     get_filename_component(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}" REALPATH)
-endif ()
+    get_filename_component(PYTHON_EXECUTABLE_DIR "${PYTHON_EXECUTABLE}" DIRECTORY)
 
-if (PYTHON_EXECUTABLE AND EXISTS ${PYTHON_EXECUTABLE}-config)
-    set(PYTHON_CONFIG ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
+    if ( EXISTS ${PYTHON_EXECUTABLE}-config )
+        set(PYTHON_CONFIG ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
+    elseif ( EXISTS ${PYTHON_EXECUTABLE_DIR}/python-config )
+        set(PYTHON_CONFIG ${PYTHON_EXECUTABLE_DIR}/python-config CACHE PATH "" FORCE)
+    endif ()
 else ()
     find_program(PYTHON_CONFIG
         NAMES python-config python-config2.7 python-config2.6 python-config2.6
