@@ -49,7 +49,8 @@ if (PYTHON_EXECUTABLE)
     endif ()
 else ()
     find_program(PYTHON_CONFIG
-        NAMES python-config python-config2.7 python-config2.6 python-config2.6
+        NAMES python-config python3.7-config python3.6-config python3.5-config
+              python3.4-config python-config2.7 python-config2.6 python-config2.6
               python-config2.4 python-config2.3)
 endif ()
 
