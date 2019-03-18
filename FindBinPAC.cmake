@@ -29,7 +29,7 @@ find_file(BinPAC_EXE
 )
 
 find_library(BinPAC_LIBRARY
-    NAMES libbinpac.a
+    NAMES binpac libbinpac.a
     HINTS ${BinPAC_ROOT_DIR}/lib
 )
 
