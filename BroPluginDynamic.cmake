@@ -216,7 +216,7 @@ function(bro_plugin_end_dynamic)
 
     target_link_libraries(${_plugin_lib} ${_plugin_libs})
 
-    # Create bif/__init__.bro.
+    # Create bif/__load__.zeek.
     bro_bif_create_loader(bif-init-${_plugin_name_canon} "${bro_PLUGIN_BIF_SCRIPTS}")
 
     # Copy scripts/ if it's not already at the right place inside the
