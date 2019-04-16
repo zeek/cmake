@@ -32,7 +32,7 @@ macro(bif_target bifInput)
                            ${bifInputBasename}.netvar_init)
         set(BIF_OUTPUT_H   ${bifInputBasename}.func_h
                            ${bifInputBasename}.netvar_h)
-        set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.bro)
+        set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.zeek)
         set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Bro script stubs for BIFs in base distribution of Bro" FORCE) # Propogate to top-level
 
     elseif ( "${ARGV1}" STREQUAL "plugin" )
@@ -60,9 +60,9 @@ macro(bif_target bifInput)
         set(BIF_OUTPUT_H   ${bifInputBasename}.h)
 
         if ( NOT BRO_PLUGIN_BUILD_DYNAMIC )
-            set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name_canon}.${bifInputBasename}.bro)
+            set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name_canon}.${bifInputBasename}.zeek)
         else ()
-            set(BIF_OUTPUT_BRO ${BRO_PLUGIN_BIF}/${bifInputBasename}.bro)
+            set(BIF_OUTPUT_BRO ${BRO_PLUGIN_BIF}/${bifInputBasename}.zeek)
         endif()
 
         set(bro_PLUGIN_BIF_SCRIPTS ${bro_PLUGIN_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Bro script stubs for BIFs in Bro plugins" FORCE) # Propogate to top-level
@@ -81,7 +81,7 @@ macro(bif_target bifInput)
         # In order be able to run bro from the build directory, the
         # generated bro script needs to be inside a directory tree
         # named the same way it will be referenced from an @load.
-        set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.bro)
+        set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.zeek)
 
         set(bro_AUTO_BIFS  ${bro_AUTO_BIFS} ${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename} CACHE INTERNAL "BIFs for automatic inclusion" FORCE) # Propagate to top-level.
         set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Bro script stubs for BIFs in base distribution of Bro" FORCE) # Propogate to top-level
@@ -114,9 +114,9 @@ macro(bif_target bifInput)
                        COMMAND ${BifCl_EXE}
                        ARGS ${bifcl_args} ${CMAKE_CURRENT_SOURCE_DIR}/${bifInput} || (rm -f ${bifOutputs} && exit 1)
                        COMMAND "${CMAKE_COMMAND}"
-                       ARGS -E copy ${bifInputBasename}.bro ${BIF_OUTPUT_BRO}
+                       ARGS -E copy ${bifInputBasename}.zeek ${BIF_OUTPUT_BRO}
                        COMMAND "${CMAKE_COMMAND}"
-                       ARGS -E remove -f ${bifInputBasename}.bro
+                       ARGS -E remove -f ${bifInputBasename}.zeek
                        DEPENDS ${bifInput}
                        DEPENDS ${bifclDep}
                        COMMENT "[BIFCL] Processing ${bifInput}"
@@ -131,7 +131,7 @@ macro(bif_target bifInput)
     set(bro_ALL_GENERATED_OUTPUTS ${bro_ALL_GENERATED_OUTPUTS} ${target} CACHE INTERNAL "automatically generated files" FORCE) # Propagate to top-level.
 endmacro(bif_target)
 
-# A macro to create a __load__.bro file for all *.bif.bro files in
+# A macro to create a __load__.zeek file for all *.bif.zeek files in
 # a given collection (which should all be in the same directory).
 # It creates a corresponding target to trigger the generation.
 function(bro_bif_create_loader target bifinputs)
@@ -158,7 +158,7 @@ function(bro_bif_create_loader target bifinputs)
 
     file(MAKE_DIRECTORY ${_bif_loader_dir})
 
-    set(_bif_loader_file ${_bif_loader_dir}/__load__.bro)
+    set(_bif_loader_file ${_bif_loader_dir}/__load__.zeek)
     add_custom_target(${target}
         COMMAND "sh" "-c" "rm -f ${_bif_loader_file}"
         COMMAND "sh" "-c" "for i in ${_bif_loader_content}; do echo @load ./$i >> ${_bif_loader_file}; done"
