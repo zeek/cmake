@@ -123,12 +123,12 @@ macro(SetPackageMetadata)
     endif ()
 
     if ( NOT CPACK_PACKAGE_CONTACT )
-        set(CPACK_PACKAGE_CONTACT "info@bro.org")
+        set(CPACK_PACKAGE_CONTACT "info@zeek.org")
     endif ()
 
     if ( NOT CPACK_PACKAGE_DESCRIPTION_SUMMARY )
         set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-            "The Bro Network Intrusion Detection System")
+            "The Zeek Network Security Monitor")
     endif ()
 
     # CPack may enforce file name extensions for certain package generators
@@ -141,7 +141,7 @@ macro(SetPackageMetadata)
                        ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
                         COPYONLY)
     elseif ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.edit-me )
-        # Bro plugin skeletons have a placeholder file.  Just use
+        # Zeek plugin skeletons have a placeholder file.  Just use
         # it even if it hasn't actually been changed.
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING.edit-me
                        ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
