@@ -59,7 +59,7 @@ macro(bif_target bifInput)
 
         set(BIF_OUTPUT_H   ${bifInputBasename}.h)
 
-        if ( NOT BRO_PLUGIN_BUILD_DYNAMIC )
+        if ( NOT ZEEK_PLUGIN_BUILD_DYNAMIC )
             set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name_canon}.${bifInputBasename}.zeek)
         else ()
             set(BIF_OUTPUT_BRO ${BRO_PLUGIN_BIF}/${bifInputBasename}.zeek)
@@ -88,7 +88,7 @@ macro(bif_target bifInput)
 
     endif ()
 
-    if ( BRO_PLUGIN_INTERNAL_BUILD )
+    if ( ZEEK_PLUGIN_INTERNAL_BUILD )
         if ( BIFCL_EXE_PATH )
             set(BifCl_EXE ${BIFCL_EXE_PATH})
         else ()

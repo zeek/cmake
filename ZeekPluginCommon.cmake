@@ -1,7 +1,7 @@
-## A set of functions for defining Bro plugins.
+## A set of functions for defining Zeek plugins.
 ##
 ## This set is used by both static and dynamic plugins via
-## BroPluginsStatic and BroPluginsDynamic, respectively.
+## ZeekPluginStatic and ZeekPluginDynamic, respectively.
 
 include(RequireCXX11)
 
@@ -58,7 +58,7 @@ endmacro()
 
 # Link an additional library to the plugin's library.
 function(bro_plugin_link_library)
-    if ( BRO_PLUGIN_BUILD_DYNAMIC )
+    if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
         bro_plugin_link_library_dynamic(${ARGV})
     else ()
         bro_plugin_link_library_static(${ARGV})
@@ -67,7 +67,7 @@ endfunction()
 
 # Adds *.bif files to a plugin.
 macro(bro_plugin_bif)
-    if ( BRO_PLUGIN_BUILD_DYNAMIC )
+    if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
         bro_plugin_bif_dynamic(${ARGV})
     else ()
         bro_plugin_bif_static(${ARGV})
@@ -76,7 +76,7 @@ endmacro()
 
 # Ends a plugin definition.
 macro(bro_plugin_end)
-    if ( BRO_PLUGIN_BUILD_DYNAMIC )
+    if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
         bro_plugin_end_dynamic(${ARGV})
     else ()
         bro_plugin_end_static(${ARGV})
@@ -85,7 +85,7 @@ endmacro()
 
 # Internal macro to create a unique target name for a plugin.
 macro(_plugin_target_name target ns name)
-    if ( BRO_PLUGIN_BUILD_DYNAMIC )
+    if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
         _plugin_target_name_dynamic(${ARGV})
     else ()
         _plugin_target_name_static(${ARGV})

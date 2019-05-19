@@ -1,7 +1,7 @@
-## A set of functions for defining Bro plugins.
+## A set of functions for defining Zeek plugins.
 ##
 ## This set is for plugins compiled in statically.
-## See BroPluginsDynamic.cmake for the dynamic version.
+## See ZeekPluginDynamic.cmake for the dynamic version.
 
 function(bro_plugin_bif_static)
     foreach ( bif ${ARGV} )
