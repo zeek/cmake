@@ -9,7 +9,7 @@ include(BifCl)
 include(BinPAC)
 
 # Begins a plugin definition, giving its namespace and name as the arguments.
-function(bro_plugin_begin ns name)
+function(zeek_plugin_begin ns name)
     _plugin_target_name(target "${ns}" "${name}")
     set(_plugin_lib        "${target}" PARENT_SCOPE)
     set(_plugin_name       "${ns}::${name}" PARENT_SCOPE)
@@ -20,15 +20,25 @@ function(bro_plugin_begin ns name)
     set(_plugin_dist       "" PARENT_SCOPE)
 endfunction()
 
+# This is needed to support legacy Bro plugins.
+macro(bro_plugin_begin)
+    zeek_plugin_begin(${ARGV})
+endmacro()
+
 # Adds *.cc files to a plugin.
-function(bro_plugin_cc)
+function(zeek_plugin_cc)
         list(APPEND _plugin_objs ${ARGV})
         set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
 endfunction()
 
+# This is needed to support legacy Bro plugins.
+macro(bro_plugin_cc)
+    zeek_plugin_cc(${ARGV})
+endmacro()
+
 # Adds a *.pac file to a plugin. Further *.pac files may given that
 # it depends on.
-function(bro_plugin_pac)
+function(zeek_plugin_pac)
     binpac_target(${ARGV})
     list(APPEND _plugin_objs ${BINPAC_OUTPUT_CC})
     list(APPEND _plugin_deps ${BINPAC_BUILD_TARGET})
@@ -36,13 +46,23 @@ function(bro_plugin_pac)
     set(_plugin_deps "${_plugin_deps}" PARENT_SCOPE)
 endfunction()
 
+# This is needed to support legacy Bro plugins.
+macro(bro_plugin_pac)
+    zeek_plugin_pac(${ARGV})
+endmacro()
+
 # Add an additional object file to the plugin's library.
-function(bro_plugin_obj)
+function(zeek_plugin_obj)
     foreach ( bif ${ARGV} )
         list(APPEND _plugin_objs ${bif})
         set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
     endforeach ()
 endfunction()
+
+# This is needed to support legacy Bro plugins.
+macro(bro_plugin_obj)
+    zeek_plugin_obj(${ARGV})
+endmacro()
 
 # Add additional files that should be included into the binary plugin distribution.
 # Ignored for static plugins.
@@ -66,7 +86,7 @@ function(bro_plugin_link_library)
 endfunction()
 
 # Adds *.bif files to a plugin.
-macro(bro_plugin_bif)
+macro(zeek_plugin_bif)
     if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
         bro_plugin_bif_dynamic(${ARGV})
     else ()
@@ -74,13 +94,23 @@ macro(bro_plugin_bif)
     endif ()
 endmacro()
 
+# This is needed to support legacy Bro plugins.
+macro(bro_plugin_bif)
+    zeek_plugin_bif(${ARGV})
+endmacro()
+
 # Ends a plugin definition.
-macro(bro_plugin_end)
+macro(zeek_plugin_end)
     if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
         bro_plugin_end_dynamic(${ARGV})
     else ()
         bro_plugin_end_static(${ARGV})
     endif ()
+endmacro()
+
+# This is needed to support legacy Bro plugins.
+macro(bro_plugin_end)
+    zeek_plugin_end(${ARGV})
 endmacro()
 
 # Internal macro to create a unique target name for a plugin.
