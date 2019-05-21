@@ -1,13 +1,13 @@
-## A set of functions for defining Bro plugins.
+## A set of functions for defining Zeek plugins.
 ##
 ## This set is for plugins compiled dynamically for loading at run-time.
-## See BroPluginsStatic.cmake for the static version.
+## See ZeekPluginStatic.cmake for the static version.
 ##
 ## Note: This is meant to run as a standalone CMakeLists.txt. It sets
-## up all the basic infrastructure to compile a dynamic Bro plugin when
+## up all the basic infrastructure to compile a dynamic Zeek plugin when
 ## included from its top-level CMake file.
 
-if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
+if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
    set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH "${BRO_PLUGIN_INSTALL_ROOT}"
        CACHE INTERNAL "" FORCE)
 
@@ -16,16 +16,16 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
 
         if ( NOT EXISTS "${BRO_DIST}/build/CMakeCache.txt" )
            message(FATAL_ERROR
-                   "${BRO_DIST}/build/CMakeCache.txt; has Bro been built?")
+                   "${BRO_DIST}/build/CMakeCache.txt; has Zeek been built?")
         endif ()
 
         load_cache("${BRO_DIST}/build" READ_WITH_PREFIX bro_cache_
                    CMAKE_INSTALL_PREFIX
-                   Bro_BINARY_DIR
-                   Bro_SOURCE_DIR
+                   Zeek_BINARY_DIR
+                   Zeek_SOURCE_DIR
                    ENABLE_DEBUG
                    BRO_PLUGIN_INSTALL_PATH
-                   BRO_EXE_PATH
+                   ZEEK_EXE_PATH
                    CMAKE_CXX_FLAGS
                    CMAKE_C_FLAGS
                    CAF_INCLUDE_DIR_CORE
@@ -41,11 +41,11 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
             CACHE INTERNAL "" FORCE)
         set(BRO_PLUGIN_ENABLE_DEBUG "${bro_cache_ENABLE_DEBUG}"
             CACHE INTERNAL "" FORCE)
-        set(BRO_PLUGIN_BRO_SRC "${bro_cache_Bro_SOURCE_DIR}"
+        set(BRO_PLUGIN_BRO_SRC "${bro_cache_Zeek_SOURCE_DIR}"
             CACHE INTERNAL "" FORCE)
-        set(BRO_PLUGIN_BRO_BUILD "${bro_cache_Bro_BINARY_DIR}"
+        set(BRO_PLUGIN_BRO_BUILD "${bro_cache_Zeek_BINARY_DIR}"
             CACHE INTERNAL "" FORCE)
-        set(BRO_PLUGIN_BRO_EXE_PATH "${bro_cache_BRO_EXE_PATH}"
+        set(BRO_PLUGIN_BRO_EXE_PATH "${bro_cache_ZEEK_EXE_PATH}"
             CACHE INTERNAL "" FORCE)
 
         set(BRO_PLUGIN_BRO_CMAKE ${BRO_PLUGIN_BRO_SRC}/cmake)
@@ -78,7 +78,7 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
 
         if ( NOT BRO_CONFIG_CMAKE_DIR )
             message(FATAL_ERROR "CMake var. BRO_CONFIG_CMAKE_DIR must be set"
-                    " to the path where Bro installed its cmake modules")
+                    " to the path where Zeek installed its cmake modules")
         endif ()
 
         include(${BRO_CONFIG_CMAKE_DIR}/CommonCMakeConfig.cmake)
@@ -86,7 +86,7 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
         if ( NOT BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH )
             if ( NOT BRO_CONFIG_PLUGIN_DIR )
                 message(FATAL_ERROR "CMake var. BRO_CONFIG_PLUGIN_DIR must be"
-                        " set to the path where Bro installs its plugins")
+                        " set to the path where Zeek installs its plugins")
             endif ()
 
             set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH
@@ -95,12 +95,12 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
 
         if ( NOT BRO_CONFIG_PREFIX )
             message(FATAL_ERROR "CMake var. BRO_CONFIG_PREFIX must be set"
-                    " to the root installation path of Bro")
+                    " to the root installation path of Zeek")
         endif ()
 
         if ( NOT BRO_CONFIG_INCLUDE_DIR )
             message(FATAL_ERROR "CMake var. BRO_CONFIG_INCLUDE_DIR must be set"
-                    " to the installation path of Bro headers")
+                    " to the installation path of Zeek headers")
         endif ()
 
         set(BRO_PLUGIN_BRO_CONFIG_INCLUDE_DIR "${BRO_CONFIG_INCLUDE_DIR}"
@@ -144,15 +144,15 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    set(BRO_PLUGIN_MAGIC                   "${BRO_PLUGIN_BUILD}/__bro_plugin__" CACHE INTERNAL "" FORCE)
    set(BRO_PLUGIN_README                  "${BRO_PLUGIN_BASE}/README" CACHE INTERNAL "" FORCE)
 
-   set(BRO_PLUGIN_INTERNAL_BUILD          false CACHE INTERNAL "" FORCE)
-   set(BRO_PLUGIN_BUILD_DYNAMIC           true CACHE INTERNAL "" FORCE)
+   set(ZEEK_PLUGIN_INTERNAL_BUILD         false CACHE INTERNAL "" FORCE)
+   set(ZEEK_PLUGIN_BUILD_DYNAMIC          true CACHE INTERNAL "" FORCE)
 
-   message(STATUS "Bro executable      : ${BRO_PLUGIN_BRO_EXE_PATH}")
-   message(STATUS "Bro source          : ${BRO_PLUGIN_BRO_SRC}")
-   message(STATUS "Bro build           : ${BRO_PLUGIN_BRO_BUILD}")
-   message(STATUS "Bro install prefix  : ${BRO_PLUGIN_BRO_INSTALL_PREFIX}")
-   message(STATUS "Bro plugin directory: ${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}")
-   message(STATUS "Bro debug mode      : ${BRO_PLUGIN_ENABLE_DEBUG}")
+   message(STATUS "Zeek executable      : ${BRO_PLUGIN_BRO_EXE_PATH}")
+   message(STATUS "Zeek source          : ${BRO_PLUGIN_BRO_SRC}")
+   message(STATUS "Zeek build           : ${BRO_PLUGIN_BRO_BUILD}")
+   message(STATUS "Zeek install prefix  : ${BRO_PLUGIN_BRO_INSTALL_PREFIX}")
+   message(STATUS "Zeek plugin directory: ${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}")
+   message(STATUS "Zeek debug mode      : ${BRO_PLUGIN_ENABLE_DEBUG}")
 
    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
        # By default Darwin's linker requires all symbols to be present at link time.
@@ -160,9 +160,9 @@ if ( NOT BRO_PLUGIN_INTERNAL_BUILD )
    endif ()
 
    set(bro_PLUGIN_LIBS CACHE INTERNAL "plugin libraries" FORCE)
-   set(bro_PLUGIN_BIF_SCRIPTS CACHE INTERNAL "Bro script stubs for BIFs in Bro plugins" FORCE)
+   set(bro_PLUGIN_BIF_SCRIPTS CACHE INTERNAL "Zeek script stubs for BIFs in Zeek plugins" FORCE)
 
-   add_definitions(-DBRO_PLUGIN_INTERNAL_BUILD=false)
+   add_definitions(-DZEEK_PLUGIN_INTERNAL_BUILD=false)
 
    add_custom_target(generate_outputs)
 
@@ -254,7 +254,7 @@ function(bro_plugin_end_dynamic)
 
     # Create binary install package.
     add_custom_command(OUTPUT ${_dist_output}
-            COMMAND ${BRO_PLUGIN_BRO_CMAKE}/bro-plugin-create-package.sh ${_plugin_name_canon} ${_plugin_dist}
+            COMMAND ${BRO_PLUGIN_BRO_CMAKE}/zeek-plugin-create-package.sh ${_plugin_name_canon} ${_plugin_dist}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             DEPENDS ${_plugin_lib}
             COMMENT "Building binary plugin package: ${_dist_tarball_name}")
@@ -270,7 +270,7 @@ function(bro_plugin_end_dynamic)
     set(plugin_install "${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}/${_plugin_name_canon}")
 
     INSTALL(CODE "execute_process(
-        COMMAND ${BRO_PLUGIN_BRO_CMAKE}/bro-plugin-install-package.sh ${_plugin_name_canon} \$ENV{DESTDIR}/${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}
+        COMMAND ${BRO_PLUGIN_BRO_CMAKE}/zeek-plugin-install-package.sh ${_plugin_name_canon} \$ENV{DESTDIR}/${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )")
 

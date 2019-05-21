@@ -9,7 +9,7 @@
 # the input pac to make it unique. The target is added automatically to
 # bro_ALL_GENERATED_OUTPUTS.
 macro(BINPAC_TARGET pacFile)
-    if ( BRO_PLUGIN_INTERNAL_BUILD )
+    if ( ZEEK_PLUGIN_INTERNAL_BUILD )
         if ( BINPAC_EXE_PATH )
             set(BinPAC_EXE ${BINPAC_EXE_PATH})
         endif ()

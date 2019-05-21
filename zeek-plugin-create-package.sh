@@ -3,7 +3,7 @@
 # Helper script creating a tarball with a plugin's binary distribution. We'll
 # also leave a MANIFEST in place with all files part of the tar ball.
 #
-# Called from BroPluginDynamic.cmake. Current directory is the plugin
+# Called from ZeekPluginDynamic.cmake. Current directory is the plugin
 # build directory.
 
 if [ $# = 0 ]; then

@@ -2,7 +2,7 @@
 #
 # Helper script to install the tarball with a plugin's binary distribution.
 #
-# Called from BroPluginDynamic.cmake. Current directory is the plugin
+# Called from ZeekPluginDynamic.cmake. Current directory is the plugin
 # build directory.
 
 if [ $# != 2 ]; then
@@ -13,7 +13,7 @@ fi
 dst=$2
 
 if [ ! -d "${dst}" ]; then
-    echo "Warning: ${dst} does not exist; has Bro been installed?"
+    echo "Warning: ${dst} does not exist; has Zeek been installed?"
     mkdir -p ${dst}
 fi
 

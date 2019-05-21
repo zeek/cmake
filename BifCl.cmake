@@ -1,6 +1,6 @@
 
 # A macro to define a command that uses the BIF compiler to produce C++
-# segments and Bro language declarations from a .bif file. The outputs
+# segments and Zeek language declarations from a .bif file. The outputs
 # are returned in BIF_OUTPUT_{CC,H,BRO}. By default, it runs bifcl in
 # alternative mode (-a; suitable for standalone compilation). If
 # an additional parameter "standard" is given, it runs it in standard mode
@@ -33,7 +33,7 @@ macro(bif_target bifInput)
         set(BIF_OUTPUT_H   ${bifInputBasename}.func_h
                            ${bifInputBasename}.netvar_h)
         set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.zeek)
-        set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Bro script stubs for BIFs in base distribution of Bro" FORCE) # Propogate to top-level
+        set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Zeek script stubs for BIFs in base distribution of Zeek" FORCE) # Propogate to top-level
 
     elseif ( "${ARGV1}" STREQUAL "plugin" )
         set(plugin_name ${ARGV2})
@@ -59,13 +59,13 @@ macro(bif_target bifInput)
 
         set(BIF_OUTPUT_H   ${bifInputBasename}.h)
 
-        if ( NOT BRO_PLUGIN_BUILD_DYNAMIC )
+        if ( NOT ZEEK_PLUGIN_BUILD_DYNAMIC )
             set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name_canon}.${bifInputBasename}.zeek)
         else ()
             set(BIF_OUTPUT_BRO ${BRO_PLUGIN_BIF}/${bifInputBasename}.zeek)
         endif()
 
-        set(bro_PLUGIN_BIF_SCRIPTS ${bro_PLUGIN_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Bro script stubs for BIFs in Bro plugins" FORCE) # Propogate to top-level
+        set(bro_PLUGIN_BIF_SCRIPTS ${bro_PLUGIN_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Zeek script stubs for BIFs in Zeek plugins" FORCE) # Propogate to top-level
 
     else ()
         # Alternative mode. These will get compiled in automatically.
@@ -78,17 +78,17 @@ macro(bif_target bifInput)
         set(BIF_OUTPUT_CC  ${bifInputBasename}.cc)
         set(BIF_OUTPUT_H   ${bifInputBasename}.h)
 
-        # In order be able to run bro from the build directory, the
-        # generated bro script needs to be inside a directory tree
+        # In order be able to run Zeek from the build directory, the
+        # generated Zeek script needs to be inside a directory tree
         # named the same way it will be referenced from an @load.
         set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.zeek)
 
         set(bro_AUTO_BIFS  ${bro_AUTO_BIFS} ${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename} CACHE INTERNAL "BIFs for automatic inclusion" FORCE) # Propagate to top-level.
-        set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Bro script stubs for BIFs in base distribution of Bro" FORCE) # Propogate to top-level
+        set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Zeek script stubs for BIFs in base distribution of Zeek" FORCE) # Propogate to top-level
 
     endif ()
 
-    if ( BRO_PLUGIN_INTERNAL_BUILD )
+    if ( ZEEK_PLUGIN_INTERNAL_BUILD )
         if ( BIFCL_EXE_PATH )
             set(BifCl_EXE ${BIFCL_EXE_PATH})
         else ()
@@ -143,7 +143,7 @@ function(bro_bif_create_loader target bifinputs)
 
         if ( _bif_loader_dir )
             if ( NOT _bif_loader_dir_tmp STREQUAL _bif_loader_dir )
-                message(FATAL_ERROR "Directory of Bro script BIF stub ${_bro_file} differs from expected: ${_bif_loader_dir}")
+                message(FATAL_ERROR "Directory of Zeek script BIF stub ${_bro_file} differs from expected: ${_bif_loader_dir}")
             endif ()
         else ()
             set(_bif_loader_dir ${_bif_loader_dir_tmp})
