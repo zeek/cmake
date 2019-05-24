@@ -3,7 +3,7 @@
 # This script is meant to be used by binary packages post-installation.
 # Variables between @ symbols are replaced by CMake at configure time.
 
-backupNamesFile=/tmp/bro_install_backups
+backupNamesFile=/tmp/zeek_install_backups
 version=@VERSION@
 sampleFiles=""
 
@@ -49,7 +49,7 @@ if [ -n "${sampleFiles}" ]; then
 EOF
 fi
 
-# Set up world writeable spool and logs directory for broctl, making sure
+# Set up world writeable spool and logs directory for zeekctl, making sure
 # to set the sticky bit so that unprivileged users can't rename/remove files.
 # (CMake/CPack is supposed to install them, but has problems with empty dirs)
 if [ -n "@EMPTY_WORLD_DIRS@" ]; then

@@ -4,7 +4,7 @@
 # Variables between @ symbols are replaced by CMake at configure time.
 
 configFiles="@INSTALLED_CONFIG_FILES@"
-backupNamesFile=/tmp/bro_install_backups
+backupNamesFile=/tmp/zeek_install_backups
 
 # Checks if a config file exists in a default location and makes a backup
 # so that a modified version is not clobbered
