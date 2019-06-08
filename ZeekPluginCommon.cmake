@@ -66,7 +66,7 @@ endmacro()
 
 # Add additional files that should be included into the binary plugin distribution.
 # Ignored for static plugins.
-macro(bro_plugin_dist_files)
+macro(zeek_plugin_dist_files)
     foreach ( file ${ARGV} )
         list(APPEND _plugin_dist ${file})
         # Don't need this here, and generates an error that
@@ -76,14 +76,24 @@ macro(bro_plugin_dist_files)
     endforeach ()
 endmacro()
 
+# This is needed to support legacy Bro plugins.
+macro(bro_plugin_dist_files)
+    zeek_plugin_dist_files(${ARGV})
+endmacro()
+
 # Link an additional library to the plugin's library.
-function(bro_plugin_link_library)
+function(zeek_plugin_link_library)
     if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
         bro_plugin_link_library_dynamic(${ARGV})
     else ()
         bro_plugin_link_library_static(${ARGV})
     endif ()
 endfunction()
+
+# This is needed to support legacy Bro plugins.
+macro(bro_plugin_link_library)
+    zeek_plugin_link_library(${ARGV})
+endmacro()
 
 # Adds *.bif files to a plugin.
 macro(zeek_plugin_bif)
