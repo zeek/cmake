@@ -23,7 +23,7 @@ if (ZEEK_EXE AND ZEEK_ROOT_DIR)
 endif ()
 
 find_program(ZEEK_EXE zeek
-             HINTS ${ZEEK_ROOT_DIR}/bin /usr/local/bro/bin)
+             HINTS ${ZEEK_ROOT_DIR}/bin /usr/local/zeek/bin /usr/local/bro/bin)
 
 if (ZEEK_EXE)
     get_filename_component(ZEEK_ROOT_DIR ${ZEEK_EXE} PATH)
