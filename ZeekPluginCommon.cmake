@@ -4,6 +4,7 @@
 ## ZeekPluginStatic and ZeekPluginDynamic, respectively.
 
 include(RequireCXX11)
+include(FindClangTidy)
 
 include(BifCl)
 include(BinPAC)
@@ -25,10 +26,12 @@ macro(bro_plugin_begin)
     zeek_plugin_begin(${ARGV})
 endmacro()
 
+
 # Adds *.cc files to a plugin.
 function(zeek_plugin_cc)
-        list(APPEND _plugin_objs ${ARGV})
-        set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
+    list(APPEND _plugin_objs ${ARGV})
+    set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
+    add_clang_tidy_files(${ARGV})
 endfunction()
 
 # This is needed to support legacy Bro plugins.
