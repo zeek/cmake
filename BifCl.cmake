@@ -35,6 +35,9 @@ macro(bif_target bifInput)
         set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.zeek)
         set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Zeek script stubs for BIFs in base distribution of Zeek" FORCE) # Propogate to top-level
 
+        # Do this here so that all of the necessary files for each individual BIF get added to clang-tidy
+        add_clang_tidy_files(${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename}.func_def)
+
     elseif ( "${ARGV1}" STREQUAL "plugin" )
         set(plugin_name ${ARGV2})
         set(plugin_name_canon ${ARGV3})
@@ -57,6 +60,11 @@ macro(bif_target bifInput)
                                ${bifInputBasename}.register.cc)
         endif()
 
+        # Do this here so that all of the necessary files for each individual BIF get added to clang-tidy
+        foreach (bif_cc_file ${BIF_OUTPUT_CC})
+            add_clang_tidy_files(${CMAKE_CURRENT_BINARY_DIR}/${bif_cc_file})
+        endforeach(bif_cc_file)
+
         set(BIF_OUTPUT_H   ${bifInputBasename}.h)
 
         if ( NOT ZEEK_PLUGIN_BUILD_DYNAMIC )
@@ -77,6 +85,11 @@ macro(bif_target bifInput)
             ${bifInputBasename}.init.cc)
         set(BIF_OUTPUT_CC  ${bifInputBasename}.cc)
         set(BIF_OUTPUT_H   ${bifInputBasename}.h)
+
+        # Do this here so that all of the necessary files for each individual BIF get added to clang-tidy
+        foreach (bif_cc_file ${BIF_OUTPUT_CC})
+            add_clang_tidy_files(${CMAKE_CURRENT_BINARY_DIR}/${bif_cc_file})
+        endforeach(bif_cc_file)
 
         # In order be able to run Zeek from the build directory, the
         # generated Zeek script needs to be inside a directory tree

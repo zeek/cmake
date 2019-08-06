@@ -11,4 +11,5 @@ function(bro_add_subdir_library name)
     endif ()
 
     set(bro_SUBDIR_LIBS "${_target}" ${bro_SUBDIR_LIBS} CACHE INTERNAL "subdir libraries")
+    add_clang_tidy_files(${ARGN})
 endfunction()

@@ -44,6 +44,8 @@ macro(BINPAC_TARGET pacFile)
     set(pacOutputs ${BINPAC_OUTPUT_H} ${BINPAC_OUTPUT_CC})
     set_property(SOURCE ${BINPAC_OUTPUT_CC} APPEND_STRING PROPERTY COMPILE_FLAGS "-Wno-tautological-compare")
 
+    add_clang_tidy_files(${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.cc)
+
     set(target "pac-${CMAKE_CURRENT_BINARY_DIR}/${pacFile}")
 
     string(REGEX REPLACE "${CMAKE_BINARY_DIR}/src/" "" target "${target}")
