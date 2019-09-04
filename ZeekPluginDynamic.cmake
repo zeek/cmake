@@ -57,11 +57,11 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
         include_directories(BEFORE
                             ${BRO_PLUGIN_BRO_SRC}/src
                             ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
-                            ${BRO_PLUGIN_BRO_SRC}/aux/broker
+                            ${BRO_PLUGIN_BRO_SRC}/aux/broker/include
                             ${BRO_PLUGIN_BRO_BUILD}
                             ${BRO_PLUGIN_BRO_BUILD}/src
                             ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
-                            ${BRO_PLUGIN_BRO_BUILD}/aux/broker
+                            ${BRO_PLUGIN_BRO_BUILD}/aux/broker/include
                             ${bro_cache_CAF_INCLUDE_DIR_CORE}
                             ${bro_cache_CAF_INCLUDE_DIR_IO}
                             ${bro_cache_CAF_INCLUDE_DIR_OPENSSL}
