@@ -58,6 +58,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${BRO_PLUGIN_BRO_SRC}/src
                             ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
                             ${BRO_PLUGIN_BRO_SRC}/aux/broker/include
+                            ${BRO_PLUGIN_BRO_SRC}/aux/paraglob/include
                             ${BRO_PLUGIN_BRO_BUILD}
                             ${BRO_PLUGIN_BRO_BUILD}/src
                             ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
