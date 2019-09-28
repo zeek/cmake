@@ -17,19 +17,41 @@
 #  BROKER_LIBRARY            The broker library
 #  BROKER_INCLUDE_DIR        The broker headers
 
-find_path(BROKER_ROOT_DIR
-    NAMES include/broker/broker.hh
-)
+if(NOT BROKER_ROOT_DIR)
+    find_path(BROKER_ROOT_DIR
+        NAMES include/broker/broker.hh
+    )
+    set(header_hints
+        "${BROKER_ROOT_DIR}/include"
+    )
+else()
+    set(header_hints
+        "${BROKER_ROOT_DIR}/include"
+        "${BROKER_ROOT_DIR}/../include"
+        "${BROKER_ROOT_DIR}/../../include"
+    )
+endif()
 
 find_library(BROKER_LIBRARY
     NAMES broker
     HINTS ${BROKER_ROOT_DIR}/lib
 )
 
-find_path(BROKER_INCLUDE_DIR
+find_path(broker_hh_dir
     NAMES broker/broker.hh
-    HINTS ${BROKER_ROOT_DIR}/include
+    HINTS ${header_hints}
 )
+
+find_path(config_hh_dir
+    NAMES broker/config.hh
+    HINTS ${header_hints}
+)
+
+if("${broker_hh_dir}" STREQUAL "${config_hh_dir}")
+    set(BROKER_INCLUDE_DIR "${broker_hh_dir}")
+else()
+    set(BROKER_INCLUDE_DIR "${broker_hh_dir}" "${config_hh_dir}")
+endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Broker DEFAULT_MSG
