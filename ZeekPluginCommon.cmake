@@ -3,7 +3,7 @@
 ## This set is used by both static and dynamic plugins via
 ## ZeekPluginStatic and ZeekPluginDynamic, respectively.
 
-include(RequireCXX11)
+include(RequireCXX17)
 include(FindClangTidy)
 
 include(BifCl)
