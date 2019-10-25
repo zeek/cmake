@@ -68,7 +68,6 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${bro_cache_CAF_INCLUDE_DIR_OPENSSL}
                             ${CMAKE_CURRENT_BINARY_DIR}
                             ${CMAKE_CURRENT_BINARY_DIR}/src
-                            ${CMAKE_CURRENT_SOURCE_DIR}
                             ${CMAKE_CURRENT_SOURCE_DIR}/src
                             )
 
@@ -128,7 +127,6 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${CAF_INCLUDE_DIR_OPENSSL}
                             ${CMAKE_CURRENT_BINARY_DIR}
                             ${CMAKE_CURRENT_BINARY_DIR}/src
-                            ${CMAKE_CURRENT_SOURCE_DIR}
                             ${CMAKE_CURRENT_SOURCE_DIR}/src
                             )
     endif ()
