@@ -1,7 +1,8 @@
 # Set up the default flags and CMake build type once during the configuration
 # of the top-level CMake project.
 if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-    set(EXTRA_COMPILE_FLAGS "-Wall -Wno-unused")
+    set(EXTRA_COMPILE_FLAGS     "-Wall -Wno-unused")
+    set(EXTRA_COMPILE_FLAGS_CXX "-Wno-register")
 
     if ( NOT CMAKE_BUILD_TYPE )
         if ( ENABLE_DEBUG )
@@ -25,5 +26,5 @@ if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     # Compiler flags may already exist in CMake cache (e.g. when specifying
     # CFLAGS environment variable before running cmake for the the first time)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_COMPILE_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS} ${EXTRA_COMPILE_FLAGS_CXX}")
 endif ()
