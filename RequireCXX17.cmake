@@ -59,7 +59,15 @@ if ( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
                 "${CMAKE_CXX_COMPILER_VERSION}")
     endif ()
 elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
-    # TODO: don't seem to be any great/easy ways to get a clang version string.
+    execute_process(COMMAND ${CMAKE_CXX_COMPILER} -v ERROR_VARIABLE
+                    clang_version)
+    string(REGEX REPLACE "^clang version ([^ ]+) .*" "\\1"
+           clang_version "${clang_version}")
+    if ( ${clang_version} VERSION_LESS ${required_clang_version} )
+        message(FATAL_ERROR "GCC version must be at least "
+                "${required_clang_version} for C++17 support, manually detected: "
+                "${CMAKE_CXX_COMPILER_VERSION}")
+    endif ()
 endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
