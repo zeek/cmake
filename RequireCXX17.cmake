@@ -15,6 +15,8 @@ set(required_gcc_version 7.0)
 set(required_clang_version 4.0)
 set(required_apple_clang_version 6.0)
 
+set(cxx17_flag "-std=c++17")
+
 macro(cxx17_compile_test)
     check_cxx_source_compiles("
         #include <optional>
@@ -38,6 +40,9 @@ elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
                 "${required_clang_version} for C++17 support, detected: "
                 "${CMAKE_CXX_COMPILER_VERSION}")
     endif ()
+    if ( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5 )
+        set(cxx17_flag "-std=c++1z")
+    endif ()
 elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
     if ( CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${required_apple_clang_version} )
         message(FATAL_ERROR "Apple Clang version must be at least "
@@ -51,7 +56,7 @@ else()
     # user needs in the case it actually doesn't support C++17.
 endif ()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${cxx17_flag}")
 cxx17_compile_test()
 
 set(HAVE_CXX17 true)
