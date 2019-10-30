@@ -74,5 +74,10 @@ if (NOT HAVE_DLT_PPP_SERIAL)
     set(DLT_PPP_SERIAL 50)
 endif ()
 
+check_symbol_exists(DLT_NFLOG pcap.h HAVE_DLT_NFLOG)
+if (NOT HAVE_DLT_NFLOG)
+    set(DLT_NFLOG 239)
+endif ()
+
 set(CMAKE_REQUIRED_INCLUDES)
 set(CMAKE_REQUIRED_LIBRARIES)
