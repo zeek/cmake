@@ -20,13 +20,7 @@ function(bro_plugin_link_library_static)
 endfunction()
 
 function(bro_plugin_end_static)
-    if ( bro_HAVE_OBJECT_LIBRARIES )
-        add_library(${_plugin_lib} OBJECT ${_plugin_objs})
-        set(_target "$<TARGET_OBJECTS:${_plugin_lib}>")
-    else ()
-        add_library(${_plugin_lib} STATIC ${_plugin_objs})
-        set(_target "${_plugin_lib}")
-    endif ()
+    add_library(${_plugin_lib} OBJECT ${_plugin_objs})
 
     if ( NOT "${_plugin_deps}" STREQUAL "" )
         add_dependencies(${_plugin_lib} ${_plugin_deps})
@@ -34,7 +28,8 @@ function(bro_plugin_end_static)
 
     add_dependencies(${_plugin_lib} generate_outputs)
 
-    set(bro_PLUGIN_LIBS ${bro_PLUGIN_LIBS} "${_target}" CACHE INTERNAL "plugin libraries")
+    set(bro_PLUGIN_LIBS ${bro_PLUGIN_LIBS} "$<TARGET_OBJECTS:${_plugin_lib}>" CACHE INTERNAL "plugin libraries")
+    set(bro_PLUGIN_DEPS ${bro_PLUGIN_DEPS} "${_plugin_lib}" CACHE INTERNAL "plugin dependencies")
 endfunction()
 
 macro(_plugin_target_name_static target ns name)
