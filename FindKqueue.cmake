@@ -9,13 +9,12 @@ if ( NOT HAVE_KQUEUE )
   # If they didn't pass one, build our local copy of it.
   if ( LIBKQUEUE_ROOT_DIR )
 
-    set(static_ext "${CMAKE_STATIC_LIBRARY_SUFFIX}")
-
     find_path(LIBKQUEUE_ROOT_DIR
       NAMES "include/sys/event.h")
 
+    # Prefer linking statically but look for a shared library version too.
     find_library(LIBKQUEUE_LIBRARIES
-      NAMES libkqueue.a
+      NAMES libkqueue.a libkqueue.so
       HINTS ${LIBKQUEUE_ROOT_DIR}/lib)
 
     find_path(LIBKQUEUE_INCLUDE_DIRS
@@ -44,9 +43,7 @@ if ( NOT HAVE_KQUEUE )
     set(kqueue_src     "${CMAKE_CURRENT_SOURCE_DIR}/src/3rdparty/libkqueue")
     set(kqueue_ep      "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-ep")
     set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build")
-    set(kqueue_dir     "${kqueue_src}")
-    set(kqueue_install "${CMAKE_INSTALL_PREFIX}")
-    set(static_ext "${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(kqueue_static  "${kqueue_build}/libkqueue${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
     if ( ${CMAKE_VERSION} VERSION_LESS "3.2.0" )
       # Build byproducts is just required by the Ninja generator
@@ -57,7 +54,7 @@ if ( NOT HAVE_KQUEUE )
 
       set(build_byproducts_arg)
     else ()
-      set(build_byproducts_arg BUILD_BYPRODUCTS ${kqueue_build}/libkqueue${static_ext})
+      set(build_byproducts_arg BUILD_BYPRODUCTS ${kqueue_static})
     endif ()
 
     ExternalProject_Add(project_kqueue
@@ -82,12 +79,6 @@ if ( NOT HAVE_KQUEUE )
       WORKING_DIRECTORY ${kqueue_build}
       ALWAYS 1
       ${use_terminal_arg}
-      )
-
-    install(CODE "execute_process(
-    COMMAND ${CMAKE_MAKE_PROGRAM} install
-    WORKING_DIRECTORY ${kqueue_build}
-    )"
       )
 
     if ( CMAKE_TOOLCHAIN_FILE )
@@ -118,8 +109,6 @@ if ( NOT HAVE_KQUEUE )
       ${cmake_c_compiler_launcher_arg}
       ${cmake_cxx_compiler_launcher_arg}
       -DCMAKE_BUILD_TYPE:string=${CMAKE_BUILD_TYPE}
-      -DCMAKE_INSTALL_PREFIX:path=${kqueue_install}
-      -DCMAKE_INSTALL_LIBDIR:path=lib
       -DSTATIC_KQUEUE=yes
       ${kqueue_src}
       WORKING_DIRECTORY ${kqueue_build}
@@ -140,8 +129,7 @@ if ( NOT HAVE_KQUEUE )
     endif ()
 
     add_library(libkqueue_a STATIC IMPORTED)
-    set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION
-      ${kqueue_build}/libkqueue${static_ext})
+    set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION ${kqueue_static})
     add_dependencies(libkqueue_a project_kqueue)
 
     set(HAVE_KQUEUE true)
