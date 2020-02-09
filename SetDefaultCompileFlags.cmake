@@ -1,5 +1,10 @@
 # Set up the default flags and CMake build type once during the configuration
 # of the top-level CMake project.
+
+if (MSVC)
+  return()
+endif()
+
 if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     set(EXTRA_COMPILE_FLAGS     "-Wall -Wno-unused")
     set(EXTRA_COMPILE_FLAGS_CXX "-Wno-register")

@@ -9,11 +9,23 @@ if ( DEFINED HAVE_CXX17 )
     return()
 endif ()
 
-include(CheckCXXSourceCompiles)
-
 set(required_gcc_version 7.0)
 set(required_clang_version 4.0)
+set(required_msvc_version 19.14)
 set(required_apple_clang_version 6.0)
+
+if ( MSVC )
+    if ( CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${required_msvc_version} )
+        message(FATAL_ERROR "MSVC version must be at least "
+                "${required_gcc_version} for C++17 support, detected: "
+                "${CMAKE_CXX_COMPILER_VERSION}")
+    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    set(HAVE_CXX17 true)
+    return()
+endif ()
+
+include(CheckCXXSourceCompiles)
 
 set(cxx17_flag "-std=c++17")
 
