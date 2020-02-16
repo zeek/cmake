@@ -20,7 +20,8 @@ if ( MSVC )
                 "${required_gcc_version} for C++17 support, detected: "
                 "${CMAKE_CXX_COMPILER_VERSION}")
     endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    set_property(CACHE CMAKE_CXX_FLAGS
+                 PROPERTY VALUE "${CMAKE_CXX_FLAGS} /std:c++17")
     set(HAVE_CXX17 true)
     return()
 endif ()
@@ -68,7 +69,8 @@ else()
     # user needs in the case it actually doesn't support C++17.
 endif ()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${cxx17_flag}")
+set_property(CACHE CMAKE_CXX_FLAGS
+             PROPERTY VALUE "${CMAKE_CXX_FLAGS} ${cxx17_flag}")
 cxx17_compile_test()
 
 set(HAVE_CXX17 true)

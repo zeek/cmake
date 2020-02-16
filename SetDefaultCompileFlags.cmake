@@ -21,8 +21,7 @@ if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 
     if ( "${_build_type_upper}" STREQUAL "DEBUG" )
         if ( ENABLE_COVERAGE )
-            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+            set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} --coverage")
         endif()
         # manual add of -g works around its omission in FreeBSD's CMake port
         set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -g -DDEBUG -DBRO_DEBUG")
@@ -30,6 +29,8 @@ if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 
     # Compiler flags may already exist in CMake cache (e.g. when specifying
     # CFLAGS environment variable before running cmake for the the first time)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_COMPILE_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS} ${EXTRA_COMPILE_FLAGS_CXX}")
+    set_property(CACHE CMAKE_C_FLAGS
+                 PROPERTY VALUE "${CMAKE_C_FLAGS} ${EXTRA_COMPILE_FLAGS}")
+    set_property(CACHE CMAKE_CXX_FLAGS
+                 PROPERTY VALUE "${CMAKE_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS} ${EXTRA_COMPILE_FLAGS_CXX}")
 endif ()
