@@ -28,9 +28,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                    ZEEK_EXE_PATH
                    CMAKE_CXX_FLAGS
                    CMAKE_C_FLAGS
-                   CAF_INCLUDE_DIR_CORE
-                   CAF_INCLUDE_DIR_IO
-                   CAF_INCLUDE_DIR_OPENSSL)
+                   CAF_INCLUDE_DIRS)
 
         if ( NOT BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH )
            set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH
@@ -63,9 +61,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${BRO_PLUGIN_BRO_BUILD}/src
                             ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
                             ${BRO_PLUGIN_BRO_BUILD}/aux/broker/include
-                            ${bro_cache_CAF_INCLUDE_DIR_CORE}
-                            ${bro_cache_CAF_INCLUDE_DIR_IO}
-                            ${bro_cache_CAF_INCLUDE_DIR_OPENSSL}
+                            ${bro_cache_CAF_INCLUDE_DIRS}
                             ${CMAKE_CURRENT_BINARY_DIR}
                             ${CMAKE_CURRENT_BINARY_DIR}/src
                             ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -122,9 +118,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${BRO_CONFIG_INCLUDE_DIR}
                             ${BinPAC_INCLUDE_DIR}
                             ${BROKER_INCLUDE_DIR}
-                            ${CAF_INCLUDE_DIR_CORE}
-                            ${CAF_INCLUDE_DIR_IO}
-                            ${CAF_INCLUDE_DIR_OPENSSL}
+                            ${CAF_INCLUDE_DIRS}
                             ${CMAKE_CURRENT_BINARY_DIR}
                             ${CMAKE_CURRENT_BINARY_DIR}/src
                             ${CMAKE_CURRENT_SOURCE_DIR}/src
