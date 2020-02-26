@@ -27,18 +27,19 @@ endif ()
 
 include(CheckCXXSourceCompiles)
 
+set(cxx17_testcode
+    "#include <optional>
+     int main() { std::optional<int> a; }")
+
+check_cxx_source_compiles("${cxx17_testcode}" cxx17_already_works)
+
+if ( cxx17_already_works )
+    # Nothing to do. Flags already select a suitable C++ version.
+    set(HAVE_CXX17 true)
+    return()
+endif ()
+
 set(cxx17_flag "-std=c++17")
-
-macro(cxx17_compile_test)
-    check_cxx_source_compiles("
-        #include <optional>
-        int main() { std::optional<int> a; }"
-        cxx17_works)
-
-    if (NOT cxx17_works)
-        message(FATAL_ERROR "failed using C++17 for compilation")
-    endif ()
-endmacro()
 
 if ( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
     if ( CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${required_gcc_version} )
@@ -69,6 +70,11 @@ else()
 endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${cxx17_flag}")
-cxx17_compile_test()
+
+check_cxx_source_compiles("${cxx17_testcode}" cxx17_works)
+
+if ( NOT cxx17_works )
+    message(FATAL_ERROR "failed using C++17 for compilation")
+endif ()
 
 set(HAVE_CXX17 true)
