@@ -57,6 +57,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
                             ${BRO_PLUGIN_BRO_SRC}/aux/broker/include
                             ${BRO_PLUGIN_BRO_SRC}/aux/paraglob/include
+                            ${BRO_PLUGIN_BRO_SRC}/aux/rapidjson/include
                             ${BRO_PLUGIN_BRO_BUILD}
                             ${BRO_PLUGIN_BRO_BUILD}/src
                             ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
@@ -116,6 +117,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
 
         include_directories(BEFORE
                             ${BRO_CONFIG_INCLUDE_DIR}
+                            ${BRO_CONFIG_INCLUDE_DIR}/3rdparty/rapidjson/include
                             ${BinPAC_INCLUDE_DIR}
                             ${BROKER_INCLUDE_DIR}
                             ${CAF_INCLUDE_DIRS}
