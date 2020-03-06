@@ -40,7 +40,7 @@ if ( NOT HAVE_KQUEUE )
   else()
 
     include(ExternalProject)
-    set(kqueue_src     "${CMAKE_CURRENT_SOURCE_DIR}/src/3rdparty/libkqueue")
+    set(kqueue_src     "${CMAKE_CURRENT_SOURCE_DIR}/aux/libkqueue")
     set(kqueue_ep      "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-ep")
     set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build")
     set(kqueue_static  "${kqueue_build}/libkqueue${CMAKE_STATIC_LIBRARY_SUFFIX}")
