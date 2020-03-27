@@ -63,6 +63,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${BRO_PLUGIN_BRO_SRC}/auxil/paraglob/include
                             ${BRO_PLUGIN_BRO_SRC}/aux/rapidjson/include
                             ${BRO_PLUGIN_BRO_SRC}/auxil/rapidjson/include
+                            ${BRO_PLUGIN_BRO_SRC}/auxil/fmt/include
                             ${BRO_PLUGIN_BRO_BUILD}
                             ${BRO_PLUGIN_BRO_BUILD}/src
                             ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
@@ -125,7 +126,8 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
         string(REPLACE ":" ";" ZEEK_CONFIG_INCLUDE_DIRS "${BRO_CONFIG_INCLUDE_DIR}")
         list(GET ZEEK_CONFIG_INCLUDE_DIRS 0 ZEEK_CONFIG_BASE_INCLUDE_DIR)
         list(APPEND ZEEK_CONFIG_INCLUDE_DIRS
-             "${ZEEK_CONFIG_BASE_INCLUDE_DIR}/zeek/3rdparty/rapidjson/include")
+             "${ZEEK_CONFIG_BASE_INCLUDE_DIR}/zeek/3rdparty/rapidjson/include"
+             "${ZEEK_CONFIG_BASE_INCLUDE_DIR}/zeek/3rdparty/fmt/include")
 
         include_directories(BEFORE
                             ${ZEEK_CONFIG_INCLUDE_DIRS}
@@ -286,4 +288,3 @@ endfunction()
 macro(_plugin_target_name_dynamic target ns name)
     set(${target} "${ns}-${name}.${HOST_ARCHITECTURE}")
 endmacro()
-
