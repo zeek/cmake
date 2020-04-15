@@ -7,7 +7,7 @@ endif ()
 
 if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     set(EXTRA_COMPILE_FLAGS     "-Wall -Wno-unused")
-    set(EXTRA_COMPILE_FLAGS_CXX "-Wno-register")
+    set(EXTRA_COMPILE_FLAGS_CXX "-Wno-register -Werror=vla")
 
     if ( NOT CMAKE_BUILD_TYPE )
         if ( ENABLE_DEBUG )
