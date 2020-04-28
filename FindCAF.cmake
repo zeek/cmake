@@ -35,6 +35,7 @@ foreach (comp ${CAF_FIND_COMPONENTS})
   if (CAF_ROOT_DIR)
     set(header_hints
         "${CAF_ROOT_DIR}/include"
+        "${CAF_ROOT_DIR}"
         "${CAF_ROOT_DIR}/libcaf_${comp}"
         "${CAF_ROOT_DIR}/../libcaf_${comp}"
         "${CAF_ROOT_DIR}/../../libcaf_${comp}")
@@ -80,7 +81,9 @@ foreach (comp ${CAF_FIND_COMPONENTS})
     # skip probe_event as it is header only
     if (NOT ${comp} STREQUAL "probe_event" AND NOT ${comp} STREQUAL "test")
       if (CAF_ROOT_DIR)
-        set(library_hints "${CAF_ROOT_DIR}/lib")
+        set(library_hints
+            "${CAF_ROOT_DIR}/lib"
+            "${CAF_ROOT_DIR}/libcaf_${comp}")
       endif ()
       find_library(CAF_LIBRARY_${UPPERCOMP}
                    NAMES
