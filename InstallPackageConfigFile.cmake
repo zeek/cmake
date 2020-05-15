@@ -49,8 +49,8 @@ macro(InstallPackageConfigFile _srcfile _dstdir _dstfilename)
                           COMMENT "Installed example configuration files")
     endif ()
 
-    # '/' is invalid in target names, so replace w/ '.'
-    string(REGEX REPLACE "/" "." _flatsrc ${_srcfile})
+    # Replace characters disallowed in target names (per CMP0037) with '.'.
+    string(REGEX REPLACE "[^A-Za-z0-9_.+-]" "." _flatsrc ${_srcfile})
 
     set(_example ${_dstfile}.example)
 
