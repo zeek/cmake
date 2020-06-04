@@ -110,7 +110,12 @@ macro(bif_target bifInput)
     else ()
         if ( NOT BifCl_EXE )
             if ( BRO_PLUGIN_BRO_BUILD )
-                set(BifCl_EXE "${BRO_PLUGIN_BRO_BUILD}/aux/bifcl/bifcl")
+                # Zeek 3.2+ has auxil/ instead of aux/
+                if ( EXISTS "${BRO_PLUGIN_BRO_BUILD}/auxil" )
+                    set(BifCl_EXE "${BRO_PLUGIN_BRO_BUILD}/auxil/bifcl/bifcl")
+                else ()
+                    set(BifCl_EXE "${BRO_PLUGIN_BRO_BUILD}/aux/bifcl/bifcl")
+                endif ()
             else ()
                 find_program(BifCl_EXE bifcl)
 
