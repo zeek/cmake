@@ -52,16 +52,23 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
         set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${bro_cache_CMAKE_C_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${bro_cache_CMAKE_CXX_FLAGS}")
 
+        # Zeek 3.2+ has auxil/ instead of aux/
         include_directories(BEFORE
                             ${BRO_PLUGIN_BRO_SRC}/src
                             ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
+                            ${BRO_PLUGIN_BRO_SRC}/auxil/binpac/lib
                             ${BRO_PLUGIN_BRO_SRC}/aux/broker/include
+                            ${BRO_PLUGIN_BRO_SRC}/auxil/broker/include
                             ${BRO_PLUGIN_BRO_SRC}/aux/paraglob/include
+                            ${BRO_PLUGIN_BRO_SRC}/auxil/paraglob/include
                             ${BRO_PLUGIN_BRO_SRC}/aux/rapidjson/include
+                            ${BRO_PLUGIN_BRO_SRC}/auxil/rapidjson/include
                             ${BRO_PLUGIN_BRO_BUILD}
                             ${BRO_PLUGIN_BRO_BUILD}/src
                             ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
+                            ${BRO_PLUGIN_BRO_BUILD}/auxil/binpac/lib
                             ${BRO_PLUGIN_BRO_BUILD}/aux/broker/include
+                            ${BRO_PLUGIN_BRO_BUILD}/auxil/broker/include
                             ${bro_cache_CAF_INCLUDE_DIRS}
                             ${CMAKE_CURRENT_BINARY_DIR}
                             ${CMAKE_CURRENT_BINARY_DIR}/src
