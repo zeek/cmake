@@ -122,9 +122,13 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
         find_package(CAF COMPONENTS core io openssl REQUIRED)
         find_package(Broker REQUIRED)
 
+        string(REPLACE ":" ";" ZEEK_CONFIG_INCLUDE_DIRS "${BRO_CONFIG_INCLUDE_DIR}")
+        list(GET ZEEK_CONFIG_INCLUDE_DIRS 0 ZEEK_CONFIG_BASE_INCLUDE_DIR)
+        list(APPEND ZEEK_CONFIG_INCLUDE_DIRS
+             "${ZEEK_CONFIG_BASE_INCLUDE_DIR}/zeek/3rdparty/rapidjson/include")
+
         include_directories(BEFORE
-                            ${BRO_CONFIG_INCLUDE_DIR}
-                            ${BRO_CONFIG_INCLUDE_DIR}/3rdparty/rapidjson/include
+                            ${ZEEK_CONFIG_INCLUDE_DIRS}
                             ${BinPAC_INCLUDE_DIR}
                             ${BROKER_INCLUDE_DIR}
                             ${CAF_INCLUDE_DIRS}
