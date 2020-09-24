@@ -28,6 +28,15 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                    ZEEK_EXE_PATH
                    CMAKE_CXX_FLAGS
                    CMAKE_C_FLAGS
+                   PCAP_INCLUDE_DIR
+                   BIND_INCLUDE_DIR
+                   ZLIB_INCLUDE_DIR
+                   JEMALLOC_INCLUDE_DIR
+                   OPENSSL_INCLUDE_DIR
+                   LibMMDB_INCLUDE_DIR
+                   LibKrb5_INCLUDE_DIR
+                   GooglePerftools_INCLUDE_DIR
+                   FTS_INCLUDE_DIR
                    CAF_INCLUDE_DIRS)
 
         if ( NOT BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH )
@@ -51,6 +60,34 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
         set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_CMAKE} ${CMAKE_MODULE_PATH})
         set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${bro_cache_CMAKE_C_FLAGS}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${bro_cache_CMAKE_CXX_FLAGS}")
+
+        if ( bro_cache_PCAP_INCLUDE_DIR )
+            include_directories(BEFORE ${bro_cache_PCAP_INCLUDE_DIR})
+        endif ()
+        if ( bro_cache_BIND_INCLUDE_DIR )
+            include_directories(BEFORE ${bro_cache_BIND_INCLUDE_DIR})
+        endif ()
+        if ( bro_cache_ZLIB_INCLUDE_DIR )
+            include_directories(BEFORE ${bro_cache_ZLIB_INCLUDE_DIR})
+        endif ()
+        if ( bro_cache_JEMALLOC_INCLUDE_DIR )
+            include_directories(BEFORE ${bro_cache_JEMALLOC_INCLUDE_DIR})
+        endif ()
+        if ( bro_cache_OPENSSL_INCLUDE_DIR )
+            include_directories(BEFORE ${bro_cache_OPENSSL_INCLUDE_DIR})
+        endif ()
+        if ( bro_cache_LibMMDB_INCLUDE_DIR )
+            include_directories(BEFORE ${bro_cache_LibMMDB_INCLUDE_DIR})
+        endif ()
+        if ( bro_cache_LibKrb5_INCLUDE_DIR )
+            include_directories(BEFORE ${bro_cache_LibKrb5_INCLUDE_DIR})
+        endif ()
+        if ( bro_cache_GooglePerftools_INCLUDE_DIR )
+            include_directories(BEFORE ${bro_cache_GooglePerftools_INCLUDE_DIR})
+        endif ()
+        if ( bro_cache_FTS_INCLUDE_DIR )
+            include_directories(BEFORE ${bro_cache_FTS_INCLUDE_DIR})
+        endif ()
 
         # Zeek 3.2+ has auxil/ instead of aux/
         include_directories(BEFORE
