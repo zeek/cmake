@@ -134,7 +134,7 @@ if ( NOT HAVE_KQUEUE )
 
     set(HAVE_KQUEUE true)
     set(LIBKQUEUE_LIBRARIES libkqueue_a CACHE STRING "libkqueue libs" FORCE)
-    set(LIBKQUEUE_INCLUDE_DIRS "${kqueue_src}/include" CACHE STRING "libkqueue includes" FORCE)
+    set(LIBKQUEUE_INCLUDE_DIRS "${kqueue_src}/include;${kqueue_build}/include" CACHE INTERNAL "libkqueue includes" FORCE)
 
     include_directories(BEFORE ${LIBKQUEUE_INCLUDE_DIRS})
     set(zeekdeps ${zeekdeps} ${LIBKQUEUE_LIBRARIES})
