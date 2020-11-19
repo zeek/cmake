@@ -30,6 +30,21 @@ function(bro_plugin_end_static)
 
     set(bro_PLUGIN_LIBS ${bro_PLUGIN_LIBS} "$<TARGET_OBJECTS:${_plugin_lib}>" CACHE INTERNAL "plugin libraries")
     set(bro_PLUGIN_DEPS ${bro_PLUGIN_DEPS} "${_plugin_lib}" CACHE INTERNAL "plugin dependencies")
+
+    #install(DIRECTORY ./ DESTINATION ${ZEEK_SCRIPT_INSTALL_PATH} FILES_MATCHING
+    #        PATTERN "site/local*" EXCLUDE
+    #        PATTERN "*.zeek"
+    #        PATTERN "*.sig"
+    #        PATTERN "*.fp"
+    #)
+
+    file ( MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/scripts/plugins" )
+    set ( plugin_build_scripts_dir "${CMAKE_BINARY_DIR}/scripts/plugins/${_plugin_name_canon}" )
+    set ( plugin_src_scripts_dir "${CMAKE_CURRENT_SOURCE_DIR}/scripts" )
+    if ( IS_DIRECTORY ${plugin_src_scripts_dir} )
+      file(CREATE_LINK ${plugin_src_scripts_dir} ${plugin_build_scripts_dir} SYMBOLIC)
+    endif ()
+
 endfunction()
 
 macro(_plugin_target_name_static target ns name)
