@@ -128,6 +128,30 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                     " to the installation path of Zeek headers")
         endif ()
 
+        # Add potential custom library paths to our search path. This
+        # works transparently across future find_library() calls.
+        #
+        # The zeek-config call is currently an outlier ... we need it
+        # because existing plugin configure scripts need to keep
+        # working with possible alternative libdirs, but do not
+        # determine the libdir themselves. zeek-config is the only way
+        # to determine it post-installation in those cases.
+        #
+        # XXX In the future the FindZeek module should make
+        # zeek-config calls to establish the various settings
+        # consistently within cmake. This would simplify configure
+        # scripts and make cmake use with Zeek more standard.
+        if ( NOT BRO_CONFIG_LIB_DIR )
+            execute_process(
+                COMMAND ${BRO_CONFIG_PREFIX}/bin/zeek-config --lib_dir
+                OUTPUT_VARIABLE BRO_CONFIG_LIB_DIR
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+        endif ()
+
+        if ( BRO_CONFIG_LIB_DIR )
+            set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${BRO_CONFIG_LIB_DIR})
+        endif ()
+
         set(BRO_PLUGIN_BRO_CONFIG_INCLUDE_DIR "${BRO_CONFIG_INCLUDE_DIR}"
             CACHE INTERNAL "" FORCE)
         set(BRO_PLUGIN_BRO_INSTALL_PREFIX "${BRO_CONFIG_PREFIX}"
