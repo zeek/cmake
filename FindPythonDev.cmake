@@ -69,10 +69,30 @@ endif ()
 # The OpenBSD python packages have python-config's that don't reliably
 # report linking flags that will work.
 if (PYTHON_CONFIG AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD")
-    execute_process(COMMAND "${PYTHON_CONFIG}" --ldflags
+    # Try `--ldflags --embed` first and fallback to `--ldflags` if it fails.
+    # Python 3.8+ introduced the `--embed` flag in relation to this:
+    # https://docs.python.org/3.8/whatsnew/3.8.html#debug-build-uses-the-same-abi-as-release-build
+    # Note that even if this FindPythonDev script could technically apply to
+    # either embedded or extension use cases, the `--embed` flag only adds
+    # a `-lpython` and it's generally safe to link libpython in both cases.
+    # The only downside to doing that against an extension when it's not
+    # strictly necessary is losing the ability to mix-and-match debug/release
+    # modes between Python and extensions and that's not a feature to typically
+    # care about.
+    execute_process(COMMAND "${PYTHON_CONFIG}" --ldflags --embed
+                    RESULT_VARIABLE _python_config_result
                     OUTPUT_VARIABLE PYTHON_LIBRARIES
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     ERROR_QUIET)
+
+    if ( NOT ${_python_config_result} EQUAL 0 )
+      execute_process(COMMAND "${PYTHON_CONFIG}" --ldflags
+                      RESULT_VARIABLE _python_config_result
+                      OUTPUT_VARIABLE PYTHON_LIBRARIES
+                      OUTPUT_STRIP_TRAILING_WHITESPACE
+                      ERROR_QUIET)
+    endif ()
+
     string(STRIP "${PYTHON_LIBRARIES}" PYTHON_LIBRARIES)
 
     execute_process(COMMAND "${PYTHON_CONFIG}" --includes
