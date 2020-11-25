@@ -41,10 +41,17 @@ if (PYTHON_EXECUTABLE)
     # symlink).
     get_filename_component(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}" REALPATH)
     get_filename_component(PYTHON_EXECUTABLE_DIR "${PYTHON_EXECUTABLE}" DIRECTORY)
+    get_filename_component(PYTHON_EXECUTABLE_NAME "${PYTHON_EXECUTABLE}" NAME)
 
     if ( EXISTS ${PYTHON_EXECUTABLE}-config )
         set(PYTHON_CONFIG ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
-    elseif ( EXISTS ${PYTHON_EXECUTABLE_DIR}/python-config )
+    # Avoid assumption that python-config is associated with python3 if
+    # python3 co-exists in a directory that also contains python2 stuff
+    elseif ( EXISTS ${PYTHON_EXECUTABLE_DIR}/python-config AND
+             NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2 AND
+             NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2.7 AND
+             NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2-config AND
+             NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2.7-config )
         set(PYTHON_CONFIG ${PYTHON_EXECUTABLE_DIR}/python-config CACHE PATH "" FORCE)
     endif ()
 else ()
@@ -83,10 +90,28 @@ if (PYTHON_CONFIG AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD")
         PYTHON_LIBRARIES
     )
 else ()
-    find_package(PythonLibs)
-    if (PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIR)
-        set(PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}")
+    if ( ${CMAKE_VERSION} VERSION_LESS "3.12.0" )
+        find_package(PythonLibs)
+
+        if ( PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIR )
+            set(PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}")
+        endif ()
+    else ()
+        # Expect this branch to be used mostly in macOS where the system
+        # default Python 3 installation is not easily/consistently detected
+        # by CMake.  CMake 3.12+ is required, but it's expected that macOS
+        # users are getting a recent version from homebrew/etc anyway.
+        find_package(Python3 COMPONENTS Development)
+
+        if ( Python3_INCLUDE_DIRS AND NOT PYTHON_INCLUDE_DIR )
+            set(PYTHON_INCLUDE_DIR "${Python3_INCLUDE_DIRS}")
+        endif ()
+
+        if ( Python3_LIBRARIES AND NOT PYTHON_LIBRARIES )
+            set(PYTHON_LIBRARIES "${Python3_LIBRARIES}")
+        endif ()
     endif ()
+
     find_package_handle_standard_args(PythonDev DEFAULT_MSG
         PYTHON_INCLUDE_DIR
         PYTHON_LIBRARIES
