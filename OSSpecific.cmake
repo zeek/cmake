@@ -1,8 +1,6 @@
 if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-    set(bro_LINKER_FLAGS "${bro_LINKER_FLAGS} -rdynamic")
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
-    set(bro_LINKER_FLAGS "${bro_LINKER_FLAGS} -rdynamic")
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(HAVE_DARWIN true)
