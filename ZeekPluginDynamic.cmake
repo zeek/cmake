@@ -300,7 +300,7 @@ function(bro_plugin_end_dynamic)
 
     add_dependencies(${_plugin_lib} bro-plugin-${_plugin_name_canon})
 
-    set(_dist_tarball_name ${_plugin_name_canon}.tar.gz)
+    set(_dist_tarball_name ${_plugin_name_canon}.tgz)
     set(_dist_output ${CMAKE_CURRENT_BINARY_DIR}/${_dist_tarball_name})
 
     # Create binary install package.
