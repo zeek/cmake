@@ -164,7 +164,23 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
         set(CMAKE_MODULE_PATH ${BRO_PLUGIN_BRO_CMAKE} ${CMAKE_MODULE_PATH})
 
         find_package(BinPAC REQUIRED)
-        find_package(CAF COMPONENTS core io openssl REQUIRED)
+
+        set(_saved_cmake_prefix_path "${CMAKE_PREFIX_PATH}")
+        list(INSERT CMAKE_PREFIX_PATH 0 "${CAF_ROOT_DIR}")
+        find_package(CAF REQUIRED COMPONENTS core io openssl CONFIG)
+        set(CMAKE_PREFIX_PATH "${_saved_cmake_prefix_path}")
+
+        set(CAF_LIBRARIES CAF::core CAF::io CAF::openssl CACHE INTERNAL "")
+        set(caf_dirs "")
+        foreach (caf_lib IN LISTS CAF_LIBRARIES ITEMS CAF::test)
+          get_target_property(dirs ${caf_lib} INTERFACE_INCLUDE_DIRECTORIES)
+          if ( dirs )
+            list(APPEND caf_dirs ${dirs})
+          endif ()
+        endforeach ()
+        list(REMOVE_DUPLICATES caf_dirs)
+        set(CAF_INCLUDE_DIRS "${caf_dirs}" CACHE INTERNAL "")
+
         find_package(Broker REQUIRED)
 
         string(REPLACE ":" ";" ZEEK_CONFIG_INCLUDE_DIRS "${BRO_CONFIG_INCLUDE_DIR}")
