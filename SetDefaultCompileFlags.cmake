@@ -19,7 +19,7 @@ if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 
     string(TOUPPER ${CMAKE_BUILD_TYPE} _build_type_upper)
 
-    if ( "${_build_type_upper}" STREQUAL "DEBUG" )
+    if ( "${_build_type_upper}" STREQUAL "DEBUG" OR "${_build_type_upper}" STREQUAL "RELWITHDEBINFO" )
         if ( ENABLE_COVERAGE )
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
