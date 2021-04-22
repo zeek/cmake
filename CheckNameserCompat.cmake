@@ -10,7 +10,7 @@ check_c_source_compiles("
     int main() { HEADER *hdr; int d = NS_IN6ADDRSZ; return 0; }"
     have_nameser_header)
 
-if (NOT have_nameser_header)
+if (NOT have_nameser_header AND NOT MSVC)
     check_c_source_compiles("
         #include <arpa/nameser.h>
         #include <arpa/nameser_compat.h>

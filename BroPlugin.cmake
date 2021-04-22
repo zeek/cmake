@@ -1,1 +1,1 @@
-ZeekPlugin.cmake
+include(ZeekPlugin.cmake)

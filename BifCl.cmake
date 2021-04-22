@@ -146,6 +146,7 @@ macro(bif_target bifInput)
 
     string(REGEX REPLACE "${escaped_path}" "" target "${target}")
     string(REGEX REPLACE "/" "-" target "${target}")
+    string(REGEX REPLACE ":" "" target "${target}")
     add_custom_target(${target} DEPENDS ${BIF_OUTPUT_H} ${BIF_OUTPUT_CC})
     set_source_files_properties(${bifOutputs} PROPERTIES GENERATED 1)
     set(BIF_BUILD_TARGET ${target})

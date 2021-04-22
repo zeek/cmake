@@ -4,6 +4,7 @@
 ## ZeekPluginStatic and ZeekPluginDynamic, respectively.
 
 include(RequireCXX17)
+
 include(FindClangTidy)
 
 include(BifCl)
