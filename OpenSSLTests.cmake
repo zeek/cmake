@@ -1,6 +1,7 @@
 include(CheckCSourceCompiles)
 include(CheckCXXSourceCompiles)
 include(CheckCSourceRuns)
+include(CheckIncludeFiles)
 
 set(CMAKE_REQUIRED_LIBRARIES ${OPENSSL_LIBRARIES} ${CMAKE_DL_LIBS})
 # Use all includes, not just OpenSSL includes to see if there are
@@ -33,6 +34,8 @@ endif ()
 if (OPENSSL_VERSION VERSION_LESS "0.9.7")
     message(FATAL_ERROR "OpenSSL >= v0.9.7 required")
 endif ()
+
+check_include_files(openssl/kdf.h OPENSSL_HAVE_KDF_H)
 
 check_cxx_source_compiles("
 #include <openssl/x509.h>
