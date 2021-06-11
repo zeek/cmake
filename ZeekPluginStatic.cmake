@@ -28,9 +28,19 @@ function(bro_plugin_end_static)
 
     add_dependencies(${_plugin_lib} generate_outputs)
 
+    set(preload_script ${_plugin_name_canon}/__preload__.zeek)
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/__preload__.zeek)
+        file(APPEND ${CMAKE_BINARY_DIR}/scripts/builtin-plugins/__preload__.zeek "\n@load ${preload_script}")
+    endif()
+    set(load_script ${_plugin_name_canon}/__load__.zeek)
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/__load__.zeek)
+        file(APPEND ${CMAKE_BINARY_DIR}/scripts/builtin-plugins/__load__.zeek "\n@load ${load_script}")
+    endif()
+
+    get_filename_component(plugin_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     if ( IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scripts" )
         install(DIRECTORY ./scripts/
-            DESTINATION "${ZEEK_SCRIPT_INSTALL_PATH}/plugins/${_plugin_name_canon}"
+            DESTINATION "${ZEEK_SCRIPT_INSTALL_PATH}/builtin-plugins/${_plugin_name_canon}"
             FILES_MATCHING
                 PATTERN "*.zeek"
                 PATTERN "*.sig"
@@ -38,10 +48,10 @@ function(bro_plugin_end_static)
 
         # Make a plugin directory and symlink the scripts directory into it 
         # so that the development ZEEKPATH will work too.
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/scripts/plugins)
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/scripts/builtin-plugins)
         execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink
                     "${CMAKE_CURRENT_SOURCE_DIR}/scripts"
-                    "${CMAKE_BINARY_DIR}/scripts/plugins/${_plugin_name_canon}")
+                    "${CMAKE_BINARY_DIR}/scripts/builtin-plugins/${_plugin_name_canon}")
     endif ()
 
     set(bro_PLUGIN_LIBS ${bro_PLUGIN_LIBS} "$<TARGET_OBJECTS:${_plugin_lib}>" CACHE INTERNAL "plugin libraries")
