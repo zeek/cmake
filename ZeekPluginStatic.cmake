@@ -28,6 +28,22 @@ function(bro_plugin_end_static)
 
     add_dependencies(${_plugin_lib} generate_outputs)
 
+    if ( IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scripts" )
+        install(DIRECTORY ./scripts/
+            DESTINATION "${ZEEK_SCRIPT_INSTALL_PATH}/plugins/${_plugin_name_canon}"
+            FILES_MATCHING
+                PATTERN "*.zeek"
+                PATTERN "*.sig"
+                PATTERN "*.fp")
+
+        # Make a plugin directory and symlink the scripts directory into it 
+        # so that the development ZEEKPATH will work too.
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/scripts/plugins)
+        execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink
+                    "${CMAKE_CURRENT_SOURCE_DIR}/scripts"
+                    "${CMAKE_BINARY_DIR}/scripts/plugins/${_plugin_name_canon}")
+    endif ()
+
     set(bro_PLUGIN_LIBS ${bro_PLUGIN_LIBS} "$<TARGET_OBJECTS:${_plugin_lib}>" CACHE INTERNAL "plugin libraries")
     set(bro_PLUGIN_DEPS ${bro_PLUGIN_DEPS} "${_plugin_lib}" CACHE INTERNAL "plugin dependencies")
 endfunction()

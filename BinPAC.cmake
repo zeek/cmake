@@ -36,6 +36,7 @@ macro(BINPAC_TARGET pacFile)
                        COMMAND ${BinPAC_EXE}
                        ARGS -q -d ${CMAKE_CURRENT_BINARY_DIR}
                             -I ${CMAKE_CURRENT_SOURCE_DIR}
+                            -I ${CMAKE_CURRENT_SOURCE_DIR}/src
                             -I ${CMAKE_SOURCE_DIR}/src
                             ${BinPAC_addl_args}
                             ${CMAKE_CURRENT_SOURCE_DIR}/${pacFile}
