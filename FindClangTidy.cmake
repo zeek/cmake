@@ -39,13 +39,13 @@ function(create_clang_tidy_target)
 
         if (RUN_CLANG_TIDY)
             add_custom_target(clang-tidy
-                              COMMAND ${RUN_CLANG_TIDY} -p ${CMAKE_BINARY_DIR} -clang-tidy-binary ${CLANG_TIDY} -j 4 -export-fixes ${CMAKE_BINARY_DIR}/clang-tidy.yaml ${final_tidy_srcs}
-                              WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                              COMMAND ${RUN_CLANG_TIDY} -p ${PROJECT_BINARY_DIR} -clang-tidy-binary ${CLANG_TIDY} -j 4 -export-fixes ${PROJECT_BINARY_DIR}/clang-tidy.yaml ${final_tidy_srcs}
+                              WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
             )
         else()
             add_custom_target(clang-tidy
-                              COMMAND ${CLANG_TIDY} -p ${CMAKE_BINARY_DIR} ${final_tidy_srcs}
-                              WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                              COMMAND ${CLANG_TIDY} -p ${PROJECT_BINARY_DIR} ${final_tidy_srcs}
+                              WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
             )
         endif()
     endif()

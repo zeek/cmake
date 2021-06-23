@@ -263,7 +263,7 @@ macro(ConfigurePackaging _version)
 
     # add default files/directories to ignore for source package
     # user may specify others via configure script
-    list(APPEND CPACK_SOURCE_IGNORE_FILES ${CMAKE_BINARY_DIR} ".git")
+    list(APPEND CPACK_SOURCE_IGNORE_FILES ${PROJECT_BINARY_DIR} ".git")
 
     include(CPack)
 endmacro(ConfigurePackaging)
