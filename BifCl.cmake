@@ -18,7 +18,7 @@ macro(bif_target bifInput)
 
     if ( "${ARGV1}" STREQUAL "standard" )
         set(bifcl_args "")
-        set(target "bif-std-${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename}")
+	set(target "bif-std-${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename}")
         set(bifOutputs
             ${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename}.func_def
             ${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename}.func_h
@@ -32,7 +32,7 @@ macro(bif_target bifInput)
                            ${bifInputBasename}.netvar_init)
         set(BIF_OUTPUT_H   ${bifInputBasename}.func_h
                            ${bifInputBasename}.netvar_h)
-        set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.zeek)
+        set(BIF_OUTPUT_BRO ${Zeek_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.zeek)
         set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Zeek script stubs for BIFs in base distribution of Zeek" FORCE) # Propogate to top-level
 
         # Do this here so that all of the necessary files for each individual BIF get added to clang-tidy
@@ -68,7 +68,7 @@ macro(bif_target bifInput)
         set(BIF_OUTPUT_H   ${bifInputBasename}.h)
 
         if ( NOT ZEEK_PLUGIN_BUILD_DYNAMIC )
-            set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name_canon}.${bifInputBasename}.zeek)
+            set(BIF_OUTPUT_BRO ${Zeek_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name_canon}.${bifInputBasename}.zeek)
         else ()
             set(BIF_OUTPUT_BRO ${BRO_PLUGIN_BIF}/${bifInputBasename}.zeek)
         endif()
@@ -94,7 +94,7 @@ macro(bif_target bifInput)
         # In order be able to run Zeek from the build directory, the
         # generated Zeek script needs to be inside a directory tree
         # named the same way it will be referenced from an @load.
-        set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.zeek)
+	set(BIF_OUTPUT_BRO ${Zeek_BINARY_DIR}/scripts/base/bif/${bifInputBasename}.zeek)
 
         set(bro_AUTO_BIFS  ${bro_AUTO_BIFS} ${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename} CACHE INTERNAL "BIFs for automatic inclusion" FORCE) # Propagate to top-level.
         set(bro_BASE_BIF_SCRIPTS ${bro_BASE_BIF_SCRIPTS} ${BIF_OUTPUT_BRO} CACHE INTERNAL "Zeek script stubs for BIFs in base distribution of Zeek" FORCE) # Propogate to top-level
@@ -140,7 +140,7 @@ macro(bif_target bifInput)
                        COMMENT "[BIFCL] Processing ${bifInput}"
     )
 
-    string(REGEX REPLACE "${CMAKE_BINARY_DIR}/src/" "" target "${target}")
+    string(REGEX REPLACE "${Zeek_BINARY_DIR}/src/" "" target "${target}")
     string(REGEX REPLACE "/" "-" target "${target}")
     add_custom_target(${target} DEPENDS ${BIF_OUTPUT_H} ${BIF_OUTPUT_CC})
     set_source_files_properties(${bifOutputs} PROPERTIES GENERATED 1)

@@ -37,7 +37,7 @@ macro(BINPAC_TARGET pacFile)
                        ARGS -q -d ${CMAKE_CURRENT_BINARY_DIR}
                             -I ${CMAKE_CURRENT_SOURCE_DIR}
                             -I ${CMAKE_CURRENT_SOURCE_DIR}/src
-                            -I ${CMAKE_SOURCE_DIR}/src
+                            -I ${PROJECT_SOURCE_DIR}/src
                             ${BinPAC_addl_args}
                             ${CMAKE_CURRENT_SOURCE_DIR}/${pacFile}
                        DEPENDS ${binpacDep} ${pacFile}
@@ -54,7 +54,7 @@ macro(BINPAC_TARGET pacFile)
 
     set(target "pac-${CMAKE_CURRENT_BINARY_DIR}/${pacFile}")
 
-    string(REGEX REPLACE "${CMAKE_BINARY_DIR}/src/" "" target "${target}")
+    string(REGEX REPLACE "${PROJECT_BINARY_DIR}/src/" "" target "${target}")
     string(REGEX REPLACE "/" "-" target "${target}")
     add_custom_target(${target} DEPENDS ${pacOutputs})
     set(BINPAC_BUILD_TARGET ${target})

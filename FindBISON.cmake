@@ -105,7 +105,7 @@ IF(BISON_EXECUTABLE)
       DEPENDS
       "${BISON_TARGET_output_path}/${BISON_TARGET_output_name}.output"
       COMMENT "[BISON][${Name}] Copying bison verbose table to ${filename}"
-      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
     SET(BISON_${Name}_VERBOSE_FILE ${filename})
     LIST(APPEND BISON_TARGET_extraoutputs
       "${BISON_TARGET_output_path}/${BISON_TARGET_output_name}.output")

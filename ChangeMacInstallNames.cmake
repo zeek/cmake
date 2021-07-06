@@ -24,8 +24,8 @@
 # Should result in ${libs} containing:
 #             /usr/lib/libz.dylib
 #             /usr/lib/libssl.dylib
-#             ${CMAKE_BINARY_DIR}/darwin_support_libs/libmagic.dylib
-#             ${CMAKE_BINARY_DIR}/darwin_support_libs/libGeoIP.dylib
+#             ${Zeek_BINARY_DIR}/darwin_support_libs/libmagic.dylib
+#             ${Zeek_BINARY_DIR}/darwin_support_libs/libGeoIP.dylib
 #             /usr/local/lib/somestaticlib.a
 #
 # such that we can now do:
@@ -41,7 +41,7 @@ macro(ChangeMacInstallNames libListVar)
         find_program(INSTALL_NAME_TOOL install_name_tool)
 
         set(MAC_INSTALL_NAME_DEPS)
-        set(SUPPORT_BIN_DIR ${CMAKE_BINARY_DIR}/darwin_support_libs)
+        set(SUPPORT_BIN_DIR ${Zeek_BINARY_DIR}/darwin_support_libs)
         set(SUPPORT_INSTALL_DIR support_libs)
 
         file(MAKE_DIRECTORY ${SUPPORT_BIN_DIR})
@@ -56,7 +56,7 @@ macro(ChangeMacInstallNames libListVar)
                 get_filename_component(_libname ${_lib} NAME)
                 set(_adjustedLib ${SUPPORT_BIN_DIR}/${_libname})
                 set(_tmpLib
-                    ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_libname})
+                    ${Zeek_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_libname})
 
                 # make a tempory copy so we can adjust permissions
                 configure_file(${_lib} ${_tmpLib} COPYONLY)
