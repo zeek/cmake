@@ -86,6 +86,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${BRO_PLUGIN_BRO_SRC}/auxil/rapidjson/include
                             ${BRO_PLUGIN_BRO_BUILD}
                             ${BRO_PLUGIN_BRO_BUILD}/src
+                            ${BRO_PLUGIN_BRO_BUILD}/src/include
                             ${BRO_PLUGIN_BRO_BUILD}/aux/binpac/lib
                             ${BRO_PLUGIN_BRO_BUILD}/auxil/binpac/lib
                             ${BRO_PLUGIN_BRO_BUILD}/aux/broker/include
