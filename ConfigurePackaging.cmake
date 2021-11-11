@@ -170,7 +170,22 @@ macro(SetPackageMetadata)
         set(CPACK_RPM_PACKAGE_GROUP "Applications/System")
     endif ()
 
-    set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION /opt /var /var/opt)
+    # If we're building a dynamic Zeek plugin, exclude various additional paths
+    # already provided by our Zeek packages.
+    if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
+        set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION
+            /opt
+            /var
+            /var/opt
+            ${CMAKE_INSTALL_PREFIX}
+            ${BRO_CONFIG_PREFIX}
+            ${BRO_CONFIG_PREFIX}/lib
+            ${BRO_CONFIG_PREFIX}/lib/zeek
+            ${BRO_CONFIG_PLUGIN_DIR}
+        )
+    else ()
+        set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION /opt /var /var/opt)
+    endif ()
 endmacro(SetPackageMetadata)
 
 # Sets pre and post install scripts for PackageMaker packages.
