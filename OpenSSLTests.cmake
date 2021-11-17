@@ -31,8 +31,10 @@ if (NOT including_ssl_h_works)
     endif ()
 endif ()
 
-if (OPENSSL_VERSION VERSION_LESS "0.9.7")
-    message(FATAL_ERROR "OpenSSL >= v0.9.7 required")
+if (DEFINED OPENSSL_VERSION)
+    if (OPENSSL_VERSION VERSION_LESS "0.9.7")
+        message(FATAL_ERROR "OpenSSL >= v0.9.7 required")
+    endif()
 endif ()
 
 check_include_files(openssl/kdf.h OPENSSL_HAVE_KDF_H)
