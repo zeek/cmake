@@ -19,7 +19,7 @@ function(zeek_plugin_begin ns name)
     set(_plugin_objs       "" PARENT_SCOPE)
     set(_plugin_deps       "" PARENT_SCOPE)
     set(_plugin_dist       "" PARENT_SCOPE)
-    set(_plugin_script     "" PARENT_SCOPE)
+    set(_plugin_scripts     "" PARENT_SCOPE)
 endfunction()
 
 # This is needed to support legacy Bro plugins.
@@ -31,9 +31,9 @@ endmacro()
 # scripts will be added to the distribution regardless of this
 # but adding them explicitly allows tracking changes in scripts
 # when building dist
-function(zeek_plugin_script)
-    list(APPEND _plugin_script ${ARGV})
-    set(_plugin_script "${_plugin_script}" PARENT_SCOPE)
+function(zeek_plugin_scripts)
+    list(APPEND _plugin_scripts ${ARGV})
+    set(_plugin_scripts "${_plugin_scripts}" PARENT_SCOPE)
 endfunction()
 
 # Adds *.cc files to a plugin.
