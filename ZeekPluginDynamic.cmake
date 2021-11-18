@@ -324,7 +324,7 @@ function(bro_plugin_end_dynamic)
     add_custom_command(OUTPUT ${_dist_output}
             COMMAND ${BRO_PLUGIN_BRO_CMAKE}/zeek-plugin-create-package.sh ${_plugin_name_canon} ${_plugin_dist}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            DEPENDS ${_plugin_lib}
+            DEPENDS ${_plugin_lib} ${_plugin_scripts}
             COMMENT "Building binary plugin package: ${_dist_tarball_name}")
 
     add_custom_target(dist ALL DEPENDS ${_dist_output})
