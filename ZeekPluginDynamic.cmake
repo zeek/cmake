@@ -25,7 +25,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                    Zeek_SOURCE_DIR
                    ENABLE_DEBUG
                    BRO_PLUGIN_INSTALL_PATH
-                   ZEEK_EXE_PATH
+                   BRO_EXE_PATH
                    CMAKE_CXX_FLAGS
                    CMAKE_C_FLAGS
                    PCAP_INCLUDE_DIR
@@ -48,7 +48,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
             CACHE INTERNAL "" FORCE)
         set(BRO_PLUGIN_BRO_BUILD "${bro_cache_Zeek_BINARY_DIR}"
             CACHE INTERNAL "" FORCE)
-        set(BRO_PLUGIN_BRO_EXE_PATH "${bro_cache_ZEEK_EXE_PATH}"
+        set(BRO_PLUGIN_BRO_EXE_PATH "${bro_cache_BRO_EXE_PATH}"
             CACHE INTERNAL "" FORCE)
 
         set(BRO_PLUGIN_BRO_CMAKE ${BRO_PLUGIN_BRO_SRC}/cmake)
