@@ -25,7 +25,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                    Zeek_SOURCE_DIR
                    ENABLE_DEBUG
                    BRO_PLUGIN_INSTALL_PATH
-                   ZEEK_EXE_PATH
+                   BRO_EXE_PATH
                    CMAKE_CXX_FLAGS
                    CMAKE_C_FLAGS
                    PCAP_INCLUDE_DIR
@@ -48,7 +48,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
             CACHE INTERNAL "" FORCE)
         set(BRO_PLUGIN_BRO_BUILD "${bro_cache_Zeek_BINARY_DIR}"
             CACHE INTERNAL "" FORCE)
-        set(BRO_PLUGIN_BRO_EXE_PATH "${bro_cache_ZEEK_EXE_PATH}"
+        set(BRO_PLUGIN_BRO_EXE_PATH "${bro_cache_BRO_EXE_PATH}"
             CACHE INTERNAL "" FORCE)
 
         set(BRO_PLUGIN_BRO_CMAKE ${BRO_PLUGIN_BRO_SRC}/cmake)
@@ -221,6 +221,23 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
    message(STATUS "Zeek install prefix  : ${BRO_PLUGIN_BRO_INSTALL_PREFIX}")
    message(STATUS "Zeek plugin directory: ${BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH}")
    message(STATUS "Zeek debug mode      : ${BRO_PLUGIN_ENABLE_DEBUG}")
+
+   # Determine whether Zeek has unit-test support. This would be better via an
+   # improved FindZeek, or at least an explicit feature list via zeek-config.
+   # It's unavailable if Zeek is pre-4.2 or the build got configured with
+   # --disable-cpp-tests.
+   execute_process(
+       COMMAND ${BRO_PLUGIN_BRO_EXE_PATH} --test -v
+       RESULT_VARIABLE _zeek_retcode
+       OUTPUT_QUIET ERROR_QUIET)
+
+   if ( _zeek_retcode EQUAL 0 )
+       message(STATUS "Zeek unittest support: yes")
+       set(ZEEK_HAS_CPP_TESTS true)
+   else ()
+       message(STATUS "Zeek unittest support: no")
+       set(ZEEK_HAS_CPP_TESTS false)
+   endif ()
 
    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
        # By default Darwin's linker requires all symbols to be present at link time.

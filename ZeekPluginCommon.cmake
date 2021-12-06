@@ -9,7 +9,14 @@ include(FindClangTidy)
 include(BifCl)
 include(BinPAC)
 
+# CTest support: the following does not work when called from a function. We
+# enable it always, but add tests only when zeek_plugin_begin() doesn't disable
+# testing and Zeek has unit-test support.
+enable_testing()
+
 # Begins a plugin definition, giving its namespace and name as the arguments.
+# The DISABLE_CPP_TESTS option disables unit test support. When not provided,
+# unit-testing is enabled when Zeek supports it, and disabled otherwise.
 function(zeek_plugin_begin ns name)
     _plugin_target_name(target "${ns}" "${name}")
     set(_plugin_lib        "${target}" PARENT_SCOPE)
@@ -20,6 +27,24 @@ function(zeek_plugin_begin ns name)
     set(_plugin_deps       "" PARENT_SCOPE)
     set(_plugin_dist       "" PARENT_SCOPE)
     set(_plugin_scripts    "" PARENT_SCOPE)
+
+    cmake_parse_arguments(PARSE_ARGV 2 ZEEK_PLUGIN "DISABLE_CPP_TESTS" "" "")
+
+    # Whether to build the plugin with unit-test support
+    set(_plugin_cpp_tests true PARENT_SCOPE)
+    # The set of files to check for unit tests
+    set(_plugin_cpp_test_sources "" PARENT_SCOPE)
+
+    # Cover the dynamic case (ZEEK_HAS_CPP_TESTS, based on zeek --test return
+    # code), the static one (ENABLE_ZEEK_UNIT_TESTS, provided by the build
+    # system), and a possible override if the caller opted to DISABLE_CPP_TESTS.
+    if ( (ZEEK_HAS_CPP_TESTS OR ENABLE_ZEEK_UNIT_TESTS)
+            AND NOT ZEEK_PLUGIN_DISABLE_CPP_TESTS )
+        add_definitions(-DDOCTEST_CONFIG_SUPER_FAST_ASSERTS)
+    else ()
+        set(_plugin_cpp_tests false PARENT_SCOPE)
+        add_definitions(-DDOCTEST_CONFIG_DISABLE)
+    endif()
 endfunction()
 
 # This is needed to support legacy Bro plugins.
@@ -39,7 +64,9 @@ endfunction()
 # Adds *.cc files to a plugin.
 function(zeek_plugin_cc)
     list(APPEND _plugin_objs ${ARGV})
+    list(APPEND _plugin_cpp_test_sources ${ARGV})
     set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
+    set(_plugin_cpp_test_sources "${_plugin_cpp_test_sources}" PARENT_SCOPE)
     add_clang_tidy_files(${ARGV})
 endfunction()
 
@@ -109,6 +136,8 @@ endmacro()
 
 # Adds *.bif files to a plugin.
 macro(zeek_plugin_bif)
+    list(APPEND _plugin_cpp_test_sources ${ARGV})
+
     if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
         bro_plugin_bif_dynamic(${ARGV})
     else ()
@@ -128,6 +157,29 @@ macro(zeek_plugin_end)
     else ()
         bro_plugin_end_static(${ARGV})
     endif ()
+
+    # Scan relevant files for TEST_CASE macros and generate CTest targets.
+    # This is similar to the logic in Zeek's src/CMakeLists.txt.
+    if (_plugin_cpp_tests)
+        set(test_cases "")
+        foreach (cc_file ${_plugin_cpp_test_sources})
+            file (STRINGS ${cc_file} test_case_lines REGEX "TEST_CASE")
+            foreach (line ${test_case_lines})
+                string(REGEX REPLACE "TEST_CASE\\(\"(.+)\"\\)" "\\1" test_case "${line}")
+                list(APPEND test_cases "${test_case}")
+            endforeach ()
+        endforeach ()
+        list(LENGTH test_cases num_test_cases)
+        if (${num_test_cases} GREATER 0)
+            MESSAGE(STATUS "Found ${num_test_cases} test cases for CTest")
+            foreach (test_case ${test_cases})
+                add_test(NAME "${test_case}"
+                    COMMAND zeek --test "--test-case=${test_case}")
+            endforeach()
+        endif ()
+    else ()
+        MESSAGE(STATUS "Unit-testing disabled")
+    endif ()
 endmacro()
 
 # This is needed to support legacy Bro plugins.
@@ -143,4 +195,3 @@ macro(_plugin_target_name target ns name)
         _plugin_target_name_static(${ARGV})
     endif ()
 endmacro()
-
