@@ -435,7 +435,7 @@ else()
       ${_OPENSSL_LIBDIR}
       ${_OPENSSL_LIBRARY_DIRS}
     PATH_SUFFIXES
-      lib
+      lib lib64
   )
 
   find_library(OPENSSL_CRYPTO_LIBRARY
@@ -447,7 +447,7 @@ else()
       ${_OPENSSL_LIBDIR}
       ${_OPENSSL_LIBRARY_DIRS}
     PATH_SUFFIXES
-      lib
+      lib lib64
   )
 
   mark_as_advanced(OPENSSL_CRYPTO_LIBRARY OPENSSL_SSL_LIBRARY)
@@ -650,7 +650,7 @@ if(OPENSSL_FOUND)
     _OpenSSL_target_add_dependencies(OpenSSL::SSL)
   endif()
 
-  if("${OPENSSL_VERSION_MAJOR}.${OPENSSL_VERSION_MAJOR}.${OPENSSL_VERSION_FIX}" VERSION_GREATER_EQUAL "0.9.8")
+  if("${OPENSSL_VERSION_MAJOR}.${OPENSSL_VERSION_MINOR}.${OPENSSL_VERSION_FIX}" VERSION_GREATER_EQUAL "0.9.8")
     if(MSVC)
       if(EXISTS "${OPENSSL_INCLUDE_DIR}")
         set(_OPENSSL_applink_paths PATHS ${OPENSSL_INCLUDE_DIR})
