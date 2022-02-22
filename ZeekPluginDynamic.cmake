@@ -32,8 +32,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                    ZLIB_INCLUDE_DIR
                    OPENSSL_INCLUDE_DIR
                    LibKrb5_INCLUDE_DIR
-                   GooglePerftools_INCLUDE_DIR
-                   CAF_INCLUDE_DIRS)
+                   GooglePerftools_INCLUDE_DIR)
 
         if ( NOT BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH )
            set(BRO_PLUGIN_BRO_PLUGIN_INSTALL_PATH
@@ -91,7 +90,6 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${BRO_PLUGIN_BRO_BUILD}/auxil/binpac/lib
                             ${BRO_PLUGIN_BRO_BUILD}/aux/broker/include
                             ${BRO_PLUGIN_BRO_BUILD}/auxil/broker/include
-                            ${bro_cache_CAF_INCLUDE_DIRS}
                             ${CMAKE_CURRENT_BINARY_DIR}
                             ${CMAKE_CURRENT_BINARY_DIR}/src
                             ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -166,22 +164,6 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
 
         find_package(BinPAC REQUIRED)
 
-        set(_saved_cmake_prefix_path "${CMAKE_PREFIX_PATH}")
-        list(INSERT CMAKE_PREFIX_PATH 0 "${CAF_ROOT_DIR}")
-        find_package(CAF REQUIRED COMPONENTS core io openssl CONFIG)
-        set(CMAKE_PREFIX_PATH "${_saved_cmake_prefix_path}")
-
-        set(CAF_LIBRARIES CAF::core CAF::io CAF::openssl CACHE INTERNAL "")
-        set(caf_dirs "")
-        foreach (caf_lib IN LISTS CAF_LIBRARIES ITEMS CAF::test)
-          get_target_property(dirs ${caf_lib} INTERFACE_INCLUDE_DIRECTORIES)
-          if ( dirs )
-            list(APPEND caf_dirs ${dirs})
-          endif ()
-        endforeach ()
-        list(REMOVE_DUPLICATES caf_dirs)
-        set(CAF_INCLUDE_DIRS "${caf_dirs}" CACHE INTERNAL "")
-
         find_package(Broker REQUIRED)
 
         string(REPLACE ":" ";" ZEEK_CONFIG_INCLUDE_DIRS "${BRO_CONFIG_INCLUDE_DIR}")
@@ -193,7 +175,6 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${ZEEK_CONFIG_INCLUDE_DIRS}
                             ${BinPAC_INCLUDE_DIR}
                             ${BROKER_INCLUDE_DIR}
-                            ${CAF_INCLUDE_DIRS}
                             ${CMAKE_CURRENT_BINARY_DIR}
                             ${CMAKE_CURRENT_BINARY_DIR}/src
                             ${CMAKE_CURRENT_SOURCE_DIR}/src
