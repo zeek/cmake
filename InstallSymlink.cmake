@@ -3,7 +3,11 @@
 # files can be installed when building binary packages.
 #
 # The rule for binary packaging is that files (including symlinks) must
-# be installed with the standard CMake install() macro.
+# be installed with the standard CMake install() macro. We do so via
+# a detour through CMAKE_CURRENT_BINARY_DIR: at install time we create
+# the symlink there (using a tweaked name, to avoid collisions), then
+# install that, and then clean it up to avoid leaving potential dangling
+# symlinks in the build tree.
 #
 # The rule for non-binary packaging is that CMake 2.6 cannot install()
 # symlinks, but can create the symlink at install-time via scripting.
@@ -18,11 +22,18 @@ macro(InstallSymlink _filepath _sympath)
     get_filename_component(_installdir ${_sympath} PATH)
 
     if (BINARY_PACKAGING_MODE)
-        execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink
-                        ${_filepath}
-                        ${CMAKE_CURRENT_BINARY_DIR}/${_symname})
-        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_symname}
-                DESTINATION ${_installdir})
+        # We need install(CODE ...) here to run this at installation time.
+        # execute_process would run at the configuration stage, making the
+        # symlink potentially conflict with other actions by the caller.
+        install(CODE "
+            execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
+                ${_filepath}
+                ${CMAKE_CURRENT_BINARY_DIR}/${_symname}.link)
+        ")
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_symname}.link
+                DESTINATION ${_installdir}
+                RENAME ${_symname})
+        install(CODE "file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/${_symname}.link)")
     else ()
         # scripting the symlink installation at install time should work
         # for CMake 2.6.x and 2.8.x
