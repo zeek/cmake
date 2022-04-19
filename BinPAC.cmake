@@ -54,7 +54,11 @@ macro(BINPAC_TARGET pacFile)
 
     set(target "pac-${CMAKE_CURRENT_BINARY_DIR}/${pacFile}")
 
-    string(REGEX REPLACE "${PROJECT_BINARY_DIR}/src/" "" target "${target}")
+    # Make sure to escape a bunch of special characters in the path before trying to use it as a
+    # regular expression below.
+    string(REGEX REPLACE "([][+.*()^])" "\\\\\\1" escaped_path "${PROJECT_BINARY_DIR}/src/")
+
+    string(REGEX REPLACE "${escaped_path}" "" target "${target}")
     string(REGEX REPLACE "/" "-" target "${target}")
     add_custom_target(${target} DEPENDS ${pacOutputs})
     set(BINPAC_BUILD_TARGET ${target})

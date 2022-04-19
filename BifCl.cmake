@@ -140,7 +140,11 @@ macro(bif_target bifInput)
                        COMMENT "[BIFCL] Processing ${bifInput}"
     )
 
-    string(REGEX REPLACE "${Zeek_BINARY_DIR}/src/" "" target "${target}")
+    # Make sure to escape a bunch of special characters in the path before trying to use it as a
+    # regular expression below.
+    string(REGEX REPLACE "([][+.*()^])" "\\\\\\1" escaped_path "${Zeek_BINARY_DIR}/src/")
+
+    string(REGEX REPLACE "${escaped_path}" "" target "${target}")
     string(REGEX REPLACE "/" "-" target "${target}")
     add_custom_target(${target} DEPENDS ${BIF_OUTPUT_H} ${BIF_OUTPUT_CC})
     set_source_files_properties(${bifOutputs} PROPERTIES GENERATED 1)
