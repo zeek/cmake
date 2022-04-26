@@ -39,96 +39,24 @@ if ( NOT HAVE_CARES )
 
   else()
 
-    include(ExternalProject)
-    include(GNUInstallDirs)
+    OPTION (CARES_STATIC "" ON)
+    OPTION (CARES_SHARED "" OFF)
+    OPTION (CARES_INSTALL "" OFF)
+    OPTION (CARES_STATIC_PIC "" ON)
+    OPTION (CARES_BUILD_TESTS "" OFF)
+    OPTION (CARES_BUILD_CONTAINER_TESTS "" OFF)
+    OPTION (CARES_BUILD_TOOLS "" OFF)
 
-    set(cares_src     "${CMAKE_CURRENT_SOURCE_DIR}/auxil/c-ares")
-    set(cares_ep      "${CMAKE_CURRENT_BINARY_DIR}/cares-ep")
-    set(cares_build   "${CMAKE_CURRENT_BINARY_DIR}/cares-build")
-    set(cares_static  "${cares_build}/${CMAKE_INSTALL_LIBDIR}/libcares${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    add_subdirectory(auxil/c-ares)
 
-    set(build_byproducts_arg BUILD_BYPRODUCTS ${cares_static})
-
-    ExternalProject_Add(project_cares
-      PREFIX            "${cares_ep}"
-      BINARY_DIR        "${cares_build}"
-      DOWNLOAD_COMMAND  ""
-      CONFIGURE_COMMAND ""
-      BUILD_COMMAND     ""
-      INSTALL_COMMAND   ""
-      ${build_byproducts_arg}
-      )
-
-    set(use_terminal_arg USES_TERMINAL 1)
-
-    ExternalProject_Add_Step(project_cares project_cares_build_step
-      COMMAND ${CMAKE_MAKE_PROGRAM}
-      COMMENT "Building c-ares"
-      WORKING_DIRECTORY ${cares_build}
-      ALWAYS 1
-      ${use_terminal_arg}
-      )
-
-    set(cares_cmake_flags "")
-    list(APPEND cares_cmake_flags -DCMAKE_BUILD_TYPE:string=${CMAKE_BUILD_TYPE})
-    list(APPEND cares_cmake_flags -DCARES_SHARED=no)
-    list(APPEND cares_cmake_flags -DCARES_STATIC=yes)
-    list(APPEND cares_cmake_flags -DCARES_STATIC_PIC=yes)
-    list(APPEND cares_cmake_flags -DCARES_INSTALL=no)
-    list(APPEND cares_cmake_flags -DCARES_BUILD_TOOLS=no)
-
-    if ( CMAKE_TOOLCHAIN_FILE )
-      list(APPEND cares_cmake_flags -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
-    endif ()
-
-    if ( CMAKE_C_COMPILER_LAUNCHER )
-      list(APPEND cares_cmake_flags
-        -DCMAKE_C_COMPILER_LAUNCHER:path=${CMAKE_C_COMPILER_LAUNCHER})
-    endif ()
-
-    if ( CMAKE_CXX_COMPILER_LAUNCHER )
-      list(APPEND cares_cmake_flags
-        -DCMAKE_CXX_COMPILER_LAUNCHER:path=${CMAKE_CXX_COMPILER_LAUNCHER})
-    endif ()
-
-    if ( CMAKE_INSTALL_PREFIX )
-      list(APPEND cares_cmake_flags
-	-DCMAKE_INSTALL_PREFIX:path=${CMAKE_INSTALL_PREFIX})
-    endif ()
-
-    execute_process(
-      COMMAND
-      ${CMAKE_COMMAND}
-      -G${CMAKE_GENERATOR}
-      ${cares_cmake_flags}
-      ${cares_src}
-      WORKING_DIRECTORY ${cares_build}
-      RESULT_VARIABLE cares_cmake_result
-      ERROR_VARIABLE CARES_CMAKE_OUTPUT
-      OUTPUT_VARIABLE CARES_CMAKE_OUTPUT
-      ERROR_STRIP_TRAILING_WHITESPACE
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      )
-
-    message("\n********** Begin c-ares External Project CMake Output ************")
-    message("\n${CARES_CMAKE_OUTPUT}")
-    message("\n*********** End c-ares External Project CMake Output *************")
-    message("\n")
-
-    if (cares_cmake_result)
-      message(FATAL_ERROR "c-ares CMake configuration failed")
-    endif ()
-
-    add_library(cares_a STATIC IMPORTED)
-    set_property(TARGET cares_a PROPERTY IMPORTED_LOCATION ${cares_static})
-    add_dependencies(cares_a project_cares)
+    set(cares_src   "${CMAKE_CURRENT_SOURCE_DIR}/auxil/c-ares")
+    set(cares_build "${CMAKE_CURRENT_BINARY_DIR}/auxil/c-ares")
+    set(cares_lib   "${cares_build}/${CMAKE_INSTALL_LIBDIR}/libcares.a")
 
     set(HAVE_CARES true)
-    set(CARES_LIBRARIES cares_a CACHE STRING "cares libs" FORCE)
-    set(CARES_INCLUDE_DIRS "${cares_src}/include;${cares_build}/include;${cares_build}" CACHE INTERNAL "cares includes" FORCE)
-
-    include_directories(BEFORE ${CARES_INCLUDE_DIRS})
-    set(zeekdeps ${zeekdeps} ${CARES_LIBRARIES})
+    set(zeekdeps ${zeekdeps} ${cares_lib})
+    include_directories(BEFORE ${cares_src}/include)
+    include_directories(BEFORE ${cares_build})
 
   endif()
 endif()
