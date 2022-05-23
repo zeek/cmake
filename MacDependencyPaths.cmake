@@ -23,6 +23,7 @@ if (APPLE AND "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
         list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}) # Homebrew, if linked
         list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}/opt/openssl) # Homebrew OpenSSL
         list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}/opt/bison/bin) # Homebrew Bison
+        list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}/opt/flex/bin) # Homebrew Flex
         list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}/opt/actor-framework) # Homebrew actor-framework
     endif ()
 
