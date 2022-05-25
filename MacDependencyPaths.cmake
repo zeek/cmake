@@ -5,9 +5,9 @@
 # Prepend the default search path locations, in case for some reason the
 # ports/brew/fink executables are not found.
 # If they are found, the actual paths will be pre-pended again below.
-list(INSERT CMAKE_PREFIX_PATH 0 /opt/local)
-list(INSERT CMAKE_PREFIX_PATH 0 /usr/local)
-list(INSERT CMAKE_PREFIX_PATH 0 /sw)
+list(PREPEND CMAKE_PREFIX_PATH /usr/local)
+list(PREPEND CMAKE_PREFIX_PATH /opt/local)
+list(PREPEND CMAKE_PREFIX_PATH /sw)
 
 if (APPLE AND "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     find_program(MAC_PORTS_BIN ports)
@@ -15,19 +15,20 @@ if (APPLE AND "${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     find_program(MAC_FINK_BIN fink)
 
     if (MAC_PORTS_BIN)
-      list(INSERT CMAKE_PREFIX_PATH 0 ${MAC_PORTS_BIN}) # MacPorts
+      list(PREPEND CMAKE_PREFIX_PATH ${MAC_PORTS_BIN}) # MacPorts
     endif ()
 
     if (MAC_HBREW_BIN)
         execute_process(COMMAND ${MAC_HBREW_BIN} "--prefix" OUTPUT_VARIABLE BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-        list(INSERT CMAKE_PREFIX_PATH 0 ${BREW_PREFIX}) # Homebrew, if linked
-        list(INSERT CMAKE_PREFIX_PATH 0 ${BREW_PREFIX}/opt/openssl) # Homebrew OpenSSL
-        list(INSERT CMAKE_PREFIX_PATH 0 ${BREW_PREFIX}/opt/bison/bin) # Homebrew Bison
-        list(INSERT CMAKE_PREFIX_PATH 0 ${BREW_PREFIX}/opt/actor-framework) # Homebrew actor-framework
+        list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}) # Homebrew, if linked
+        list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}/opt/openssl) # Homebrew OpenSSL
+        list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}/opt/bison/bin) # Homebrew Bison
+        list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}/opt/flex/bin) # Homebrew Flex
+        list(PREPEND CMAKE_PREFIX_PATH ${BREW_PREFIX}/opt/actor-framework) # Homebrew actor-framework
     endif ()
 
     if (MAC_FINK_BIN)
-       list(INSERT CMAKE_PREFIX_PATH 0 /sw)        # Fink
+       list(PREPEND CMAKE_PREFIX_PATH /sw)        # Fink
     endif ()
 
 endif ()
