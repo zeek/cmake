@@ -47,16 +47,24 @@ if ( NOT HAVE_CARES )
     OPTION (CARES_BUILD_CONTAINER_TESTS "" OFF)
     OPTION (CARES_BUILD_TOOLS "" OFF)
 
-    add_subdirectory(auxil/c-ares)
-
     set(cares_src   "${CMAKE_CURRENT_SOURCE_DIR}/auxil/c-ares")
     set(cares_build "${CMAKE_CURRENT_BINARY_DIR}/auxil/c-ares")
     set(cares_lib   "${cares_build}/${CMAKE_INSTALL_LIBDIR}/libcares.a")
 
-    set(HAVE_CARES true)
-    set(zeekdeps ${zeekdeps} ${cares_lib})
+    # For reasons we haven't been able to determine, systems with c-ares already
+    # installed will sometimes add /usr/local/include to the include path with
+    # the call to add_subdirectory() below, which breaks things since it tries
+    # use those versions of the c-ares headers before the local ones. I think
+    # this is tied to a bug in c-ares 1.17.1 but we never nailed it down to that.
+    # Instead, ensure that the local paths end up in the include path before
+    # anything c-ares adds.
     include_directories(BEFORE ${cares_src}/include)
     include_directories(BEFORE ${cares_build})
+
+    add_subdirectory(auxil/c-ares)
+
+    set(HAVE_CARES true)
+    set(zeekdeps ${zeekdeps} ${cares_lib})
 
   endif()
 endif()
