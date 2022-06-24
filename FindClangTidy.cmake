@@ -6,7 +6,11 @@
 # to store the list of sources in.
 if (NOT CLANG_TIDY)
     find_program(CLANG_TIDY NAMES clang-tidy)
-    find_program(RUN_CLANG_TIDY NAMES run-clang-tidy.py)
+    find_program(RUN_CLANG_TIDY NAMES run-clang-tidy)
+
+    if (NOT RUN_CLANG_TIDY)
+        find_program(RUN_CLANG_TIDY NAMES run-clang-tidy.py)
+    endif()
 
     if (CLANG_TIDY)
         define_property(GLOBAL PROPERTY TIDY_SRCS
