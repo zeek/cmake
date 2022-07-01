@@ -79,6 +79,8 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${BRO_PLUGIN_BRO_SRC}/auxil/binpac/lib
                             ${BRO_PLUGIN_BRO_SRC}/aux/broker/include
                             ${BRO_PLUGIN_BRO_SRC}/auxil/broker/include
+                            ${BRO_PLUGIN_BRO_SRC}/aux/filesystem/include
+                            ${BRO_PLUGIN_BRO_SRC}/auxil/filesystem/include
                             ${BRO_PLUGIN_BRO_SRC}/aux/paraglob/include
                             ${BRO_PLUGIN_BRO_SRC}/auxil/paraglob/include
                             ${BRO_PLUGIN_BRO_SRC}/aux/rapidjson/include
@@ -168,6 +170,8 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
 
         string(REPLACE ":" ";" ZEEK_CONFIG_INCLUDE_DIRS "${BRO_CONFIG_INCLUDE_DIR}")
         list(GET ZEEK_CONFIG_INCLUDE_DIRS 0 ZEEK_CONFIG_BASE_INCLUDE_DIR)
+        list(APPEND ZEEK_CONFIG_INCLUDE_DIRS
+             "${ZEEK_CONFIG_BASE_INCLUDE_DIR}/zeek/3rdparty/filesystem/include")
         list(APPEND ZEEK_CONFIG_INCLUDE_DIRS
              "${ZEEK_CONFIG_BASE_INCLUDE_DIR}/zeek/3rdparty/rapidjson/include")
 
