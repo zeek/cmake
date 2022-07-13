@@ -158,6 +158,10 @@ macro(zeek_plugin_end)
         bro_plugin_end_static(${ARGV})
     endif ()
 
+    if ( POLICY CMP0110 )
+        cmake_policy(SET CMP0110 NEW)
+    endif ()
+
     # Scan relevant files for TEST_CASE macros and generate CTest targets.
     # This is similar to the logic in Zeek's src/CMakeLists.txt.
     if (_plugin_cpp_tests)
