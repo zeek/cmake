@@ -79,5 +79,11 @@ if (NOT HAVE_DLT_NFLOG)
     set(DLT_NFLOG 239)
 endif ()
 
+check_symbol_exists(DLT_LINUX_SLL2 pcap.h HAVE_DLT_LINUX_SLL2)
+if (NOT HAVE_DLT_LINUX_SLL2)
+    set(DONT_HAVE_LIBPCAP_DLT_LINUX_SLL2 true)
+    message(STATUS "No DLT_LINUX_SLL2 support in libpcap")
+endif ()
+
 set(CMAKE_REQUIRED_INCLUDES)
 set(CMAKE_REQUIRED_LIBRARIES)
