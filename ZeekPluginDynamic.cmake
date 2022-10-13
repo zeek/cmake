@@ -95,7 +95,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${CMAKE_CURRENT_SOURCE_DIR}/src
                             )
 
-        if ( WIN32 )
+        if ( MSVC )
             find_library(ZEEK_LIBRARY zeek HINTS "${BRO_DIST}/build/src" REQUIRED)
             set(ENV{PATH} "${BRO_PLUGIN_BRO_BUILD}/build/src;$ENV{PATH}")
         else ()
@@ -171,7 +171,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
 
         find_package(Broker REQUIRED)
 
-        if ( WIN32 )
+        if ( MSVC )
             find_library(ZEEK_LIBRARY zeek HINTS "${BRO_CONFIG_PREFIX}/lib" REQUIRED)
             set(ZEEK_CONFIG_INCLUDE_DIRS "${BRO_CONFIG_INCLUDE_DIR}")
         else ()
@@ -291,7 +291,7 @@ function(bro_plugin_end_dynamic)
     endif()
 
     target_link_libraries(${_plugin_lib} ${_plugin_libs})
-    if ( WIN32 )
+    if ( MSVC )
         target_link_libraries(${_plugin_lib} ${ZEEK_LIBRARY} ws2_32)
     endif()
 
