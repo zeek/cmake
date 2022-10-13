@@ -75,7 +75,7 @@
 # See the License for more information.
 #=============================================================================
 
-FIND_PROGRAM(BISON_EXECUTABLE bison DOC "path to the bison executable")
+find_program(BISON_EXECUTABLE NAMES bison win-bison win_bison DOC "path to the bison executable")
 MARK_AS_ADVANCED(BISON_EXECUTABLE)
 
 IF(BISON_EXECUTABLE)

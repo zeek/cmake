@@ -48,7 +48,9 @@ macro(BINPAC_TARGET pacFile)
     set(BINPAC_OUTPUT_H ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.h)
     set(BINPAC_OUTPUT_CC ${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.cc)
     set(pacOutputs ${BINPAC_OUTPUT_H} ${BINPAC_OUTPUT_CC})
-    set_property(SOURCE ${BINPAC_OUTPUT_CC} APPEND_STRING PROPERTY COMPILE_FLAGS "-Wno-tautological-compare")
+    if ( NOT MSVC )
+        set_property(SOURCE ${BINPAC_OUTPUT_CC} APPEND_STRING PROPERTY COMPILE_FLAGS "-Wno-tautological-compare")
+    endif()
 
     add_clang_tidy_files(${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.cc)
 
@@ -60,6 +62,7 @@ macro(BINPAC_TARGET pacFile)
 
     string(REGEX REPLACE "${escaped_path}" "" target "${target}")
     string(REGEX REPLACE "/" "-" target "${target}")
+    string(REGEX REPLACE ":" "" target "${target}")
     add_custom_target(${target} DEPENDS ${pacOutputs})
     set(BINPAC_BUILD_TARGET ${target})
 

@@ -3,8 +3,12 @@ include(CheckSymbolExists)
 include(CheckCSourceCompiles)
 include(CheckIncludeFiles)
 
+set(PCAP_OS_LIBRARIES)
+if (MSVC)
+    set(PCAP_OS_LIBRARIES ws2_32.lib Crypt32.lib ${OPENSSL_LIBRARIES})
+endif()
 set(CMAKE_REQUIRED_INCLUDES ${PCAP_INCLUDE_DIR})
-set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY})
+set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY} ${PCAP_OS_LIBRARIES})
 
 cmake_policy(PUSH)
 

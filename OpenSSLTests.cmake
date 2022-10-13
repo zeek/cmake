@@ -3,7 +3,12 @@ include(CheckCXXSourceCompiles)
 include(CheckCSourceRuns)
 include(CheckIncludeFiles)
 
-set(CMAKE_REQUIRED_LIBRARIES ${OPENSSL_LIBRARIES} ${CMAKE_DL_LIBS})
+set(OPENSSL_OS_LIBRARIES)
+if (MSVC)
+    set(OPENSSL_OS_LIBRARIES ws2_32.lib Crypt32.lib)
+endif()
+
+set(CMAKE_REQUIRED_LIBRARIES ${OPENSSL_LIBRARIES} ${CMAKE_DL_LIBS} ${OPENSSL_OS_LIBRARIES})
 # Use all includes, not just OpenSSL includes to see if there are
 # include files of different versions that do not match
 GET_DIRECTORY_PROPERTY(includes INCLUDE_DIRECTORIES)
@@ -64,7 +69,7 @@ if (NOT OPENSSL_D2I_X509_USES_CONST_CHAR)
     endif ()
 endif ()
 
-if (NOT CMAKE_CROSSCOMPILING)
+if (NOT CMAKE_CROSSCOMPILING AND NOT MSVC)
     check_c_source_runs("
         #include <stdio.h>
         #include <openssl/opensslv.h>

@@ -38,12 +38,18 @@ if ( NOT HAVE_KQUEUE )
     include_directories(BEFORE ${LIBKQUEUE_INCLUDE_DIRS})
 
   else()
+    
+    if ( MSVC )
+        set(LIBKQUEUE_NAME "kqueue")
+    else()
+        set(LIBKQUEUE_NAME "libkqueue")
+    endif()
 
     include(ExternalProject)
     set(kqueue_src     "${CMAKE_CURRENT_SOURCE_DIR}/auxil/libkqueue")
     set(kqueue_ep      "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-ep")
     set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build")
-    set(kqueue_static  "${kqueue_build}/libkqueue${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(kqueue_static  "${kqueue_build}/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
     if ( ${CMAKE_VERSION} VERSION_LESS "3.2.0" )
       # Build byproducts is just required by the Ninja generator

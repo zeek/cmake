@@ -95,7 +95,12 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
                             ${CMAKE_CURRENT_SOURCE_DIR}/src
                             )
 
-        set(ENV{PATH} "${BRO_PLUGIN_BRO_BUILD}/build/src:$ENV{PATH}")
+        if ( MSVC )
+            find_library(ZEEK_LIBRARY zeek HINTS "${BRO_DIST}/build/src" REQUIRED)
+            set(ENV{PATH} "${BRO_PLUGIN_BRO_BUILD}/build/src;$ENV{PATH}")
+        else ()
+            set(ENV{PATH} "${BRO_PLUGIN_BRO_BUILD}/build/src:$ENV{PATH}")
+        endif ()
 
     else ()
         # Independent from BRO_DIST source tree
@@ -166,7 +171,12 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
 
         find_package(Broker REQUIRED)
 
-        string(REPLACE ":" ";" ZEEK_CONFIG_INCLUDE_DIRS "${BRO_CONFIG_INCLUDE_DIR}")
+        if ( MSVC )
+            find_library(ZEEK_LIBRARY zeek HINTS "${BRO_CONFIG_PREFIX}/lib" REQUIRED)
+            set(ZEEK_CONFIG_INCLUDE_DIRS "${BRO_CONFIG_INCLUDE_DIR}")
+        else ()
+            string(REPLACE ":" ";" ZEEK_CONFIG_INCLUDE_DIRS "${BRO_CONFIG_INCLUDE_DIR}")
+        endif ()
         list(GET ZEEK_CONFIG_INCLUDE_DIRS 0 ZEEK_CONFIG_BASE_INCLUDE_DIR)
         list(APPEND ZEEK_CONFIG_INCLUDE_DIRS
              "${ZEEK_CONFIG_BASE_INCLUDE_DIR}/zeek/3rdparty/rapidjson/include")
@@ -281,6 +291,9 @@ function(bro_plugin_end_dynamic)
     endif()
 
     target_link_libraries(${_plugin_lib} ${_plugin_libs})
+    if ( MSVC )
+        target_link_libraries(${_plugin_lib} ${ZEEK_LIBRARY} ws2_32)
+    endif()
 
     # Create bif/__load__.zeek.
     bro_bif_create_loader(bif-init-${_plugin_name_canon} "${bro_PLUGIN_BIF_SCRIPTS}")
