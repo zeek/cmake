@@ -41,6 +41,7 @@ if ( NOT HAVE_KQUEUE )
     
     if ( MSVC )
         set(LIBKQUEUE_NAME "kqueue")
+        set(WIN_CONFIG -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY})
     else()
         set(LIBKQUEUE_NAME "libkqueue")
     endif()
@@ -116,6 +117,7 @@ if ( NOT HAVE_KQUEUE )
       ${cmake_cxx_compiler_launcher_arg}
       -DCMAKE_BUILD_TYPE:string=${CMAKE_BUILD_TYPE}
       -DSTATIC_KQUEUE=yes
+      ${WIN_CONFIG}
       ${kqueue_src}
       WORKING_DIRECTORY ${kqueue_build}
       RESULT_VARIABLE kqueue_cmake_result
