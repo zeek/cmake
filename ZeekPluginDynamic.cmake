@@ -75,6 +75,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
         # Zeek 3.2+ has auxil/ instead of aux/
         include_directories(BEFORE
                             ${BRO_PLUGIN_BRO_SRC}/src
+                            ${BRO_PLUGIN_BRO_SRC}/src/include/
                             ${BRO_PLUGIN_BRO_SRC}/aux/binpac/lib
                             ${BRO_PLUGIN_BRO_SRC}/auxil/binpac/lib
                             ${BRO_PLUGIN_BRO_SRC}/aux/broker/include
@@ -359,4 +360,3 @@ endfunction()
 macro(_plugin_target_name_dynamic target ns name)
     set(${target} "${ns}-${name}.${HOST_ARCHITECTURE}")
 endmacro()
-
