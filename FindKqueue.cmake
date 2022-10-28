@@ -40,16 +40,19 @@ if ( NOT HAVE_KQUEUE )
   else()
     
     if ( MSVC )
-        set(LIBKQUEUE_NAME "kqueue")
+        set(LIBKQUEUE_NAME "kqueue_static")
         set(WIN_CONFIG -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY})
+        set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build/kqueueStatic")
+
     else()
         set(LIBKQUEUE_NAME "libkqueue")
+        set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build")
+
     endif()
 
     include(ExternalProject)
     set(kqueue_src     "${CMAKE_CURRENT_SOURCE_DIR}/auxil/libkqueue")
     set(kqueue_ep      "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-ep")
-    set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build")
     set(kqueue_static  "${kqueue_build}/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
     if ( ${CMAKE_VERSION} VERSION_LESS "3.2.0" )
