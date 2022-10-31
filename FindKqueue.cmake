@@ -42,7 +42,7 @@ if ( NOT HAVE_KQUEUE )
     if ( MSVC )
         set(LIBKQUEUE_NAME "kqueue_static")
         set(WIN_CONFIG -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY})
-        set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build/kqueueStatic")
+        set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build/kqueueStatic/kqueueStatic")
 
     else()
         set(LIBKQUEUE_NAME "libkqueue")
