@@ -39,21 +39,20 @@ if ( NOT HAVE_KQUEUE )
 
   else()
     
+    set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build")
+    set(kqueue_src     "${CMAKE_CURRENT_SOURCE_DIR}/auxil/libkqueue")
+    set(kqueue_ep      "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-ep")
+
     if ( MSVC )
         set(LIBKQUEUE_NAME "kqueue_static")
         set(WIN_CONFIG -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY})
-        set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build/kqueueStatic/kqueueStatic")
-
+        set(kqueue_static_lib  "${kqueue_build}/kqueueStatic/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
     else()
         set(LIBKQUEUE_NAME "libkqueue")
-        set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build")
-
+        set(kqueue_static_lib  "${kqueue_build}/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
     endif()
 
     include(ExternalProject)
-    set(kqueue_src     "${CMAKE_CURRENT_SOURCE_DIR}/auxil/libkqueue")
-    set(kqueue_ep      "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-ep")
-    set(kqueue_static  "${kqueue_build}/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
     if ( ${CMAKE_VERSION} VERSION_LESS "3.2.0" )
       # Build byproducts is just required by the Ninja generator
@@ -64,7 +63,7 @@ if ( NOT HAVE_KQUEUE )
 
       set(build_byproducts_arg)
     else ()
-      set(build_byproducts_arg BUILD_BYPRODUCTS ${kqueue_static})
+      set(build_byproducts_arg BUILD_BYPRODUCTS ${kqueue_static_lib})
     endif ()
 
     ExternalProject_Add(project_kqueue
@@ -140,7 +139,7 @@ if ( NOT HAVE_KQUEUE )
     endif ()
 
     add_library(libkqueue_a STATIC IMPORTED)
-    set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION ${kqueue_static})
+    set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION ${kqueue_static_lib})
     add_dependencies(libkqueue_a project_kqueue)
 
     set(HAVE_KQUEUE true)
