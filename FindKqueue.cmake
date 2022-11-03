@@ -38,7 +38,7 @@ if ( NOT HAVE_KQUEUE )
     include_directories(BEFORE ${LIBKQUEUE_INCLUDE_DIRS})
 
   else()
-    
+
     set(kqueue_build   "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build")
     set(kqueue_src     "${CMAKE_CURRENT_SOURCE_DIR}/auxil/libkqueue")
     set(kqueue_ep      "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-ep")
@@ -118,7 +118,6 @@ if ( NOT HAVE_KQUEUE )
       ${cmake_c_compiler_launcher_arg}
       ${cmake_cxx_compiler_launcher_arg}
       -DCMAKE_BUILD_TYPE:string=${CMAKE_BUILD_TYPE}
-      -DSTATIC_KQUEUE=yes
       ${WIN_CONFIG}
       ${kqueue_src}
       WORKING_DIRECTORY ${kqueue_build}
