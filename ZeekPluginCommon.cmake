@@ -28,6 +28,8 @@ function(zeek_plugin_begin ns name)
     set(_plugin_dist       "" PARENT_SCOPE)
     set(_plugin_scripts    "" PARENT_SCOPE)
 
+    include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR})
+
     cmake_parse_arguments(PARSE_ARGV 2 ZEEK_PLUGIN "DISABLE_CPP_TESTS" "" "")
 
     # Whether to build the plugin with unit-test support

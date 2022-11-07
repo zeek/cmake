@@ -15,7 +15,7 @@ endfunction()
 
 function(bro_plugin_link_library_static)
     foreach ( lib ${ARGV} )
-        set(bro_SUBDIR_LIBS ${bro_SUBDIR_LIBS} "${lib}" CACHE INTERNAL "plugin libraries")
+        set(bro_PLUGIN_LINK_LIBS ${bro_PLUGIN_LINK_LIBS} "${lib}" CACHE INTERNAL "plugin link libraries")
     endforeach ()
 endfunction()
 
