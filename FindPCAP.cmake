@@ -20,7 +20,7 @@
 #  HAVE_PF_RING              If a found version of libpcap supports PF_RING
 
 find_path(PCAP_ROOT_DIR
-    NAMES include/pcap.h
+    NAMES include/pcap.h Include/pcap.h
 )
 
 find_path(PCAP_INCLUDE_DIR
@@ -28,9 +28,15 @@ find_path(PCAP_INCLUDE_DIR
     HINTS ${PCAP_ROOT_DIR}/include
 )
 
+if ( MSVC AND COMPILER_ARCHITECTURE STREQUAL "x86_64" )
+    set(_pcap_lib_hint_path ${PCAP_ROOT_DIR}/lib/x64)
+else()
+    set(_pcap_lib_hint_path ${PCAP_ROOT_DIR}/lib)
+endif()
+
 find_library(PCAP_LIBRARY
-    NAMES pcap
-    HINTS ${PCAP_ROOT_DIR}/lib
+    NAMES pcap wpcap
+    HINTS ${_pcap_lib_hint_path}
 )
 
 include(FindPackageHandleStandardArgs)
@@ -61,6 +67,11 @@ if (NOT PCAP_LINKS_SOLO)
         message(FATAL_ERROR "Couldn't determine how to link against libpcap")
     endif ()
 endif ()
+
+string(FIND "${PCAP_LIBRARY}" "wpcap" _pcap_lib_is_wpcap)
+if ( _pcap_lib_is_wpcap GREATER_EQUAL 0 )
+    set(HAVE_WPCAP TRUE)
+endif()
 
 include(CheckFunctionExists)
 set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY})
