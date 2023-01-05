@@ -58,7 +58,7 @@ macro(SetPackageVersion _version)
 endmacro(SetPackageVersion)
 
 # Sets the list of desired package types to be created by the make
-# package target.  A .tar.gz is only made for source packages, and 
+# package target.  A .tar.gz is only made for source packages, and
 # binary pacakage format depends on the operating system:
 #
 # Darwin - PackageMaker

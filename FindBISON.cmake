@@ -150,7 +150,7 @@ IF(BISON_EXECUTABLE)
         IF("${ARGV5}" STREQUAL "VERBOSE")
           BISON_TARGET_option_verbose(${Name} ${BisonOutput} "${ARGV6}")
         ENDIF()
-      
+
         IF("${ARGV5}" STREQUAL "COMPILE_FLAGS")
           BISON_TARGET_option_extraopts("${ARGV6}")
         ENDIF()
@@ -164,7 +164,7 @@ IF(BISON_EXECUTABLE)
         IF("${ARGV7}" STREQUAL "VERBOSE")
           BISON_TARGET_option_verbose(${Name} ${BisonOutput} "${ARGV8}")
         ENDIF()
-      
+
         IF("${ARGV7}" STREQUAL "COMPILE_FLAGS")
           BISON_TARGET_option_extraopts("${ARGV8}")
         ENDIF()
@@ -184,12 +184,12 @@ IF(BISON_EXECUTABLE)
           LIST(APPEND BISON_TARGET_cmdopt "-d")
           STRING(REGEX REPLACE "^(.*)(\\.[^.]*)$" "\\2" _fileext "${ARGV2}")
           STRING(REPLACE "c" "h" _fileext ${_fileext})
-          STRING(REGEX REPLACE "^(.*)(\\.[^.]*)$" "\\1${_fileext}" 
+          STRING(REGEX REPLACE "^(.*)(\\.[^.]*)$" "\\1${_fileext}"
               BISON_${Name}_OUTPUT_HEADER "${ARGV2}")
       ENDIF()
 
       LIST(APPEND BISON_TARGET_outputs "${BISON_${Name}_OUTPUT_HEADER}")
-        
+
       ADD_CUSTOM_COMMAND(OUTPUT ${BISON_TARGET_outputs}
         ${BISON_TARGET_extraoutputs}
         COMMAND ${BISON_EXECUTABLE}
@@ -197,7 +197,7 @@ IF(BISON_EXECUTABLE)
         DEPENDS ${ARGV1}
         COMMENT "[BISON][${Name}] Building parser with bison ${BISON_VERSION}"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-    
+
       # define target variables
       SET(BISON_${Name}_DEFINED TRUE)
       SET(BISON_${Name}_INPUT ${ARGV1})

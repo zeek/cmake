@@ -8,7 +8,7 @@
 #
 # The caller can use these variables to display a list of any missing
 # packages and abort the build/configuration if there were any.
-# 
+#
 # Use as follows:
 #
 # include(FindRequiredPackage)

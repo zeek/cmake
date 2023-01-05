@@ -8,7 +8,7 @@
 # to be set before calling find_package:
 #
 #  GooglePerftools_ROOT_DIR  Set this variable to the root installation of
-#                            GooglePerftools if the module has problems finding 
+#                            GooglePerftools if the module has problems finding
 #                            the proper installation path.
 #
 # Variables defined by this module:

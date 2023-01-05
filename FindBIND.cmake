@@ -14,7 +14,7 @@
 # Variables defined by this module:
 #
 #  BIND_FOUND                System has BIND, include and library dirs found
-#  BIND_INCLUDE_DIR          The BIND include directories. 
+#  BIND_INCLUDE_DIR          The BIND include directories.
 #  BIND_LIBRARY              The BIND library (if any) required for
 #                            ns_inittab and res_mkquery symbols
 
