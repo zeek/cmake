@@ -6,7 +6,7 @@
 # build directory.
 
 if [ $# != 2 ]; then
-    echo "usage: `basename $0` <canonical plugin name> <destination directory>"
+    echo "usage: $(basename $0) <canonical plugin name> <destination directory>"
     exit 1
 fi
 
@@ -18,6 +18,6 @@ if [ ! -d "${dst}" ]; then
 fi
 
 name=$1
-tgz=`pwd`/$name.tgz
+tgz=$(pwd)/$name.tgz
 
-( cd ${dst} && rm -rf "${name}" && tar xzf ${tgz} )
+(cd ${dst} && rm -rf "${name}" && tar xzf ${tgz})
