@@ -1,42 +1,79 @@
-## A set of functions for defining Zeek plugins.
-##
-## This set is for plugins compiled in statically.
-## See ZeekPluginDynamic.cmake for the dynamic version.
+include(BifCl)
+include(BinPAC)
+include(FindClangTidy)
 
-function(bro_plugin_bif_static)
-    foreach ( bif ${ARGV} )
-        bif_target(${bif} "plugin" ${_plugin_name} ${_plugin_name_canon} TRUE)
-        list(APPEND _plugin_objs ${BIF_OUTPUT_CC})
-        list(APPEND _plugin_deps ${BIF_BUILD_TARGET})
-        set(_plugin_objs "${_plugin_objs}" PARENT_SCOPE)
-        set(_plugin_deps "${_plugin_deps}" PARENT_SCOPE)
-    endforeach ()
-endfunction()
+# Sets `target` to contain the CMake target name for a static plugin.
+macro(zeek_get_static_plugin_target target ns name)
+    set(${target} "plugin-${ns}-${name}")
+endmacro()
 
-function(bro_plugin_link_library_static)
-    foreach ( lib ${ARGV} )
-        set(bro_PLUGIN_LINK_LIBS ${bro_PLUGIN_LINK_LIBS} "${lib}" CACHE INTERNAL "plugin link libraries")
-    endforeach ()
-endfunction()
+# Implements the statically linked version of zeek_add_plugin.
+function(zeek_add_static_plugin ns name)
+    # Helper variables.
+    zeek_get_static_plugin_target(target_name ${ns} ${name})
+    set(full_name "${ns}::${name}")
+    set(canon_name "${ns}_${name}")
 
-function(bro_plugin_end_static)
-    add_library(${_plugin_lib} OBJECT ${_plugin_objs})
+    # Create the target if no begin function has been used.
+    if (NOT TARGET ${target_name})
+        add_library(${target_name} OBJECT)
+    endif()
+    add_dependencies(${target_name} zeek_autogen_files)
 
-    if ( NOT "${_plugin_deps}" STREQUAL "" )
-        add_dependencies(${_plugin_lib} ${_plugin_deps})
+    # Parse arguments (note: DIST_FILES are ignored in static builds).
+    set(fn_varargs INCLUDE_DIRS DEPENDENCIES SOURCES BIFS DIST_FILES PAC)
+    cmake_parse_arguments(FN_ARGS "" "" "${fn_varargs}" ${ARGN})
+
+    # Take care of compiling BIFs.
+    if (FN_ARGS_BIFS)
+        # Generate the targets and add the .cc files.
+        foreach ( bif ${FN_ARGS_BIFS} )
+            bif_target(${bif} "plugin" ${full_name} ${canon_name} ON)
+            target_sources(${target_name} PRIVATE ${BIF_OUTPUT_CC})
+        endforeach ()
+    endif()
+
+    # Take care of PAC files.
+    zeek_next_pac_block(at_end pacInputs pacRemainder ${ARGN})
+    while (NOT at_end)
+        binpac_target(${pacInputs})
+        target_sources(${target_name} PRIVATE ${BINPAC_OUTPUT_CC})
+        zeek_next_pac_block(at_end pacInputs pacRemainder ${pacRemainder})
+    endwhile()
+
+    # Pass compiler flags, paths and dependencies to the target.
+    target_link_libraries(
+        ${target_name}
+        PRIVATE
+            $<BUILD_INTERFACE:zeek_internal>)
+    target_include_directories(
+        ${target_name}
+        PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    # Add extra dependencies.
+    if (FN_ARGS_DEPENDENCIES)
+        target_link_libraries(${target_name} PUBLIC ${FN_ARGS_DEPENDENCIES})
+    endif()
+
+    # Add the sources for the plugin.
+    if (FN_ARGS_SOURCES)
+        target_sources(${target_name} PRIVATE ${FN_ARGS_SOURCES})
+        add_clang_tidy_files(${FN_ARGS_SOURCES})
     endif ()
 
-    add_dependencies(${_plugin_lib} generate_outputs)
-
-    set(preload_script ${_plugin_name_canon}/__preload__.zeek)
+    # Setup for the load/preload scripts.
+    set(preload_script ${canon_name}/__preload__.zeek)
     if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/__preload__.zeek)
-        file(APPEND ${Zeek_BINARY_DIR}/scripts/builtin-plugins/__preload__.zeek "\n@load ${preload_script}")
+        file(APPEND ${CMAKE_BINARY_DIR}/scripts/builtin-plugins/__preload__.zeek "\n@load ${preload_script}")
     endif()
-    set(load_script ${_plugin_name_canon}/__load__.zeek)
+    set(load_script ${canon_name}/__load__.zeek)
     if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/__load__.zeek)
-        file(APPEND ${Zeek_BINARY_DIR}/scripts/builtin-plugins/__load__.zeek "\n@load ${load_script}")
+        file(APPEND ${CMAKE_BINARY_DIR}/scripts/builtin-plugins/__load__.zeek "\n@load ${load_script}")
     endif()
 
+    # Install the scripts.
     get_filename_component(plugin_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     if ( IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scripts" )
         install(DIRECTORY ./scripts/
@@ -46,19 +83,22 @@ function(bro_plugin_end_static)
                 PATTERN "*.sig"
                 PATTERN "*.fp")
 
-        # Make a plugin directory and symlink the scripts directory into it 
+        # Make a plugin directory and symlink the scripts directory into it
         # so that the development ZEEKPATH will work too.
-        file(MAKE_DIRECTORY ${Zeek_BINARY_DIR}/scripts/builtin-plugins)
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/scripts/builtin-plugins)
         execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink
                     "${CMAKE_CURRENT_SOURCE_DIR}/scripts"
-                    "${Zeek_BINARY_DIR}/scripts/builtin-plugins/${_plugin_name_canon}")
+                    "${CMAKE_BINARY_DIR}/scripts/builtin-plugins/${_plugin_name_canon}")
     endif ()
 
-    set(bro_PLUGIN_LIBS ${bro_PLUGIN_LIBS} "$<TARGET_OBJECTS:${_plugin_lib}>" CACHE INTERNAL "plugin libraries")
-    set(bro_PLUGIN_DEPS ${bro_PLUGIN_DEPS} "${_plugin_lib}" CACHE INTERNAL "plugin dependencies")
+    # Feed into the main Zeek target(s).
+    zeek_add_obj_lib(${target_name})
 endfunction()
 
-macro(_plugin_target_name_static target ns name)
-    set(${target} "plugin-${ns}-${name}")
-endmacro()
+# Adds an additional PAC to an already existing plugin.
+function(zeek_add_static_plugin_pac ns name pacfile)
+    set(target_name "plugin-${ns}-${name}")
+    binpac_target(${pacfile} ${ARGN})
+    target_sources(${target_name} PRIVATE ${BINPAC_OUTPUT_CC})
+endfunction()
 

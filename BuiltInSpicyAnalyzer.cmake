@@ -44,8 +44,10 @@ function (spicy_add_analyzer)
         add_library(${lib} OBJECT ${generated_sources})
         target_include_directories(${lib} PRIVATE ${SPICY_PLUGIN_PATH}/include ${SPICY_PLUGIN_BINARY_PATH}/include)
         target_compile_definitions(${lib} PRIVATE HILTI_MANUAL_PREINIT)
-        target_link_libraries(${lib} hilti spicy)
-        set(bro_SUBDIR_LIBS "$<TARGET_OBJECTS:${lib}>" ${bro_SUBDIR_LIBS} CACHE INTERNAL "subdir libraries")
+        target_link_libraries(${lib} hilti spicy $<BUILD_INTERFACE:zeek_internal>)
+
+        # Feed into the main Zeek target(s).
+        zeek_add_obj_lib(${lib})
 
         if ( SPICY_ROOT_DIR )
             target_include_directories(${lib} PRIVATE ${SPICY_ROOT_DIR}/include)
