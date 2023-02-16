@@ -47,7 +47,7 @@ function (spicy_add_analyzer)
         target_link_libraries(${lib} hilti spicy $<BUILD_INTERFACE:zeek_internal>)
 
         # Feed into the main Zeek target(s).
-        zeek_add_obj_lib(${lib})
+        zeek_target_link_libraries(${lib})
 
         if ( SPICY_ROOT_DIR )
             target_include_directories(${lib} PRIVATE ${SPICY_ROOT_DIR}/include)

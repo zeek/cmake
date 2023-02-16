@@ -92,7 +92,7 @@ function(zeek_add_static_plugin ns name)
     endif ()
 
     # Feed into the main Zeek target(s).
-    zeek_add_obj_lib(${target_name})
+    zeek_target_link_libraries(${target_name})
 endfunction()
 
 # Adds an additional PAC to an already existing plugin.
