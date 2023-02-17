@@ -15,29 +15,25 @@ name=$1
 shift
 addl=$*
 
-# Copy additional distribution files into build directory.
+DIST=dist/${name}
+mkdir -p "${DIST}"
+
+# Copy files to be distributed to temporary location.
+cp -r __bro_plugin__ lib scripts "${DIST}"
 for i in ${addl}; do
     if [ -e "../$i" ]; then
         dir=$(dirname "$i")
-        mkdir -p "${dir}"
-        cp -p "../$i" "${dir}"
+        mkdir -p "${DIST}/${dir}"
+        cp -p "../$i" "${DIST}/${dir}"
     fi
 done
 
 tgz=${name}-$( (test -e ../VERSION && head -1 ../VERSION) || echo 0.0).tar.gz
 
-rm -f MANIFEST "${name}" "${name}".tgz "${tgz}"
+rm -f "${name}".tgz "${tgz}"
 
-for i in __bro_plugin__ lib scripts ${addl}; do
-    test -e "$i" && find -L "$i" -type f | sed "s%^%${name}/%g" >>MANIFEST
-done
+tar czf "dist/${tgz}" -C dist "${name}"
 
-ln -s . "${name}"
-mkdir -p dist
-
-flag="-T"
-test "$(uname)" = "OpenBSD" && flag="-I"
-tar czf "dist/${tgz}" ${flag} MANIFEST
+rm -rf "${DIST}"
 
 ln -s "dist/${tgz}" "${name}.tgz"
-rm -f "${name}"
