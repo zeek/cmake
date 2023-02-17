@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 #
 # Helper script creating a tarball with a plugin's binary distribution. We'll
 # also leave a MANIFEST in place with all files part of the tar ball.
@@ -7,37 +7,33 @@
 # build directory.
 
 if [ $# = 0 ]; then
-    echo "usage: `basename $0` <canonical plugin name> [<additional files to include into binary distribution>]"
+    echo "usage: $(basename "$0") <canonical plugin name> [<additional files to include into binary distribution>]"
     exit 1
 fi
 
 name=$1
 shift
-addl=$@
+addl=$*
 
-# Copy additional distribution files into build directory.
+DIST=dist/${name}
+mkdir -p "${DIST}"
+
+# Copy files to be distributed to temporary location.
+cp -r __bro_plugin__ lib scripts "${DIST}"
 for i in ${addl}; do
-    if [ -e ../$i ]; then
-        dir=`dirname $i`
-        mkdir -p ${dir}
-        cp -p ../$i ${dir}
+    if [ -e "../$i" ]; then
+        dir=$(dirname "$i")
+        mkdir -p "${DIST}/${dir}"
+        cp -p "../$i" "${DIST}/${dir}"
     fi
 done
 
-tgz=${name}-`(test -e ../VERSION && cat ../VERSION | head -1) || echo 0.0`.tar.gz
+tgz=${name}-$( (test -e ../VERSION && head -1 ../VERSION) || echo 0.0).tar.gz
 
-rm -f MANIFEST ${name} ${name}.tgz ${tgz}
+rm -f "${name}".tgz "${tgz}"
 
-for i in __bro_plugin__ lib scripts ${addl}; do
-    test -e $i && find -L $i -type f | sed "s%^%${name}/%g" >>MANIFEST
-done
+tar czf "dist/${tgz}" -C dist "${name}"
 
-ln -s . ${name}
-mkdir -p dist
+rm -rf "${DIST}"
 
-flag="-T"
-test `uname` = "OpenBSD" && flag="-I"
-tar czf dist/${tgz} ${flag} MANIFEST
-
-ln -s dist/${tgz} ${name}.tgz
-rm -f ${name}
+ln -s "dist/${tgz}" "${name}.tgz"
