@@ -94,11 +94,3 @@ function(zeek_add_static_plugin ns name)
     # Feed into the main Zeek target(s).
     zeek_target_link_libraries(${target_name})
 endfunction()
-
-# Adds an additional PAC to an already existing plugin.
-function(zeek_add_static_plugin_pac ns name pacfile)
-    set(target_name "plugin-${ns}-${name}")
-    binpac_target(${pacfile} ${ARGN})
-    target_sources(${target_name} PRIVATE ${BINPAC_OUTPUT_CC})
-endfunction()
-
