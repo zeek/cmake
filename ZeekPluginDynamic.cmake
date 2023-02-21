@@ -239,7 +239,7 @@ if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD )
    set(bro_PLUGIN_LIBS CACHE INTERNAL "plugin libraries" FORCE)
    set(bro_PLUGIN_BIF_SCRIPTS CACHE INTERNAL "Zeek script stubs for BIFs in Zeek plugins" FORCE)
 
-   add_definitions(-DZEEK_PLUGIN_INTERNAL_BUILD=false)
+   add_definitions(-DZEEK_PLUGIN_INTERNAL_BUILD=0)
 
    add_custom_target(generate_outputs)
 
