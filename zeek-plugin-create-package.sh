@@ -19,7 +19,7 @@ DIST=dist/${name}
 mkdir -p "${DIST}"
 
 # Copy files to be distributed to temporary location.
-cp -r __bro_plugin__ lib scripts "${DIST}"
+cp -rL __bro_plugin__ lib scripts "${DIST}"
 for i in ${addl}; do
     if [ -e "../$i" ]; then
         dir=$(dirname "$i")
