@@ -18,7 +18,7 @@ macro(BINPAC_TARGET pacFile)
 
         # Ensure that for plugins included via --include-plugins, the Zeek's
         # source tree paths are added to binpac's include path as well.
-        set(BinPAC_addl_args "-I;${CMAKE_SOURCE_DIR};-I;${CMAKE_SOURCE_DIR}/src")
+        set(BinPAC_addl_args "-I;${CMAKE_SOURCE_DIR};-I;${CMAKE_SOURCE_DIR}/src;-I;${CMAKE_SOURCE_DIR}/src/include")
     else ()
         if ( BRO_PLUGIN_BRO_BUILD )
             # Zeek 3.2+ has auxil/ instead of aux/
