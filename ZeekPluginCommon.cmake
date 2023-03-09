@@ -105,6 +105,7 @@ endmacro()
 # -- wrappers for legacy bro_* function names ----------------------------------
 
 macro(bro_plugin_begin)
+    message(DEPRECATION  "please use zeek_add_plugin instead")
     zeek_plugin_begin(${ARGV})
 endmacro()
 

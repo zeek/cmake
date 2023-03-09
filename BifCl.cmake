@@ -85,7 +85,7 @@ macro(bif_target bifInput)
             add_clang_tidy_files(${CMAKE_CURRENT_BINARY_DIR}/${bif_cc_file})
         endforeach(bif_cc_file)
 
-        set(BIF_OUTPUT_H ${CMAKE_CURRENT_BINARY_DIR}${bifInputBasename}.h)
+        set(BIF_OUTPUT_H ${CMAKE_CURRENT_BINARY_DIR}/${bifInputBasename}.h)
 
         if ( NOT ZEEK_PLUGIN_BUILD_DYNAMIC )
             set(BIF_OUTPUT_BRO ${CMAKE_BINARY_DIR}/scripts/base/bif/plugins/${plugin_name_canon}.${bifInputBasename}.zeek)
@@ -160,6 +160,7 @@ macro(bif_target bifInput)
     add_custom_target(${target} DEPENDS ${bifOutputs} ${BIF_OUTPUT_BRO})
 
     if ( ZEEK_PLUGIN_INTERNAL_BUILD )
+        # Note: target is defined in Zeek's top-level CMake.
         add_dependencies(zeek_autogen_files ${target})
     endif ()
 endmacro(bif_target)
