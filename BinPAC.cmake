@@ -17,12 +17,6 @@ function(binpac_target pacFile)
         # Add a dependency on the target when building Zeek to make sure the
         # executable actually exists.
         set(binpacDep Zeek::BinPAC)
-    else ()
-        if ( BRO_PLUGIN_BRO_BUILD )
-            set(BinPAC_addl_args "-I;${BRO_PLUGIN_BRO_SRC}/src")
-        else ()
-            set(BinPAC_addl_args "-I;${BRO_PLUGIN_BRO_CONFIG_INCLUDE_DIR}")
-        endif ()
     endif ()
 
     get_filename_component(basename ${pacFile} NAME_WE)
