@@ -94,7 +94,8 @@ function(zeek_add_dynamic_plugin ns name)
     )
 
     # Per convention, plugins have their headers and sources under src/ and
-    # legacy plugins expect this to auto-magically be available as include path.
+    # legacy/external plugins expect this to auto-magically be available as
+    # include path.
     if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src)
         target_include_directories(
             ${target_name}

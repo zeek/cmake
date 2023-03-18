@@ -52,6 +52,17 @@ function(zeek_add_static_plugin ns name)
         ${CMAKE_CURRENT_BINARY_DIR}
     )
 
+    # Per convention, plugins have their headers and sources under src/ and
+    # legacy/external plugins expect this to auto-magically be available as
+    # include path.
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src)
+        target_include_directories(
+            ${target_name}
+            PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/src
+        )
+    endif ()
+
     # Add extra dependencies.
     if (FN_ARGS_DEPENDENCIES)
         target_link_libraries(${target_name} PUBLIC ${FN_ARGS_DEPENDENCIES})
