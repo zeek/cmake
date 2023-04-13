@@ -70,6 +70,10 @@ endfunction()
 include(ZeekPluginStatic)
 include(ZeekPluginDynamic)
 
+if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD AND ${CMAKE_MINIMUM_REQUIRED_VERSION} VERSION_LESS 3.15.0 )
+    message(WARNING "Package requires CMake ${CMAKE_MINIMUM_REQUIRED_VERSION} which is less than Zeek's requirement (3.15.0). This will likely cause build failures and should be fixed.")
+endif ()
+
 if ( ZEEK_PLUGIN_INTERNAL_BUILD AND NOT ZEEK_PLUGIN_BUILD_DYNAMIC)
     set(ZEEK_PLUGIN_BUILD_DYNAMIC OFF)
 elseif (NOT ZEEK_PLUGIN_BUILD_DYNAMIC)
