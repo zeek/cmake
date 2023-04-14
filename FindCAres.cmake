@@ -49,7 +49,7 @@ if ( NOT HAVE_CARES )
 
     set(cares_src   "${CMAKE_CURRENT_SOURCE_DIR}/auxil/c-ares")
     set(cares_build "${CMAKE_CURRENT_BINARY_DIR}/auxil/c-ares")
-    set(cares_lib   "${cares_build}/${CMAKE_INSTALL_LIBDIR}/libcares.a")
+    set(cares_lib   c-ares::cares_static)
 
     # For reasons we haven't been able to determine, systems with c-ares already
     # installed will sometimes add /usr/local/include to the include path with

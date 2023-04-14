@@ -48,8 +48,5 @@ macro(gen_zam_target gzInput)
     )
 
     add_custom_target(${target} DEPENDS ${GEN_ZAM_OUTPUT_H})
-    set_source_files_properties(${gzOutputs} PROPERTIES GENERATED 1)
-
-    set(bro_ALL_GENERATED_OUTPUTS ${bro_ALL_GENERATED_OUTPUTS} ${target}
-        CACHE INTERNAL "automatically generated files" FORCE) # Propagate to top-level.
+    add_dependencies(zeek_autogen_files ${target})
 endmacro(gen_zam_target)
