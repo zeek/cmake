@@ -113,6 +113,11 @@ function(zeek_add_dynamic_plugin ns name)
         add_dependencies(${target_name} ${symlink_target})
     endif ()
 
+    # Add BinPAC_INCLUDE_DIR for picking up paths from FindBinPAC.cmake.
+    if ( BinPAC_INCLUDE_DIR )
+        target_include_directories(${target_name} PRIVATE ${BinPAC_INCLUDE_DIR})
+    endif ()
+
     # Write the 'magic' __bro_plugin__ file. We can do that once during CMake
     # invocation since it won't change.
     file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/__bro_plugin__" "${full_name}")
