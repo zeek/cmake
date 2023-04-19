@@ -1,6 +1,63 @@
+# This function wraps the find_package call for Zeek to allow us to override
+# variables such as CMAKE_PREFIX_PATH in the function scope without changing the
+# variable at directory scope. The function also locates dependencies for
+# dynamic plugins like BinPAC and BifCl.
+function(zeek_plugin_bootstrapping)
+  # Plugins that build against the source tree set ZEEK_DIST. Here, we have our
+  # package file plus ZeekPluginConfig.cmake to help out.
+  if ( ZEEK_DIST )
+    message("USING ZEEK_DIST: ${ZEEK_DIST}")
+    find_package(Zeek REQUIRED CONFIG NO_DEFAULT_PATH PATHS "${ZEEK_DIST}/build")
+    return()
+  endif ()
+  # When building plugins against an installed Zeek, this file must be installed
+  # alongside this script. It provides the variables ZEEK_CMAKE_CONFIG_DIR and
+  # ZEEK_CMAKE_INSTALL_PREFIX.
+  include(ZeekPluginBootstrap)
+  # When looking for dependencies, make sure to look into the install prefix.
+  list(PREPEND CMAKE_PREFIX_PATH "${ZEEK_CMAKE_INSTALL_PREFIX}")
+  # We also needs to find Broker, which we usually can find through the install
+  # prefix. Plugins may also set BROKER_ROOT_DIR to help find Broker, which we
+  # forward to the actual CMake variable if present.
+  if ( NOT Broker_DIR AND BROKER_ROOT_DIR )
+    set(Broker_DIR "${BROKER_ROOT_DIR}")
+  endif ()
+  # Load the CMake package for Zeek. This pulls in dependencies as well as
+  # targets such as Zeek::DynamicPluginBase.
+  find_package(Zeek REQUIRED CONFIG NO_DEFAULT_PATH
+               PATHS "${ZEEK_CMAKE_CONFIG_DIR}")
+  # Find BinPAC via Zeek's FindBinPAC.cmake script.
+  if ( NOT TARGET Zeek::BinPAC )
+    find_package(BinPAC REQUIRED)
+    add_executable(Zeek::BinPAC IMPORTED)
+    set_property(TARGET Zeek::BinPAC PROPERTY IMPORTED_LOCATION "${BinPAC_EXE}")
+  endif ()
+  # Find BifCl. This should be located under ZEEK_CMAKE_INSTALL_PREFIX/bin.
+  if ( NOT TARGET Zeek::BifCl )
+    list(PREPEND CMAKE_PROGRAM_PATH "${ZEEK_CMAKE_INSTALL_PREFIX}/bin")
+    find_program(ZeekBifClPath bifcl)
+    if ( NOT ZeekBifClPath ) # Note: CMake > 3.18 has REQUIRED for find_program.
+      message(FATAL_ERROR "failed to find bifcl, please add hints to CMAKE_PREFIX_PATH or CMAKE_PROGRAM_PATH")
+    endif ()
+    message(STATUS "Found BifCl at ${ZeekBifClPath}")
+    add_executable(Zeek::BifCl IMPORTED)
+    set_property(TARGET Zeek::BifCl PROPERTY
+                 IMPORTED_LOCATION "${ZeekBifClPath}")
+  endif ()
+  # For historic reasons, we also automagically add <plugin-src>/cmake (if it
+  # exists) to CMAKE_MODULE_PATH.
+  if ( EXISTS "${PROJECT_SOURCE_DIR}/cmake" )
+    list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+    set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" PARENT_SCOPE)
+  endif ()
+  # Another historic quirk: force CMAKE_EXPORT_COMPILE_COMMANDS to ON.
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON
+      CACHE PATH "Configures whether to write a compile database." FORCE)
+endfunction()
+
 # Make sure BifCl and BinPAC are available.
 if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD AND NOT Zeek_FOUND )
-  find_package(Zeek REQUIRED CONFIG NO_DEFAULT_PATH PATHS "${ZEEK_DIST}/build")
+  zeek_plugin_bootstrapping()
 endif ()
 
 include(BifCl)

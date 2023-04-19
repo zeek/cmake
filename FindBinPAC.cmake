@@ -23,7 +23,7 @@ find_path(BinPAC_ROOT_DIR
     NAMES include/binpac.h include/binpac/binpac.h
 )
 
-find_file(BinPAC_EXE
+find_program(BinPAC_EXE
     NAMES binpac
     HINTS ${BinPAC_ROOT_DIR}/bin
 )

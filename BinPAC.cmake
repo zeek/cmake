@@ -19,6 +19,27 @@ function(binpac_target pacFile)
         set(binpacDep Zeek::BinPAC)
     endif ()
 
+    # Add ZEEK_SOURCE_DIR and ZEEK_SOURCE_DIR/src to BinPAC_addl_args. This
+    # variable is defined in the main CMake file.
+    if ( ZEEK_SOURCE_DIR )
+        list(APPEND BinPAC_addl_args -I "${ZEEK_SOURCE_DIR}" -I "${ZEEK_SOURCE_DIR}/src")
+    endif ()
+
+    # Add ZEEK_CMAKE_INSTALL_PREFIX to BinPAC_addl_args if it exists. This
+    # variable is present when loading ZeekPlugin.cmake.
+    if ( ZEEK_CMAKE_INSTALL_PREFIX )
+        list(APPEND BinPAC_addl_args -I "${ZEEK_CMAKE_INSTALL_PREFIX}/include")
+    endif ()
+
+    # Add BinPAC_INCLUDE_DIR to BinPAC_addl_args if it exists. This variable is
+    # present when finding BinPAC via FindBinPAC.cmake.
+    if ( BinPAC_INCLUDE_DIR )
+        # Note: this variable may be a list.
+        foreach (dir ${BinPAC_INCLUDE_DIR})
+            list(APPEND BinPAC_addl_args -I "${dir}")
+        endforeach ()
+    endif ()
+
     get_filename_component(basename ${pacFile} NAME_WE)
     set(pacBaseName "${CMAKE_CURRENT_BINARY_DIR}/${basename}")
     set(hdr_file ${pacBaseName}_pac.h)
@@ -45,8 +66,6 @@ function(binpac_target pacFile)
                 -q -d ${CMAKE_CURRENT_BINARY_DIR}
                 -I ${CMAKE_CURRENT_SOURCE_DIR}
                 -I ${CMAKE_CURRENT_SOURCE_DIR}/src
-                -I ${ZEEK_SOURCE_DIR}
-                -I ${ZEEK_SOURCE_DIR}/src
                 ${BinPAC_addl_args}
                 ${CMAKE_CURRENT_SOURCE_DIR}/${pacFile}
         DEPENDS ${binpacDep} ${pacFile} ${BINPAC_AUXSRC} ${ARGN}
