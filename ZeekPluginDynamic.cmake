@@ -127,10 +127,18 @@ function(zeek_add_dynamic_plugin ns name)
       return()
     endif ()
 
+    # Plugins may set BRO_PLUGIN_INSTALL_ROOT to override the default
+    # installation directory. Otherwise, we use ZEEK_PLUGIN_DIR from Zeek.
+    if ( BRO_PLUGIN_INSTALL_ROOT )
+        set(install_dir "${BRO_PLUGIN_INSTALL_ROOT}")
+    else ()
+        set(install_dir ${ZEEK_PLUGIN_DIR})
+    endif ()
+
     # Create the binary install package.
     set(dist_tarball_name ${canon_name}.tgz)
     set(dist_tarball_path ${CMAKE_CURRENT_BINARY_DIR}/${dist_tarball_name})
-    message(STATUS "Install prefix for plugin ${canon_name}: ${BRO_PLUGIN_INSTALL_ROOT}")
+    message(STATUS "Install prefix for plugin ${canon_name}: ${install_dir}")
     message(STATUS "Tarball path for plugin ${canon_name}: ${dist_tarball_path}")
     add_custom_command(
         OUTPUT ${dist_tarball_path}
@@ -144,7 +152,7 @@ function(zeek_add_dynamic_plugin ns name)
     # Tell CMake to install our tarball. Note: This usually runs from our
     # plugin-support skeleton.
     INSTALL(CODE "execute_process(
-        COMMAND ${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-install-package.sh ${canon_name} \$ENV{DESTDIR}/${BRO_PLUGIN_INSTALL_ROOT}
+        COMMAND ${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-install-package.sh ${canon_name} \$ENV{DESTDIR}/${install_dir}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND_ECHO STDOUT
     )")
