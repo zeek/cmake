@@ -56,8 +56,11 @@ function(zeek_plugin_bootstrapping)
 endfunction()
 
 # Make sure BifCl and BinPAC are available.
-if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD AND NOT Zeek_FOUND )
+if ( NOT ZEEK_PLUGIN_INTERNAL_BUILD AND NOT ZEEK_PLUGIN_HAD_BOOTSTRAPPING )
   zeek_plugin_bootstrapping()
+  # Remember that we have called the function to not call it again.
+  set(ZEEK_PLUGIN_HAD_BOOTSTRAPPING ON
+      CACHE BOOL "Plugin bootstrapping has completed." FORCE)
 endif ()
 
 include(BifCl)
