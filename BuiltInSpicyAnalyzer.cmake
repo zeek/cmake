@@ -37,7 +37,9 @@ function (spicy_add_analyzer)
             DEPENDS ${SPICY_ANALYZER_SOURCES} spicyz
             COMMENT "Compiling ${SPICY_ANALYZER_NAME} analyzer"
             COMMAND
-                spicyz -L ${spicy_SOURCE_DIR}/hilti/lib -L ${spicy_SOURCE_DIR}/spicy/lib -x
+                ${CMAKE_COMMAND} -E env
+                "ZEEK_SPICY_LIBRARY_PATH=${PROJECT_SOURCE_DIR}/scripts/spicy" $<TARGET_FILE:spicyz>
+                -L ${spicy_SOURCE_DIR}/hilti/lib -L ${spicy_SOURCE_DIR}/spicy/lib -x
                 ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER} ${SPICYZ_FLAGS} ${SPICY_ANALYZER_SOURCES}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
