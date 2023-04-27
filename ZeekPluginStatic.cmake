@@ -20,6 +20,16 @@ function(zeek_add_static_plugin ns name)
     endif()
     add_dependencies(${target_name} zeek_autogen_files)
 
+    # Skip zeek-version.h when including zeek-config.h for statically build
+    # plugins (they are always builtin) *except* if the current scope is tagged
+    # with ZEEK_BUILDING_EXTRA_PLUGINS (this is the case when building plugins
+    # from BUILTIN_PLUGIN_LIST).
+    if ( NOT ZEEK_BUILDING_EXTRA_PLUGINS )
+        target_compile_definitions(
+            ${target_name}
+            PRIVATE ZEEK_CONFIG_SKIP_VERSION_H)
+    endif ()
+
     # Parse arguments (note: DIST_FILES are ignored in static builds).
     set(fn_varargs INCLUDE_DIRS DEPENDENCIES SOURCES BIFS DIST_FILES PAC)
     cmake_parse_arguments(FN_ARGS "" "" "${fn_varargs}" ${ARGN})
