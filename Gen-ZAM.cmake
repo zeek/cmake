@@ -5,7 +5,7 @@
 # The macro also creates a target that can be used to define depencencies on the
 # generated files. The name of the target includes the input template filename
 # to make it unique, and is added automatically to bro_ALL_GENERATED_OUTPUTS.
-macro(gen_zam_target gzInput)
+macro (gen_zam_target gzInput)
     get_filename_component(gzInputBasename "${gzInput}" NAME)
 
     set(target "gen-zam-${gzInputBasename}")
@@ -33,20 +33,19 @@ macro(gen_zam_target gzInput)
         ${CMAKE_CURRENT_BINARY_DIR}/ZAM-Vec1EvalDefs.h
         ${CMAKE_CURRENT_BINARY_DIR}/ZAM-Vec2EvalDefs.h)
 
-    if ( GEN_ZAM_EXE_PATH )
+    if (GEN_ZAM_EXE_PATH)
         set(GEN_ZAM_EXE ${GEN_ZAM_EXE_PATH})
     else ()
         set(GEN_ZAM_EXE "gen-zam")
     endif ()
 
-    add_custom_command(OUTPUT ${GEN_ZAM_OUTPUT_H}
-                       COMMAND ${GEN_ZAM_EXE}
-                       ARGS ${gzInput}
-                       DEPENDS ${gzInput} ${GEN_ZAM_EXE}
-                       COMMENT "[gen-zam] Generating ZAM operations"
-                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
+    add_custom_command(
+        OUTPUT ${GEN_ZAM_OUTPUT_H}
+        COMMAND ${GEN_ZAM_EXE} ARGS ${gzInput}
+        DEPENDS ${gzInput} ${GEN_ZAM_EXE}
+        COMMENT "[gen-zam] Generating ZAM operations"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     add_custom_target(${target} DEPENDS ${GEN_ZAM_OUTPUT_H})
     add_dependencies(zeek_autogen_files ${target})
-endmacro(gen_zam_target)
+endmacro (gen_zam_target)

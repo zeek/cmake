@@ -8,7 +8,7 @@
 #
 # The caller can use these variables to display a list of any missing
 # packages and abort the build/configuration if there were any.
-# 
+#
 # Use as follows:
 #
 # include(FindRequiredPackage)
@@ -22,14 +22,14 @@
 #    message(FATAL_ERROR "Configuration aborted due to missing prerequisites")
 # endif ()
 
-macro(FindRequiredPackage packageName)
+macro (FindRequiredPackage packageName)
     string(TOUPPER ${packageName} upperPackageName)
-    if ( (DEFINED ${upperPackageName}_ROOT_DIR) AND (DEFINED CMAKE_PREFIX_PATH) )
+    if ((DEFINED ${upperPackageName}_ROOT_DIR) AND (DEFINED CMAKE_PREFIX_PATH))
         set(CMAKE_PREFIX_SAVE ${CMAKE_PREFIX_PATH})
         unset(CMAKE_PREFIX_PATH)
         find_package(${packageName})
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_SAVE})
-    else()
+    else ()
         find_package(${packageName})
     endif ()
     string(TOUPPER ${packageName} canonPackageName)
@@ -49,4 +49,4 @@ macro(FindRequiredPackage packageName)
                  " Could not find prerequisite package '${packageName}'")
         endif ()
     endif ()
-endmacro(FindRequiredPackage)
+endmacro (FindRequiredPackage)

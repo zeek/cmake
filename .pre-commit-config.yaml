@@ -1,0 +1,21 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+#
+repos:
+- repo: https://github.com/cheshirekow/cmake-format-precommit
+  rev: v0.6.13
+  hooks:
+  - id: cmake-format
+    exclude: '^(FindBISON|FindOpenSSL|FindPackageHandleStandardArgs|FindPackageMessage|SelectLibraryConfigurations|conan).cmake$'
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: trailing-whitespace
+    exclude: '^(FindOpenSSL|conan).cmake$'
+
+- repo: https://github.com/maxwinterstein/shfmt-py
+  rev: 3.3.1.8
+  hooks:
+    - id: shfmt
+      args: ["-w", "-i", "4", "-ci"]

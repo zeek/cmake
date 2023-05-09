@@ -17,28 +17,13 @@
 #  FTS_LIBRARY            The FTS library
 #  FTS_INCLUDE_DIR        The FTS headers
 
-find_path(FTS_ROOT_DIR
-    NAMES include/fts.h
-)
+find_path(FTS_ROOT_DIR NAMES include/fts.h)
 
-find_library(FTS_LIBRARY
-    NAMES fts
-    HINTS ${FTS_ROOT_DIR}/lib
-)
+find_library(FTS_LIBRARY NAMES fts HINTS ${FTS_ROOT_DIR}/lib)
 
-find_path(FTS_INCLUDE_DIR
-    NAMES fts.h
-    HINTS ${FTS_ROOT_DIR}/include
-)
+find_path(FTS_INCLUDE_DIR NAMES fts.h HINTS ${FTS_ROOT_DIR}/include)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(FTS DEFAULT_MSG
-    FTS_LIBRARY
-    FTS_INCLUDE_DIR
-)
+find_package_handle_standard_args(FTS DEFAULT_MSG FTS_LIBRARY FTS_INCLUDE_DIR)
 
-mark_as_advanced(
-    FTS_ROOT_DIR
-    FTS_LIBRARY
-    FTS_INCLUDE_DIR
-)
+mark_as_advanced(FTS_ROOT_DIR FTS_LIBRARY FTS_INCLUDE_DIR)

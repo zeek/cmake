@@ -11,12 +11,12 @@ sampleFiles=""
 # the most recent package install created
 
 if [ -e ${backupNamesFile} ]; then
-    backupFileList=`cat ${backupNamesFile}`
+    backupFileList=$(cat ${backupNamesFile})
 
     for backupFile in ${backupFileList}; do
-        origFileName=`echo ${backupFile} | sed 's/\(.*\)\..*/\1/'`
+        origFileName=$(echo ${backupFile} | sed 's/\(.*\)\..*/\1/')
 
-        diff ${origFileName} ${backupFile} > /dev/null 2>&1
+        diff ${origFileName} ${backupFile} >/dev/null 2>&1
 
         if [ $? -eq 0 ]; then
             # if the installed version and the backup version don't differ
@@ -40,8 +40,8 @@ if [ -e ${backupNamesFile} ]; then
 fi
 
 if [ -n "${sampleFiles}" ]; then
-# Use some apple script to display a message to user
-/usr/bin/osascript << EOF
+    # Use some apple script to display a message to user
+    /usr/bin/osascript <<EOF
     tell application "System Events"
         activate
         display alert "Existing configuration files differ from the ones that would be installed by this package.  To avoid overwriting configuration which you may have modified, the following new config files have been installed:\n${sampleFiles}\n\nIf you have previously modified configuration files, please make sure that they are still compatible, else you should update your config files to the new versions."

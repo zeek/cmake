@@ -5,20 +5,20 @@ include(CheckCSourceCompiles)
 
 set(CMAKE_REQUIRED_INCLUDES ${BIND_INCLUDE_DIR})
 
-check_c_source_compiles("
+check_c_source_compiles(
+    "
     #include <arpa/nameser.h>
-    int main() { HEADER *hdr; int d = NS_IN6ADDRSZ; return 0; }"
-    have_nameser_header)
+    int main() { HEADER *hdr; int d = NS_IN6ADDRSZ; return 0; }" have_nameser_header)
 
 if (NOT have_nameser_header AND NOT MSVC)
-    check_c_source_compiles("
+    check_c_source_compiles(
+        "
         #include <arpa/nameser.h>
         #include <arpa/nameser_compat.h>
         int main() { HEADER *hdr; int d = NS_IN6ADDRSZ; return 0; }"
         NEED_NAMESER_COMPAT_H)
     if (NOT NEED_NAMESER_COMPAT_H)
-        message(FATAL_ERROR
-            "Asynchronous DNS support compatibility check failed.")
+        message(FATAL_ERROR "Asynchronous DNS support compatibility check failed.")
     endif ()
 endif ()
 

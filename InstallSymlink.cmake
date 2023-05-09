@@ -17,7 +17,7 @@
 #   _filepath: the absolute path to the file to symlink
 #   _sympath: absolute path of the installed symlink
 
-macro(InstallSymlink _filepath _sympath)
+macro (InstallSymlink _filepath _sympath)
     get_filename_component(_symname ${_sympath} NAME)
     get_filename_component(_installdir ${_sympath} PATH)
 
@@ -25,19 +25,20 @@ macro(InstallSymlink _filepath _sympath)
         # We need install(CODE ...) here to run this at installation time.
         # execute_process would run at the configuration stage, making the
         # symlink potentially conflict with other actions by the caller.
-        install(CODE "
+        install(
+            CODE "
             execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
                 ${_filepath}
                 ${CMAKE_CURRENT_BINARY_DIR}/${_symname}.link)
         ")
-        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_symname}.link
-                DESTINATION ${_installdir}
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_symname}.link DESTINATION ${_installdir}
                 RENAME ${_symname})
         install(CODE "file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/${_symname}.link)")
     else ()
         # scripting the symlink installation at install time should work
         # for CMake 2.6.x and 2.8.x
-        install(CODE "
+        install(
+            CODE "
             if (\"\$ENV{DESTDIR}\" STREQUAL \"\")
                 execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
                                 ${_filepath}
@@ -49,4 +50,4 @@ macro(InstallSymlink _filepath _sympath)
             endif ()
         ")
     endif ()
-endmacro(InstallSymlink)
+endmacro (InstallSymlink)

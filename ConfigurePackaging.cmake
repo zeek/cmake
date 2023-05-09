@@ -7,7 +7,7 @@
 # level version.  Not that the version set by the macro is internal
 # to binary packaging, the file name of our package will reflect the
 # exact version number.
-macro(SetPackageVersion _version)
+macro (SetPackageVersion _version)
     string(REGEX REPLACE "[.-]" " " version_numbers ${_version})
     separate_arguments(version_numbers)
 
@@ -20,8 +20,7 @@ macro(SetPackageVersion _version)
     while (version_length GREATER 0)
         list(GET version_numbers 0 patch_level)
         if (CPACK_PACKAGE_VERSION_PATCH)
-            set(CPACK_PACKAGE_VERSION_PATCH
-                "${CPACK_PACKAGE_VERSION_PATCH}.${patch_level}")
+            set(CPACK_PACKAGE_VERSION_PATCH "${CPACK_PACKAGE_VERSION_PATCH}.${patch_level}")
         else ()
             set(CPACK_PACKAGE_VERSION_PATCH ${patch_level})
         endif ()
@@ -32,33 +31,31 @@ macro(SetPackageVersion _version)
     if (APPLE)
         # Mac PackageMaker package requires only numbers in the versioning
         string(REGEX REPLACE "[_a-zA-Z-]" "" CPACK_PACKAGE_VERSION_MAJOR
-               ${CPACK_PACKAGE_VERSION_MAJOR})
+                             ${CPACK_PACKAGE_VERSION_MAJOR})
         string(REGEX REPLACE "[_a-zA-Z-]" "" CPACK_PACKAGE_VERSION_MINOR
-               ${CPACK_PACKAGE_VERSION_MINOR})
+                             ${CPACK_PACKAGE_VERSION_MINOR})
         if (CPACK_PACKAGE_VERSION_PATCH)
             string(REGEX REPLACE "[_a-zA-Z-]" "" CPACK_PACKAGE_VERSION_PATCH
-                   ${CPACK_PACKAGE_VERSION_PATCH})
+                                 ${CPACK_PACKAGE_VERSION_PATCH})
         endif ()
     endif ()
 
     if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
         # RPM version accepts letters, but not dashes.
-        string(REGEX REPLACE "[-]" "." CPACK_PACKAGE_VERSION_MAJOR
-               ${CPACK_PACKAGE_VERSION_MAJOR})
-        string(REGEX REPLACE "[-]" "." CPACK_PACKAGE_VERSION_MINOR
-               ${CPACK_PACKAGE_VERSION_MINOR})
+        string(REGEX REPLACE "[-]" "." CPACK_PACKAGE_VERSION_MAJOR ${CPACK_PACKAGE_VERSION_MAJOR})
+        string(REGEX REPLACE "[-]" "." CPACK_PACKAGE_VERSION_MINOR ${CPACK_PACKAGE_VERSION_MINOR})
         if (CPACK_PACKAGE_VERSION_PATCH)
             string(REGEX REPLACE "[-]" "." CPACK_PACKAGE_VERSION_PATCH
-                   ${CPACK_PACKAGE_VERSION_PATCH})
+                                 ${CPACK_PACKAGE_VERSION_PATCH})
         endif ()
     endif ()
 
     # Minimum supported OS X version
     set(CPACK_OSX_PACKAGE_VERSION 10.5)
-endmacro(SetPackageVersion)
+endmacro (SetPackageVersion)
 
 # Sets the list of desired package types to be created by the make
-# package target.  A .tar.gz is only made for source packages, and 
+# package target.  A .tar.gz is only made for source packages, and
 # binary pacakage format depends on the operating system:
 #
 # Darwin - PackageMaker
@@ -67,7 +64,7 @@ endmacro(SetPackageVersion)
 #
 # CPACK_GENERATOR is set by this macro
 # CPACK_SOURCE_GENERATOR is set by this macro
-macro(SetPackageGenerators)
+macro (SetPackageGenerators)
     set(CPACK_SOURCE_GENERATOR TGZ)
     #set(CPACK_GENERATOR TGZ)
     if (APPLE)
@@ -83,7 +80,7 @@ macro(SetPackageGenerators)
             set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS true)
         endif ()
     endif ()
-endmacro(SetPackageGenerators)
+endmacro (SetPackageGenerators)
 
 # Sets CPACK_PACKAGE_FILE_NAME in the following format:
 #
@@ -92,7 +89,7 @@ endmacro(SetPackageGenerators)
 # and CPACK_SOURCE_PACKAGE_FILE_NAME as:
 #
 # <project_name>-<version>
-macro(SetPackageFileName _version)
+macro (SetPackageFileName _version)
     if (PACKAGE_NAME_PREFIX)
         set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME_PREFIX}-${_version}")
         set(CPACK_SOURCE_PACKAGE_FILE_NAME "${PACKAGE_NAME_PREFIX}-${_version}")
@@ -101,8 +98,7 @@ macro(SetPackageFileName _version)
         set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${_version}")
     endif ()
 
-    set(CPACK_PACKAGE_FILE_NAME
-        "${CPACK_PACKAGE_FILE_NAME}-${CMAKE_SYSTEM_NAME}")
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${CMAKE_SYSTEM_NAME}")
 
     if (APPLE)
         # Only Intel-based Macs are supported.  CMAKE_SYSTEM_PROCESSOR may
@@ -110,45 +106,41 @@ macro(SetPackageFileName _version)
         # are the binary is x86_64 (or more generally 'Intel') compatible.
         set(arch "Intel")
     else ()
-        set (arch ${CMAKE_SYSTEM_PROCESSOR})
+        set(arch ${CMAKE_SYSTEM_PROCESSOR})
     endif ()
 
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${arch}")
-endmacro(SetPackageFileName)
+endmacro (SetPackageFileName)
 
 # Sets up binary package metadata
-macro(SetPackageMetadata)
-    if ( NOT CPACK_PACKAGE_VENDOR )
+macro (SetPackageMetadata)
+    if (NOT CPACK_PACKAGE_VENDOR)
         set(CPACK_PACKAGE_VENDOR "International Computer Science Institute")
     endif ()
 
-    if ( NOT CPACK_PACKAGE_CONTACT )
+    if (NOT CPACK_PACKAGE_CONTACT)
         set(CPACK_PACKAGE_CONTACT "info@zeek.org")
     endif ()
 
-    if ( NOT CPACK_PACKAGE_DESCRIPTION_SUMMARY )
-        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-            "The Zeek Network Security Monitor")
+    if (NOT CPACK_PACKAGE_DESCRIPTION_SUMMARY)
+        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Zeek Network Security Monitor")
     endif ()
 
     # CPack may enforce file name extensions for certain package generators
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/README
-                   ${CMAKE_CURRENT_BINARY_DIR}/README.txt
-                    COPYONLY)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_BINARY_DIR}/README.txt
+                   COPYONLY)
 
-    if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/COPYING )
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING
-                       ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
-                        COPYONLY)
-    elseif ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.edit-me )
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/COPYING)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
+                       COPYONLY)
+    elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.edit-me)
         # Zeek plugin skeletons have a placeholder file.  Just use
         # it even if it hasn't actually been changed.
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/COPYING.edit-me
-                       ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt
-                        COPYONLY)
+                       ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt COPYONLY)
     endif ()
 
-    if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/MAC_PACKAGE_INTRO )
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/MAC_PACKAGE_INTRO)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MAC_PACKAGE_INTRO
                        ${CMAKE_CURRENT_BINARY_DIR}/MAC_PACKAGE_INTRO.txt)
     else ()
@@ -159,20 +151,19 @@ macro(SetPackageMetadata)
     set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_BINARY_DIR}/README.txt)
     set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt)
     set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_BINARY_DIR}/README.txt)
-    set(CPACK_RESOURCE_FILE_WELCOME
-        ${CMAKE_CURRENT_BINARY_DIR}/MAC_PACKAGE_INTRO.txt)
+    set(CPACK_RESOURCE_FILE_WELCOME ${CMAKE_CURRENT_BINARY_DIR}/MAC_PACKAGE_INTRO.txt)
 
-    if ( NOT CPACK_RPM_PACKAGE_LICENSE )
+    if (NOT CPACK_RPM_PACKAGE_LICENSE)
         set(CPACK_RPM_PACKAGE_LICENSE "BSD")
     endif ()
 
-    if ( NOT CPACK_RPM_PACKAGE_GROUP )
+    if (NOT CPACK_RPM_PACKAGE_GROUP)
         set(CPACK_RPM_PACKAGE_GROUP "Applications/System")
     endif ()
 
     # If we're building a dynamic Zeek plugin, exclude various additional paths
     # already provided by our Zeek packages.
-    if ( ZEEK_PLUGIN_BUILD_DYNAMIC )
+    if (ZEEK_PLUGIN_BUILD_DYNAMIC)
         set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION
             /opt
             /var
@@ -181,19 +172,18 @@ macro(SetPackageMetadata)
             ${BRO_CONFIG_PREFIX}
             ${BRO_CONFIG_PREFIX}/lib
             ${BRO_CONFIG_PREFIX}/lib/zeek
-            ${BRO_CONFIG_PLUGIN_DIR}
-        )
+            ${BRO_CONFIG_PLUGIN_DIR})
     else ()
         set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION /opt /var /var/opt)
     endif ()
-endmacro(SetPackageMetadata)
+endmacro (SetPackageMetadata)
 
 # Sets pre and post install scripts for PackageMaker packages.
 # The main functionality that such scripts offer is a way to make backups
 # of "configuration" files that a user may have modified.
 # Note that RPMs already have a robust mechanism for dealing with
 # user-modified files, so we do not need this additional functionality
-macro(SetPackageInstallScripts VERSION)
+macro (SetPackageInstallScripts VERSION)
 
     if (INSTALLED_CONFIG_FILES)
         # Remove duplicates from the list of installed config files
@@ -218,8 +208,7 @@ macro(SetPackageInstallScripts VERSION)
             file(APPEND ${conffiles_file} "${_file}\n")
         endforeach ()
 
-        list(APPEND CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
-            ${CMAKE_CURRENT_BINARY_DIR}/conffiles)
+        list(APPEND CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA ${CMAKE_CURRENT_BINARY_DIR}/conffiles)
 
         # RPMs don't need any explicit direction regarding config files.
 
@@ -231,42 +220,28 @@ macro(SetPackageInstallScripts VERSION)
     endif ()
 
     if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_preinstall.sh.in)
-        configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_preinstall.sh.in
-            ${CMAKE_CURRENT_BINARY_DIR}/package_preinstall.sh
-            @ONLY)
-        configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_preinstall.sh.in
-            ${CMAKE_CURRENT_BINARY_DIR}/preinst
-            @ONLY)
-        set(CPACK_PREFLIGHT_SCRIPT
-            ${CMAKE_CURRENT_BINARY_DIR}/package_preinstall.sh)
-        set(CPACK_RPM_PRE_INSTALL_SCRIPT_FILE
-            ${CMAKE_CURRENT_BINARY_DIR}/package_preinstall.sh)
-        list(APPEND CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
-            ${CMAKE_CURRENT_BINARY_DIR}/preinst)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_preinstall.sh.in
+                       ${CMAKE_CURRENT_BINARY_DIR}/package_preinstall.sh @ONLY)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_preinstall.sh.in
+                       ${CMAKE_CURRENT_BINARY_DIR}/preinst @ONLY)
+        set(CPACK_PREFLIGHT_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/package_preinstall.sh)
+        set(CPACK_RPM_PRE_INSTALL_SCRIPT_FILE ${CMAKE_CURRENT_BINARY_DIR}/package_preinstall.sh)
+        list(APPEND CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA ${CMAKE_CURRENT_BINARY_DIR}/preinst)
     endif ()
 
     if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_postupgrade.sh.in)
-        configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_postupgrade.sh.in
-            ${CMAKE_CURRENT_BINARY_DIR}/package_postupgrade.sh
-            @ONLY)
-        configure_file(
-            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_postupgrade.sh.in
-            ${CMAKE_CURRENT_BINARY_DIR}/postinst
-            @ONLY)
-        set(CPACK_POSTUPGRADE_SCRIPT
-            ${CMAKE_CURRENT_BINARY_DIR}/package_postupgrade.sh)
-        set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE
-            ${CMAKE_CURRENT_BINARY_DIR}/package_postupgrade.sh)
-        list(APPEND CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
-            ${CMAKE_CURRENT_BINARY_DIR}/postinst)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_postupgrade.sh.in
+                       ${CMAKE_CURRENT_BINARY_DIR}/package_postupgrade.sh @ONLY)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/package_postupgrade.sh.in
+                       ${CMAKE_CURRENT_BINARY_DIR}/postinst @ONLY)
+        set(CPACK_POSTUPGRADE_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/package_postupgrade.sh)
+        set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE ${CMAKE_CURRENT_BINARY_DIR}/package_postupgrade.sh)
+        list(APPEND CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA ${CMAKE_CURRENT_BINARY_DIR}/postinst)
     endif ()
-endmacro(SetPackageInstallScripts)
+endmacro (SetPackageInstallScripts)
 
 # Main macro to configure all the packaging options
-macro(ConfigurePackaging _version)
+macro (ConfigurePackaging _version)
     SetPackageVersion(${_version})
     SetPackageGenerators()
     SetPackageFileName(${_version})
@@ -281,4 +256,4 @@ macro(ConfigurePackaging _version)
     list(APPEND CPACK_SOURCE_IGNORE_FILES ${PROJECT_BINARY_DIR} ".git")
 
     include(CPack)
-endmacro(ConfigurePackaging)
+endmacro (ConfigurePackaging)

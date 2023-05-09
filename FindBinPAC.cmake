@@ -19,35 +19,16 @@
 #  BinPAC_INCLUDE_DIR        The binpac headers
 
 # look for BinPAC in standard locations or user-provided root
-find_path(BinPAC_ROOT_DIR
-    NAMES include/binpac.h include/binpac/binpac.h
-)
+find_path(BinPAC_ROOT_DIR NAMES include/binpac.h include/binpac/binpac.h)
 
-find_program(BinPAC_EXE
-    NAMES binpac
-    HINTS ${BinPAC_ROOT_DIR}/bin
-)
+find_program(BinPAC_EXE NAMES binpac HINTS ${BinPAC_ROOT_DIR}/bin)
 
-find_library(BinPAC_LIBRARY
-    NAMES binpac libbinpac.a
-    HINTS ${BinPAC_ROOT_DIR}/lib
-)
+find_library(BinPAC_LIBRARY NAMES binpac libbinpac.a HINTS ${BinPAC_ROOT_DIR}/lib)
 
-find_path(BinPAC_INCLUDE_DIR
-    NAMES binpac.h
-    HINTS ${BinPAC_ROOT_DIR}/include ${BinPAC_ROOT_DIR}/include/binpac
-)
+find_path(BinPAC_INCLUDE_DIR NAMES binpac.h HINTS ${BinPAC_ROOT_DIR}/include
+                                                  ${BinPAC_ROOT_DIR}/include/binpac)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(BinPAC DEFAULT_MSG
-    BinPAC_EXE
-    BinPAC_LIBRARY
-    BinPAC_INCLUDE_DIR
-)
+find_package_handle_standard_args(BinPAC DEFAULT_MSG BinPAC_EXE BinPAC_LIBRARY BinPAC_INCLUDE_DIR)
 
-mark_as_advanced(
-    BinPAC_ROOT_DIR
-    BinPAC_EXE
-    BinPAC_LIBRARY
-    BinPAC_INCLUDE_DIR
-)
+mark_as_advanced(BinPAC_ROOT_DIR BinPAC_EXE BinPAC_LIBRARY BinPAC_INCLUDE_DIR)

@@ -19,7 +19,7 @@ include(InstallClobberImmune)
 #   _dstdir: absolute path to the directory in which to install the file
 #   _dstfilename: how to (re)name the file inside _dstdir
 
-macro(InstallPackageConfigFile _srcfile _dstdir _dstfilename)
+macro (InstallPackageConfigFile _srcfile _dstdir _dstfilename)
     set(_dstfile ${_dstdir}/${_dstfilename})
 
     if (BINARY_PACKAGING_MODE)
@@ -29,15 +29,13 @@ macro(InstallPackageConfigFile _srcfile _dstdir _dstfilename)
         install(FILES ${_srcfile} DESTINATION ${_dstdir} RENAME ${_dstfilename})
         # This cache variable is what the Mac package pre/post install scripts
         # use to avoid clobbering user-modified config files
-        set(INSTALLED_CONFIG_FILES
-            "${INSTALLED_CONFIG_FILES} ${_dstfile}" CACHE STRING "" FORCE)
+        set(INSTALLED_CONFIG_FILES "${INSTALLED_CONFIG_FILES} ${_dstfile}" CACHE STRING "" FORCE)
 
         # Additionally, the Mac PackageMaker packages don't have any automatic
         # handling of configuration file conflicts so install an example file
         # that the post install script will cleanup in the case it's extraneous
         if (APPLE)
-            install(FILES ${_srcfile} DESTINATION ${_dstdir}
-                    RENAME ${_dstfilename}.example)
+            install(FILES ${_srcfile} DESTINATION ${_dstdir} RENAME ${_dstfilename}.example)
         endif ()
     else ()
         # Have `make install` check at run time whether the file does not exist
@@ -45,8 +43,7 @@ macro(InstallPackageConfigFile _srcfile _dstdir _dstfilename)
     endif ()
 
     if (NOT TARGET install-example-configs)
-        add_custom_target(install-example-configs
-                          COMMENT "Installed example configuration files")
+        add_custom_target(install-example-configs COMMENT "Installed example configuration files")
     endif ()
 
     # Replace characters disallowed in target names (per CMP0037) with '.'.
@@ -54,10 +51,11 @@ macro(InstallPackageConfigFile _srcfile _dstdir _dstfilename)
 
     set(_example ${_dstfile}.example)
 
-    add_custom_target(install-example-config-${_flatsrc}
-        COMMAND "${CMAKE_COMMAND}" -E copy ${_srcfile} \${DESTDIR}${_example}
+    add_custom_target(
+        install-example-config-${_flatsrc} COMMAND "${CMAKE_COMMAND}" -E copy ${_srcfile}
+                                                   \${DESTDIR}${_example}
         COMMENT "Installing ${_example}")
 
     add_dependencies(install-example-configs install-example-config-${_flatsrc})
 
-endmacro(InstallPackageConfigFile)
+endmacro (InstallPackageConfigFile)

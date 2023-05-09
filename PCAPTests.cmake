@@ -6,13 +6,13 @@ include(CheckIncludeFiles)
 set(PCAP_OS_LIBRARIES)
 if (MSVC)
     set(PCAP_OS_LIBRARIES ws2_32.lib Crypt32.lib ${OPENSSL_LIBRARIES})
-endif()
+endif ()
 set(CMAKE_REQUIRED_INCLUDES ${PCAP_INCLUDE_DIR})
 set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY} ${PCAP_OS_LIBRARIES})
 
 cmake_policy(PUSH)
 
-if ( POLICY CMP0075 )
+if (POLICY CMP0075)
     # It's fine that check_include_files links against CMAKE_REQUIRED_LIBRARIES
     cmake_policy(SET CMP0075 NEW)
 endif ()

@@ -22,5 +22,4 @@ if (NOT SUBNETTREE_FOUND)
 endif ()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(SubnetTree DEFAULT_MSG
-                                  SUBNETTREE_PYTHON_MODULE)
+find_package_handle_standard_args(SubnetTree DEFAULT_MSG SUBNETTREE_PYTHON_MODULE)

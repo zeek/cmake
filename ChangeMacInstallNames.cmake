@@ -36,7 +36,7 @@
 # Any binary packages created from such a build should be self-contained
 # and provide working installs on vanilla OS X systems.
 
-macro(ChangeMacInstallNames libListVar)
+macro (ChangeMacInstallNames libListVar)
     if (APPLE)
         find_program(INSTALL_NAME_TOOL install_name_tool)
 
@@ -55,17 +55,14 @@ macro(ChangeMacInstallNames libListVar)
             if (NOT apple_provided_lib AND is_shared_lib)
                 get_filename_component(_libname ${_lib} NAME)
                 set(_adjustedLib ${SUPPORT_BIN_DIR}/${_libname})
-                set(_tmpLib
-                    ${Zeek_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_libname})
+                set(_tmpLib ${Zeek_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_libname})
 
                 # make a tempory copy so we can adjust permissions
                 configure_file(${_lib} ${_tmpLib} COPYONLY)
 
                 # copy to build directory with correct write permissions
-                file(COPY ${_tmpLib}
-                    DESTINATION ${SUPPORT_BIN_DIR}
-                    FILE_PERMISSIONS OWNER_READ OWNER_WRITE
-                                     GROUP_READ WORLD_READ)
+                file(COPY ${_tmpLib} DESTINATION ${SUPPORT_BIN_DIR}
+                     FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
                 # remove the old library from the list provided as macro
                 # argument and add the new library with modified install_name
@@ -74,14 +71,13 @@ macro(ChangeMacInstallNames libListVar)
 
                 # update the install target to install the third party libs
                 # with modified install_name
-                install(FILES ${_adjustedLib}
-                    DESTINATION ${SUPPORT_INSTALL_DIR})
+                install(FILES ${_adjustedLib} DESTINATION ${SUPPORT_INSTALL_DIR})
 
                 # perform the install_name change
-                execute_process(COMMAND install_name_tool -id
-                    @executable_path/../${SUPPORT_INSTALL_DIR}/${_libname}
-                    ${_adjustedLib})
+                execute_process(
+                    COMMAND install_name_tool -id
+                            @executable_path/../${SUPPORT_INSTALL_DIR}/${_libname} ${_adjustedLib})
             endif ()
         endforeach ()
     endif ()
-endmacro()
+endmacro ()

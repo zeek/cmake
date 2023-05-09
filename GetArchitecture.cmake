@@ -1,4 +1,3 @@
-
 # Determine a tag for the host architecture (e.g., "linux-x86_64").
 # We run uname ourselves here as CMAKE by default uses -p rather than
 # -m.
