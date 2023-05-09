@@ -1,7 +1,8 @@
 # Show warning when installing user is different from the one that configured,
 # except when the install is root.
 if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-    install(CODE "
+    install(
+        CODE "
     if (NOT \"$ENV{USER}\" STREQUAL \"\$ENV{USER}\" AND
         NOT \"\$ENV{USER}\" STREQUAL root)
         message(STATUS \"WARNING: Install is being performed by user \"

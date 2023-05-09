@@ -1,4 +1,4 @@
-if ( NOT TARGET Zeek::BinPAC )
+if (NOT TARGET Zeek::BinPAC)
     message(FATAL_ERROR "BinPAC.cmake needs Zeek::BinPAC")
 endif ()
 
@@ -6,14 +6,15 @@ endif ()
 # produce C++ code that implements a protocol parser/analyzer.
 # The outputs are returned in BINPAC_OUTPUT_{CC,H}.
 # Additional dependencies are pulled from BINPAC_AUXSRC.
-function(binpac_target pacFile)
+function (binpac_target pacFile)
 
     set(BinPAC_addl_args "")
 
-    if ( ZEEK_PLUGIN_INTERNAL_BUILD )
+    if (ZEEK_PLUGIN_INTERNAL_BUILD)
         # Ensure that for plugins included via --include-plugins, the Zeek's
         # source tree paths are added to binpac's include path as well.
-        set(BinPAC_addl_args "-I;${CMAKE_SOURCE_DIR};-I;${CMAKE_SOURCE_DIR}/src;-I;${CMAKE_SOURCE_DIR}/src/include")
+        set(BinPAC_addl_args
+            "-I;${CMAKE_SOURCE_DIR};-I;${CMAKE_SOURCE_DIR}/src;-I;${CMAKE_SOURCE_DIR}/src/include")
         # Add a dependency on the target when building Zeek to make sure the
         # executable actually exists.
         set(binpacDep Zeek::BinPAC)
@@ -21,19 +22,19 @@ function(binpac_target pacFile)
 
     # Add ZEEK_SOURCE_DIR and ZEEK_SOURCE_DIR/src to BinPAC_addl_args. This
     # variable is defined in the main CMake file.
-    if ( ZEEK_SOURCE_DIR )
+    if (ZEEK_SOURCE_DIR)
         list(APPEND BinPAC_addl_args -I "${ZEEK_SOURCE_DIR}" -I "${ZEEK_SOURCE_DIR}/src")
     endif ()
 
     # Add ZEEK_CMAKE_INSTALL_PREFIX to BinPAC_addl_args if it exists. This
     # variable is present when loading ZeekPlugin.cmake.
-    if ( ZEEK_CMAKE_INSTALL_PREFIX )
+    if (ZEEK_CMAKE_INSTALL_PREFIX)
         list(APPEND BinPAC_addl_args -I "${ZEEK_CMAKE_INSTALL_PREFIX}/include")
     endif ()
 
     # Add BinPAC_INCLUDE_DIR to BinPAC_addl_args if it exists. This variable is
     # present when finding BinPAC via FindBinPAC.cmake.
-    if ( BinPAC_INCLUDE_DIR )
+    if (BinPAC_INCLUDE_DIR)
         # Note: this variable may be a list.
         foreach (dir ${BinPAC_INCLUDE_DIR})
             list(APPEND BinPAC_addl_args -I "${dir}")
@@ -45,9 +46,10 @@ function(binpac_target pacFile)
     set(hdr_file ${pacBaseName}_pac.h)
     set(src_file ${pacBaseName}_pac.cc)
 
-    if ( NOT MSVC )
-        set_property(SOURCE ${src_file} APPEND_STRING PROPERTY COMPILE_FLAGS "-Wno-tautological-compare")
-    endif()
+    if (NOT MSVC)
+        set_property(SOURCE ${src_file} APPEND_STRING PROPERTY COMPILE_FLAGS
+                                                               "-Wno-tautological-compare")
+    endif ()
 
     add_clang_tidy_files(${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.cc)
 
@@ -62,15 +64,12 @@ function(binpac_target pacFile)
     string(REGEX REPLACE ":" "" target "${target}")
     add_custom_command(
         OUTPUT "${hdr_file}" "${src_file}"
-        COMMAND Zeek::BinPAC
-                -q -d ${CMAKE_CURRENT_BINARY_DIR}
-                -I ${CMAKE_CURRENT_SOURCE_DIR}
-                -I ${CMAKE_CURRENT_SOURCE_DIR}/src
-                ${BinPAC_addl_args}
-                ${CMAKE_CURRENT_SOURCE_DIR}/${pacFile}
+        COMMAND
+            Zeek::BinPAC -q -d ${CMAKE_CURRENT_BINARY_DIR} -I ${CMAKE_CURRENT_SOURCE_DIR} -I
+            ${CMAKE_CURRENT_SOURCE_DIR}/src ${BinPAC_addl_args}
+            ${CMAKE_CURRENT_SOURCE_DIR}/${pacFile}
         DEPENDS ${binpacDep} ${pacFile} ${BINPAC_AUXSRC} ${ARGN}
-        COMMENT "[BINPAC] Processing ${CMAKE_CURRENT_SOURCE_DIR}/${pacFile}"
-    )
+        COMMENT "[BINPAC] Processing ${CMAKE_CURRENT_SOURCE_DIR}/${pacFile}")
     add_custom_target(${target} DEPENDS "${hdr_file}" "${src_file}")
 
     # Make paths to generated visible at the caller.
@@ -81,4 +80,4 @@ function(binpac_target pacFile)
     if (TARGET zeek_autogen_files)
         add_dependencies(zeek_autogen_files ${target})
     endif ()
-endfunction()
+endfunction ()

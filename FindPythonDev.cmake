@@ -22,15 +22,12 @@
 
 include(FindPackageHandleStandardArgs)
 
-if ( CMAKE_CROSSCOMPILING )
+if (CMAKE_CROSSCOMPILING)
     find_package(PythonLibs)
     if (PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIR)
         set(PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}")
     endif ()
-    find_package_handle_standard_args(PythonDev DEFAULT_MSG
-        PYTHON_INCLUDE_DIR
-        PYTHON_LIBRARIES
-    )
+    find_package_handle_standard_args(PythonDev DEFAULT_MSG PYTHON_INCLUDE_DIR PYTHON_LIBRARIES)
 
     return()
 endif ()
@@ -43,27 +40,28 @@ if (PYTHON_EXECUTABLE)
     get_filename_component(PYTHON_EXECUTABLE_DIR "${PYTHON_EXECUTABLE}" DIRECTORY)
     get_filename_component(PYTHON_EXECUTABLE_NAME "${PYTHON_EXECUTABLE}" NAME)
 
-    if ( EXISTS ${PYTHON_EXECUTABLE}-config )
+    if (EXISTS ${PYTHON_EXECUTABLE}-config)
         set(PYTHON_CONFIG ${PYTHON_EXECUTABLE}-config CACHE PATH "" FORCE)
-    # Avoid assumption that python-config is associated with python3 if
-    # python3 co-exists in a directory that also contains python2 stuff
-    elseif ( EXISTS ${PYTHON_EXECUTABLE_DIR}/python-config AND
-             NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2 AND
-             NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2.7 AND
-             NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2-config AND
-             NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2.7-config )
+        # Avoid assumption that python-config is associated with python3 if
+        # python3 co-exists in a directory that also contains python2 stuff
+    elseif (
+        EXISTS ${PYTHON_EXECUTABLE_DIR}/python-config
+        AND NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2
+        AND NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2.7
+        AND NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2-config
+        AND NOT EXISTS ${PYTHON_EXECUTABLE_DIR}/python2.7-config)
         set(PYTHON_CONFIG ${PYTHON_EXECUTABLE_DIR}/python-config CACHE PATH "" FORCE)
     endif ()
 else ()
-    find_program(PYTHON_CONFIG NAMES
-                 python3-config
-                 python3.9-config
-                 python3.8-config
-                 python3.7-config
-                 python3.6-config
-                 python3.5-config
-                 python-config
-                 )
+    find_program(
+        PYTHON_CONFIG
+        NAMES python3-config
+              python3.9-config
+              python3.8-config
+              python3.7-config
+              python3.6-config
+              python3.5-config
+              python-config)
 endif ()
 
 # The OpenBSD python packages have python-config's that don't reliably
@@ -79,41 +77,36 @@ if (PYTHON_CONFIG AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD")
     # strictly necessary is losing the ability to mix-and-match debug/release
     # modes between Python and extensions and that's not a feature to typically
     # care about.
-    execute_process(COMMAND "${PYTHON_CONFIG}" --ldflags --embed
-                    RESULT_VARIABLE _python_config_result
-                    OUTPUT_VARIABLE PYTHON_LIBRARIES
-                    OUTPUT_STRIP_TRAILING_WHITESPACE
-                    ERROR_QUIET)
+    execute_process(
+        COMMAND "${PYTHON_CONFIG}" --ldflags --embed
+        RESULT_VARIABLE _python_config_result
+        OUTPUT_VARIABLE PYTHON_LIBRARIES
+        OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
 
-    if ( NOT ${_python_config_result} EQUAL 0 )
-      execute_process(COMMAND "${PYTHON_CONFIG}" --ldflags
-                      RESULT_VARIABLE _python_config_result
-                      OUTPUT_VARIABLE PYTHON_LIBRARIES
-                      OUTPUT_STRIP_TRAILING_WHITESPACE
-                      ERROR_QUIET)
+    if (NOT ${_python_config_result} EQUAL 0)
+        execute_process(
+            COMMAND "${PYTHON_CONFIG}" --ldflags
+            RESULT_VARIABLE _python_config_result
+            OUTPUT_VARIABLE PYTHON_LIBRARIES
+            OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
     endif ()
 
     string(STRIP "${PYTHON_LIBRARIES}" PYTHON_LIBRARIES)
 
-    execute_process(COMMAND "${PYTHON_CONFIG}" --includes
-                    OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
-                    OUTPUT_STRIP_TRAILING_WHITESPACE
-                    ERROR_QUIET)
+    execute_process(COMMAND "${PYTHON_CONFIG}" --includes OUTPUT_VARIABLE PYTHON_INCLUDE_DIR
+                    OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
 
     string(REGEX REPLACE "^[-I]" "" PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
     string(REGEX REPLACE "[ ]-I" " " PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_DIR}")
     separate_arguments(PYTHON_INCLUDE_DIR)
 
-    find_package_handle_standard_args(PythonDev DEFAULT_MSG
-        PYTHON_CONFIG
-        PYTHON_INCLUDE_DIR
-        PYTHON_LIBRARIES
-    )
+    find_package_handle_standard_args(PythonDev DEFAULT_MSG PYTHON_CONFIG PYTHON_INCLUDE_DIR
+                                      PYTHON_LIBRARIES)
 else ()
-    if ( ${CMAKE_VERSION} VERSION_LESS "3.12.0" )
+    if (${CMAKE_VERSION} VERSION_LESS "3.12.0")
         find_package(PythonLibs)
 
-        if ( PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIR )
+        if (PYTHON_INCLUDE_PATH AND NOT PYTHON_INCLUDE_DIR)
             set(PYTHON_INCLUDE_DIR "${PYTHON_INCLUDE_PATH}")
         endif ()
     else ()
@@ -123,17 +116,14 @@ else ()
         # users are getting a recent version from homebrew/etc anyway.
         find_package(Python3 COMPONENTS Development)
 
-        if ( Python3_INCLUDE_DIRS AND NOT PYTHON_INCLUDE_DIR )
+        if (Python3_INCLUDE_DIRS AND NOT PYTHON_INCLUDE_DIR)
             set(PYTHON_INCLUDE_DIR "${Python3_INCLUDE_DIRS}")
         endif ()
 
-        if ( Python3_LIBRARIES AND NOT PYTHON_LIBRARIES )
+        if (Python3_LIBRARIES AND NOT PYTHON_LIBRARIES)
             set(PYTHON_LIBRARIES "${Python3_LIBRARIES}")
         endif ()
     endif ()
 
-    find_package_handle_standard_args(PythonDev DEFAULT_MSG
-        PYTHON_INCLUDE_DIR
-        PYTHON_LIBRARIES
-    )
+    find_package_handle_standard_args(PythonDev DEFAULT_MSG PYTHON_INCLUDE_DIR PYTHON_LIBRARIES)
 endif ()

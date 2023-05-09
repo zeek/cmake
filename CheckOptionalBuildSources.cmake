@@ -7,7 +7,7 @@
 #     _varName: name of the variable indicating whether package is scheduled
 #               to be installed
 
-macro(CheckOptionalBuildSources _dir _packageName _varName)
+macro (CheckOptionalBuildSources _dir _packageName _varName)
     if (${_varName})
         if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_dir}/CMakeLists.txt)
             add_subdirectory(${_dir})
@@ -18,4 +18,4 @@ macro(CheckOptionalBuildSources _dir _packageName _varName)
             set(${_varName} false)
         endif ()
     endif ()
-endmacro(CheckOptionalBuildSources)
+endmacro (CheckOptionalBuildSources)

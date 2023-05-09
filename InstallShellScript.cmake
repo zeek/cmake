@@ -14,7 +14,7 @@
 # [_dstfilename]: an optional argument for how to (re)name the file as
 #     it's installed inside _dstdir
 
-macro(InstallShellScript _dstdir _srcfile)
+macro (InstallShellScript _dstdir _srcfile)
     if (NOT "${ARGN}" STREQUAL "")
         set(_dstfilename ${ARGN})
     else ()
@@ -35,25 +35,21 @@ macro(InstallShellScript _dstdir _srcfile)
         string(REGEX MATCH ${_regex} _match ${_srclines})
         if (_match)
             set(_shell ${CMAKE_MATCH_1})
-            if ( (${_shell} STREQUAL "python" OR ${_shell} STREQUAL "python3") AND PYTHON_EXECUTABLE )
+            if ((${_shell} STREQUAL "python" OR ${_shell} STREQUAL "python3") AND PYTHON_EXECUTABLE)
                 set(${_shell}_interp ${PYTHON_EXECUTABLE})
             else ()
                 find_program(${_shell}_interp ${_shell})
             endif ()
             if (NOT ${_shell}_interp)
-                message(FATAL_ERROR
-                       "Absolute path to interpreter '${_shell}' not found, "
-                       "failed to configure shell script: ${orig_file}")
+                message(FATAL_ERROR "Absolute path to interpreter '${_shell}' not found, "
+                                    "failed to configure shell script: ${orig_file}")
             endif ()
 
-            string(REGEX REPLACE ${_regex} "#!${${_shell}_interp}"
-                   _srclines "${_srclines}")
+            string(REGEX REPLACE ${_regex} "#!${${_shell}_interp}" _srclines "${_srclines}")
         endif ()
     endif ()
 
     file(WRITE ${dehashbanged_file} "${_srclines}")
 
-    install(PROGRAMS ${dehashbanged_file}
-            DESTINATION ${_dstdir}
-            RENAME ${_dstfilename})
-endmacro(InstallShellScript)
+    install(PROGRAMS ${dehashbanged_file} DESTINATION ${_dstdir} RENAME ${_dstfilename})
+endmacro (InstallShellScript)

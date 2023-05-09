@@ -5,8 +5,9 @@
 # _srcfile: the file to install
 # _dstfile: the absolute file name after installation
 
-macro(InstallClobberImmune _srcfile _dstfile)
-    install(CODE "
+macro (InstallClobberImmune _srcfile _dstfile)
+    install(
+        CODE "
         set(_destfile \"${_dstfile}\")
         if (NOT \"\$ENV{DESTDIR}\" STREQUAL \"\")
             # prepend install root prefix with install-time DESTDIR
@@ -28,4 +29,4 @@ macro(InstallClobberImmune _srcfile _dstfile)
             # TODO: create additional install_manifest files?
         endif ()
     ")
-endmacro(InstallClobberImmune)
+endmacro (InstallClobberImmune)

@@ -23,29 +23,32 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "ultrix")
     list(APPEND CMAKE_C_FLAGS -std1 -g3)
     list(APPEND CMAKE_CXX_FLAGS -std1 -g3)
     include(CheckCSourceCompiles)
-    check_c_source_compiles("
+    check_c_source_compiles(
+        "
         #include <sys/types.h>
         int main() {
             void c(const struct a *);
             return 0;
         }
-    " have_ultrix_const)
+    "
+        have_ultrix_const)
     if (NOT have_ultrix_const)
         set(NEED_ULTRIX_CONST_HACK true)
     endif ()
 
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "hpux" OR
-        ${CMAKE_SYSTEM_NAME} MATCHES "HP-UX")
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "hpux" OR ${CMAKE_SYSTEM_NAME} MATCHES "HP-UX")
     include(CheckCSourceCompiles)
     set(CMAKE_REQUIRED_FLAGS -Aa)
     set(CMAKE_REQUIRED_DEFINITIONS -D_HPUX_SOURCE)
-    check_c_source_compiles("
+    check_c_source_compiles(
+        "
         #include <sys/types.h>
         int main() {
             int frob(int, char *);
             return 0;
         }
-    " have_ansi_prototypes)
+    "
+        have_ansi_prototypes)
     set(CMAKE_REQUIRED_FLAGS)
     set(CMAKE_REQUIRED_DEFINITIONS)
 
@@ -59,5 +62,3 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "hpux" OR
         message(FATAL_ERROR "Can't get HPUX compiler to handle ANSI prototypes")
     endif ()
 endif ()
-
-

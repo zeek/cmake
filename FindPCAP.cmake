@@ -19,31 +19,20 @@
 #                            library e.g. required by pf_ring's libpcap)
 #  HAVE_PF_RING              If a found version of libpcap supports PF_RING
 
-find_path(PCAP_ROOT_DIR
-    NAMES include/pcap.h Include/pcap.h
-)
+find_path(PCAP_ROOT_DIR NAMES include/pcap.h Include/pcap.h)
 
-find_path(PCAP_INCLUDE_DIR
-    NAMES pcap.h
-    HINTS ${PCAP_ROOT_DIR}/include
-)
+find_path(PCAP_INCLUDE_DIR NAMES pcap.h HINTS ${PCAP_ROOT_DIR}/include)
 
-if ( MSVC AND COMPILER_ARCHITECTURE STREQUAL "x86_64" )
+if (MSVC AND COMPILER_ARCHITECTURE STREQUAL "x86_64")
     set(_pcap_lib_hint_path ${PCAP_ROOT_DIR}/lib/x64)
-else()
+else ()
     set(_pcap_lib_hint_path ${PCAP_ROOT_DIR}/lib)
-endif()
+endif ()
 
-find_library(PCAP_LIBRARY
-    NAMES pcap wpcap
-    HINTS ${_pcap_lib_hint_path}
-)
+find_library(PCAP_LIBRARY NAMES pcap wpcap HINTS ${_pcap_lib_hint_path})
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PCAP DEFAULT_MSG
-    PCAP_LIBRARY
-    PCAP_INCLUDE_DIR
-)
+find_package_handle_standard_args(PCAP DEFAULT_MSG PCAP_LIBRARY PCAP_INCLUDE_DIR)
 
 include(CheckCSourceCompiles)
 set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY})
@@ -61,17 +50,16 @@ if (NOT PCAP_LINKS_SOLO)
     if (THREADS_FOUND AND PCAP_NEEDS_THREADS)
         set(_tmp ${PCAP_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
         list(REMOVE_DUPLICATES _tmp)
-        set(PCAP_LIBRARY ${_tmp}
-            CACHE STRING "Libraries needed to link against libpcap" FORCE)
+        set(PCAP_LIBRARY ${_tmp} CACHE STRING "Libraries needed to link against libpcap" FORCE)
     else ()
         message(FATAL_ERROR "Couldn't determine how to link against libpcap")
     endif ()
 endif ()
 
 string(FIND "${PCAP_LIBRARY}" "wpcap" _pcap_lib_is_wpcap)
-if ( _pcap_lib_is_wpcap GREATER_EQUAL 0 )
+if (_pcap_lib_is_wpcap GREATER_EQUAL 0)
     set(HAVE_WPCAP TRUE)
-endif()
+endif ()
 
 include(CheckFunctionExists)
 set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARY})
@@ -79,8 +67,4 @@ check_function_exists(pcap_get_pfring_id HAVE_PF_RING)
 check_function_exists(pcap_dump_open_append HAVE_PCAP_DUMP_OPEN_APPEND)
 set(CMAKE_REQUIRED_LIBRARIES)
 
-mark_as_advanced(
-    PCAP_ROOT_DIR
-    PCAP_INCLUDE_DIR
-    PCAP_LIBRARY
-)
+mark_as_advanced(PCAP_ROOT_DIR PCAP_INCLUDE_DIR PCAP_LIBRARY)

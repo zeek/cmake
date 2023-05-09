@@ -17,9 +17,7 @@
 #  LibMMDB_LIBRARY                  The libmaxminddb library
 #  LibMMDB_INCLUDE_DIR              The location of libmaxminddb headers
 
-find_path(LibMMDB_ROOT_DIR
-    NAMES include/maxminddb.h
-)
+find_path(LibMMDB_ROOT_DIR NAMES include/maxminddb.h)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # the static version of the library is preferred on OS X for the
@@ -29,24 +27,11 @@ else ()
     set(libmmdb_names maxminddb)
 endif ()
 
-find_library(LibMMDB_LIBRARY
-    NAMES ${libmmdb_names}
-    HINTS ${LibMMDB_ROOT_DIR}/lib
-)
+find_library(LibMMDB_LIBRARY NAMES ${libmmdb_names} HINTS ${LibMMDB_ROOT_DIR}/lib)
 
-find_path(LibMMDB_INCLUDE_DIR
-    NAMES maxminddb.h
-    HINTS ${LibMMDB_ROOT_DIR}/include
-)
+find_path(LibMMDB_INCLUDE_DIR NAMES maxminddb.h HINTS ${LibMMDB_ROOT_DIR}/include)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(LibMMDB DEFAULT_MSG
-    LibMMDB_LIBRARY
-    LibMMDB_INCLUDE_DIR
-)
+find_package_handle_standard_args(LibMMDB DEFAULT_MSG LibMMDB_LIBRARY LibMMDB_INCLUDE_DIR)
 
-mark_as_advanced(
-    LibMMDB_ROOT_DIR
-    LibMMDB_LIBRARY
-    LibMMDB_INCLUDE_DIR
-)
+mark_as_advanced(LibMMDB_ROOT_DIR LibMMDB_LIBRARY LibMMDB_INCLUDE_DIR)

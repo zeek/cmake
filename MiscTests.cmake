@@ -6,7 +6,8 @@ include(CheckCSourceCompiles)
 set(RETSIGTYPE "void")
 set(RETSIGVAL "")
 
-check_c_source_compiles("
+check_c_source_compiles(
+    "
     #include <sys/types.h>
     #include <sys/socket.h>
     extern int socket(int, int, int);
@@ -14,12 +15,14 @@ check_c_source_compiles("
     extern int send(int, const void *, int, int);
     extern int recvfrom(int, void *, int, int, struct sockaddr *, int *);
     int main() { return 0; }
-" DO_SOCK_DECL)
+"
+    DO_SOCK_DECL)
 if (DO_SOCK_DECL)
     message(STATUS "socket() and friends need explicit declaration")
 endif ()
 
-check_cxx_source_compiles("
+check_cxx_source_compiles(
+    "
     #include <stdlib.h>
     #include <syslog.h>
     extern \"C\" {
@@ -28,7 +31,8 @@ check_cxx_source_compiles("
         int closelog();
     }
     int main() { return 0; }
-" SYSLOG_INT)
+"
+    SYSLOG_INT)
 if (SYSLOG_INT)
     message(STATUS "syslog prototypes need declaration")
 endif ()

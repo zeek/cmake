@@ -18,14 +18,10 @@
 #  BIND_LIBRARY              The BIND library (if any) required for
 #                            ns_inittab and res_mkquery symbols
 
-find_path(BIND_ROOT_DIR
-    NAMES include/bind/resolv.h include/resolv.h
-)
+find_path(BIND_ROOT_DIR NAMES include/bind/resolv.h include/resolv.h)
 
-find_path(BIND_INCLUDE_DIR
-    NAMES resolv.h
-    HINTS ${BIND_ROOT_DIR}/include/bind ${BIND_ROOT_DIR}/include
-)
+find_path(BIND_INCLUDE_DIR NAMES resolv.h HINTS ${BIND_ROOT_DIR}/include/bind
+                                                ${BIND_ROOT_DIR}/include)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     # the static resolv library is preferred because
@@ -43,23 +39,24 @@ include(CheckCSourceCompiles)
 set(CMAKE_REQUIRED_INCLUDES ${BIND_INCLUDE_DIR})
 foreach (bindlib ${bind_libs})
     if (NOT ${bindlib} MATCHES "none")
-        find_library(BIND_LIBRARY
-            NAMES ${bindlib}
-            HINTS ${BIND_ROOT_DIR}/lib ${BIND_ROOT_DIR}/lib/libbind
-        )
+        find_library(BIND_LIBRARY NAMES ${bindlib} HINTS ${BIND_ROOT_DIR}/lib
+                                                         ${BIND_ROOT_DIR}/lib/libbind)
     endif ()
 
     set(CMAKE_REQUIRED_LIBRARIES ${BIND_LIBRARY})
 
-    check_c_source_compiles("
+    check_c_source_compiles(
+        "
         #include <arpa/nameser.h>
         int main() {
             ns_initparse(0, 0, 0);
             return 0;
         }
-" ns_initparse_works_${bindlib})
+"
+        ns_initparse_works_${bindlib})
 
-    check_c_source_compiles("
+    check_c_source_compiles(
+        "
         #include <sys/types.h>
         #include <sys/socket.h>
         #include <netinet/in.h>
@@ -69,12 +66,13 @@ foreach (bindlib ${bind_libs})
             int (*p)() = res_mkquery;
             return 0;
         }
-" res_mkquery_works_${bindlib})
+"
+        res_mkquery_works_${bindlib})
 
     set(CMAKE_REQUIRED_LIBRARIES)
 
     if (ns_initparse_works_${bindlib} AND res_mkquery_works_${bindlib})
-        break ()
+        break()
     else ()
         set(BIND_LIBRARY BIND_LIBRARY-NOTFOUND)
     endif ()
@@ -85,18 +83,9 @@ include(FindPackageHandleStandardArgs)
 
 if (ns_initparse_works_none AND res_mkquery_works_none)
     # system does not require linking to a BIND library
-    find_package_handle_standard_args(BIND DEFAULT_MSG
-        BIND_INCLUDE_DIR
-    )
+    find_package_handle_standard_args(BIND DEFAULT_MSG BIND_INCLUDE_DIR)
 else ()
-    find_package_handle_standard_args(BIND DEFAULT_MSG
-        BIND_LIBRARY
-        BIND_INCLUDE_DIR
-    )
+    find_package_handle_standard_args(BIND DEFAULT_MSG BIND_LIBRARY BIND_INCLUDE_DIR)
 endif ()
 
-mark_as_advanced(
-    BIND_ROOT_DIR
-    BIND_LIBRARY
-    BIND_INCLUDE_DIR
-)
+mark_as_advanced(BIND_ROOT_DIR BIND_LIBRARY BIND_INCLUDE_DIR)

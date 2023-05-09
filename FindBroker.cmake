@@ -17,50 +17,27 @@
 #  BROKER_LIBRARY            The broker library
 #  BROKER_INCLUDE_DIR        The broker headers
 
-if(NOT BROKER_ROOT_DIR)
-    find_path(BROKER_ROOT_DIR
-        NAMES include/broker/broker.hh
-    )
-    set(header_hints
-        "${BROKER_ROOT_DIR}/include"
-    )
-else()
-    set(header_hints
-        "${BROKER_ROOT_DIR}/include"
-        "${BROKER_ROOT_DIR}/../include"
-        "${BROKER_ROOT_DIR}/../../include"
-    )
-endif()
+if (NOT BROKER_ROOT_DIR)
+    find_path(BROKER_ROOT_DIR NAMES include/broker/broker.hh)
+    set(header_hints "${BROKER_ROOT_DIR}/include")
+else ()
+    set(header_hints "${BROKER_ROOT_DIR}/include" "${BROKER_ROOT_DIR}/../include"
+                     "${BROKER_ROOT_DIR}/../../include")
+endif ()
 
-find_library(BROKER_LIBRARY
-    NAMES broker
-    HINTS ${BROKER_ROOT_DIR}/lib
-)
+find_library(BROKER_LIBRARY NAMES broker HINTS ${BROKER_ROOT_DIR}/lib)
 
-find_path(broker_hh_dir
-    NAMES broker/broker.hh
-    HINTS ${header_hints}
-)
+find_path(broker_hh_dir NAMES broker/broker.hh HINTS ${header_hints})
 
-find_path(config_hh_dir
-    NAMES broker/config.hh
-    HINTS ${header_hints}
-)
+find_path(config_hh_dir NAMES broker/config.hh HINTS ${header_hints})
 
-if("${broker_hh_dir}" STREQUAL "${config_hh_dir}")
+if ("${broker_hh_dir}" STREQUAL "${config_hh_dir}")
     set(BROKER_INCLUDE_DIR "${broker_hh_dir}")
-else()
+else ()
     set(BROKER_INCLUDE_DIR "${broker_hh_dir}" "${config_hh_dir}")
-endif()
+endif ()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Broker DEFAULT_MSG
-    BROKER_LIBRARY
-    BROKER_INCLUDE_DIR
-)
+find_package_handle_standard_args(Broker DEFAULT_MSG BROKER_LIBRARY BROKER_INCLUDE_DIR)
 
-mark_as_advanced(
-    BROKER_ROOT_DIR
-    BROKER_LIBRARY
-    BROKER_INCLUDE_DIR
-)
+mark_as_advanced(BROKER_ROOT_DIR BROKER_LIBRARY BROKER_INCLUDE_DIR)
