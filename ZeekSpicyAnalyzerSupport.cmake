@@ -51,14 +51,13 @@ function (spicy_add_analyzer)
         list(APPEND CXX_LINK ${cxx_link})
     endforeach ()
 
-    # Note: The link below to `spicy-modules` is for backwards compatibility with older zkg packages.
+    # Create a link for backwards compatibility with older zkg packages.
+    file(CREATE_LINK "." ${SPICY_MODULE_OUTPUT_DIR_BUILD}/spicy-modules SYMBOLIC)
+
     add_custom_command(
         OUTPUT ${OUTPUT}
         DEPENDS ${SPICY_ANALYZER_SOURCES} spicyz
         COMMENT "Compiling ${SPICY_ANALYZER_NAME} analyzer"
-        COMMAND mkdir -p ${SPICY_MODULE_OUTPUT_DIR_BUILD}
-        COMMAND ln -s ${SPICY_MODULE_OUTPUT_DIR_BUILD}
-                ${SPICY_MODULE_OUTPUT_DIR_BUILD}/spicy-modules
         COMMAND spicyz -o ${OUTPUT} ${_SPICYZ_FLAGS} ${SPICY_ANALYZER_SOURCES} ${CXX_LINK}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
