@@ -58,7 +58,8 @@ function (spicy_add_analyzer)
         OUTPUT ${OUTPUT}
         DEPENDS ${SPICY_ANALYZER_SOURCES} spicyz
         COMMENT "Compiling ${SPICY_ANALYZER_NAME} analyzer"
-        COMMAND spicyz -o ${OUTPUT} ${_SPICYZ_FLAGS} ${SPICY_ANALYZER_SOURCES} ${CXX_LINK}
+        COMMAND ${CMAKE_COMMAND} -E env ASAN_OPTIONS=$ENV{ASAN_OPTIONS}:detect_leaks=0 spicyz -o
+                ${OUTPUT} ${_SPICYZ_FLAGS} ${SPICY_ANALYZER_SOURCES} ${CXX_LINK}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
     add_custom_target(${SPICY_ANALYZER_NAME} ALL DEPENDS ${OUTPUT}
