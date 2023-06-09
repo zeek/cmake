@@ -122,7 +122,7 @@ function (zeek_add_dynamic_plugin ns name)
 
     # Write the 'magic' __bro_plugin__ file. We can do that once during CMake
     # invocation since it won't change.
-    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/__bro_plugin__" "${full_name}")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/__bro_plugin__" "${full_name}\n")
 
     # Stop here unless building 3rd party plugins.
     if (ZEEK_PLUGIN_INTERNAL_BUILD)
