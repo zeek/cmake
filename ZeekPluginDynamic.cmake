@@ -135,7 +135,7 @@ function (zeek_add_dynamic_plugin ns name)
     add_custom_command(
         OUTPUT ${dist_tarball_path}
         COMMAND ${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-create-package.sh ${canon_name}
-                ${DIST_FILES}
+                ${FN_ARGS_DIST_FILES}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS ${target_name}
         # DEPENDS ${target_name} ${_plugin_scripts}
