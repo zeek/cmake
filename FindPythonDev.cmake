@@ -56,11 +56,11 @@ else ()
     find_program(
         PYTHON_CONFIG
         NAMES python3-config
+              python3.11-config
+              python3.10-config
               python3.9-config
               python3.8-config
               python3.7-config
-              python3.6-config
-              python3.5-config
               python-config)
 endif ()
 
