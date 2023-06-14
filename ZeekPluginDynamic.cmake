@@ -37,8 +37,15 @@ function (zeek_add_dynamic_plugin ns name)
         ${target_name} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${lib_dir}" PREFIX ""
                                   LIBRARY_OUTPUT_NAME "${ns}-${name}.${HOST_ARCHITECTURE}")
 
-    # Parse arguments (note: DIST_FILES are ignored in static builds).
-    set(fn_varargs INCLUDE_DIRS DEPENDENCIES SOURCES BIFS DIST_FILES PAC)
+    # Parse arguments (note: DIST_FILES and SCRIPT_FILES are ignored in static builds).
+    set(fn_varargs
+        INCLUDE_DIRS
+        DEPENDENCIES
+        SOURCES
+        BIFS
+        DIST_FILES
+        SCRIPT_FILES
+        PAC)
     cmake_parse_arguments(FN_ARGS "" "" "${fn_varargs}" ${ARGN})
 
     # Take care of compiling BIFs.
@@ -137,8 +144,7 @@ function (zeek_add_dynamic_plugin ns name)
         COMMAND ${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-create-package.sh ${canon_name}
                 ${DIST_FILES}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        DEPENDS ${target_name}
-        # DEPENDS ${target_name} ${_plugin_scripts}
+        DEPENDS ${target_name} ${FN_ARGS_SCRIPT_FILES}
         COMMENT "Building binary plugin package: ${dist_tarball_path}")
     add_custom_target(${target_name}_tarball ALL DEPENDS ${dist_tarball_path})
 
