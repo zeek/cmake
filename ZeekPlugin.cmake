@@ -159,6 +159,7 @@ endmacro ()
 #   [INCLUDE_DIRS ...]
 #   [DEPENDENCIES ...]
 #   [DIST_FILES ...]
+#   [SCRIPT_FILES ...]
 #   [SOURCES ...]
 #   [BIFS ...]
 #   [[PAC ...] ... ]
@@ -171,6 +172,11 @@ endmacro ()
 # * DIST_FILES:
 #   Adds additional files to install alongside the plugin when building a
 #   dynamic plugin. Ignored when building static plugins.
+# * SCRIPT_FILES:
+#   Marks the given script files as dependencies for the tarball when building
+#   a dynamic plugin. This is currently for dependency tracking only - the
+#   plugin's whole script directory is included in the resulting tarball
+#   regardless of the files provided here. Ignored when building static plugins.
 # * SOURCES:
 #   List of C++ files for compiling the plugin.
 # * BIFS:
