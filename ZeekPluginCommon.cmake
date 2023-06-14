@@ -73,6 +73,8 @@ macro (zeek_plugin_end)
         ${_plugin_bif_files}
         DIST_FILES
         ${_plugin_dist}
+        SCRIPT_FILES
+        ${_plugin_scripts}
         ${_plugin_pac_args})
 
     if (POLICY CMP0110)

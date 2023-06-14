@@ -28,7 +28,7 @@ function (zeek_add_static_plugin ns name)
         target_compile_definitions(${target_name} PRIVATE ZEEK_CONFIG_SKIP_VERSION_H)
     endif ()
 
-    # Parse arguments (note: DIST_FILES are ignored in static builds).
+    # Parse arguments (note: DIST_FILES and SCRIPT_FILES are ignored in static builds).
     set(fn_varargs INCLUDE_DIRS DEPENDENCIES SOURCES BIFS DIST_FILES PAC)
     cmake_parse_arguments(FN_ARGS "" "" "${fn_varargs}" ${ARGN})
 
