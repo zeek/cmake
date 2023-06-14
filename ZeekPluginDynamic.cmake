@@ -29,6 +29,9 @@ function (zeek_add_dynamic_plugin ns name)
     # Create the target if no begin function has been used.
     if (NOT TARGET ${target_name})
         add_library(${target_name} MODULE)
+
+        target_compile_features(${target_name} PRIVATE cxx_std_17)
+        set_target_properties(${target_name} PROPERTIES CXX_EXTENSIONS OFF)
     endif ()
 
     # Place library file into the 'lib' directory, drop default-generated file

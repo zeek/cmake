@@ -46,6 +46,9 @@ function (spicy_add_analyzer)
 
         set(lib "spicy_${SPICY_ANALYZER_NAME}")
         add_library(${lib} OBJECT ${generated_sources})
+        target_compile_features(${lib} PRIVATE cxx_std_17)
+        set_target_properties(${lib} PROPERTIES CXX_EXTENSIONS OFF)
+
         target_include_directories(${lib} PRIVATE ${SPICY_PLUGIN_PATH}/include
                                                   ${SPICY_PLUGIN_BINARY_PATH}/include)
         target_compile_definitions(${lib} PRIVATE HILTI_MANUAL_PREINIT)
