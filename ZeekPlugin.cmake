@@ -54,6 +54,10 @@ function (zeek_plugin_bootstrapping)
     # Another historic quirk: force CMAKE_EXPORT_COMPILE_COMMANDS to ON.
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON
         CACHE PATH "Configures whether to write a compile database." FORCE)
+
+    # When CMAKE_BUILD_TYPE is not set, use the one from Zeek.
+    set(CMAKE_BUILD_TYPE "${ZEEK_CMAKE_BUILD_TYPE}"
+        CACHE STRING "Configures the CMAKE_BUILD_TYPE for the plugin.")
 endfunction ()
 
 # Make sure BifCl and BinPAC are available.
