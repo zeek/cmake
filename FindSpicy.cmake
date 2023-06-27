@@ -40,6 +40,7 @@ macro (configure)
             message(STATUS "'${SPICY_CONFIG}' does not exist")
         endif ()
     else ()
+        # Attempt to find `spicy-config` only with configured paths.
         find_program(
             spicy_config spicy-config
             HINTS ${SPICY_ROOT_DIR}/bin
@@ -47,7 +48,13 @@ macro (configure)
                   $ENV{SPICY_ROOT_DIR}/bin
                   $ENV{SPICY_ROOT_DIR}/build/bin
                   # Try build directory of Spicy distribution we may be part of.
-                  ${PROJECT_SOURCE_DIR}/../../build/bin)
+                  ${PROJECT_SOURCE_DIR}/../../build/bin
+            NO_DEFAULT_PATH)
+
+        # If above search was not successful attempt to find the program in
+        # builtin search paths. CMake's `find_program` will only execute a new
+        # search if the output variable `spicy-config` is unset.
+        find_program(spicy_config spicy-config)
     endif ()
 
     if (NOT spicy_config)
