@@ -120,9 +120,9 @@ function (zeek_add_dynamic_plugin ns name)
         target_include_directories(${target_name} PRIVATE ${BinPAC_INCLUDE_DIR})
     endif ()
 
-    # Write the 'magic' __bro_plugin__ file. We can do that once during CMake
+    # Write the 'magic' __zeek_plugin__ file. We can do that once during CMake
     # invocation since it won't change.
-    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/__bro_plugin__" "${full_name}\n")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/__zeek_plugin__" "${full_name}\n")
 
     # Stop here unless building 3rd party plugins.
     if (ZEEK_PLUGIN_INTERNAL_BUILD)
