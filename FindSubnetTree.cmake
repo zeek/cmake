@@ -2,7 +2,7 @@
 #
 # Usage of this module as follows:
 #
-#  find_package(PythonInterp REQUIRED)
+#  find_package(Python REQUIRED COMPONENTS Interpreter)
 #  find_package(SubnetTree)
 #
 # Variables defined by this module:
@@ -10,7 +10,7 @@
 #  SUBNETTREE_FOUND             Python successfully imports SubnetTree module
 
 if (NOT SUBNETTREE_FOUND)
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "import SubnetTree"
+    execute_process(COMMAND "${Python_EXECUTABLE}" -c "import SubnetTree"
                     RESULT_VARIABLE SUBNETTREE_IMPORT_RESULT)
 
     if (SUBNETTREE_IMPORT_RESULT)

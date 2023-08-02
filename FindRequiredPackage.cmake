@@ -23,6 +23,8 @@
 # endif ()
 
 macro (FindRequiredPackage packageName)
+    message(DEPRECATION "Remove in v7.1. Use find_package's REQUIRED argument instead.")
+
     string(TOUPPER ${packageName} upperPackageName)
     if ((DEFINED ${upperPackageName}_ROOT_DIR) AND (DEFINED CMAKE_PREFIX_PATH))
         set(CMAKE_PREFIX_SAVE ${CMAKE_PREFIX_PATH})
