@@ -78,6 +78,13 @@ function (spicy_add_analyzer)
         if (SPICY_ROOT_DIR)
             target_include_directories(${lib} PRIVATE ${SPICY_ROOT_DIR}/include)
         endif ()
+
+        # Install Spicy grammars into a default search path of Spicy.
+        # This allows users importing the file relatively easily.
+        set(_SPIYC_SOURCES ${SPICY_ANALYZER_SOURCES})
+        list(FILTER _SPIYC_SOURCES INCLUDE REGEX "\.spicy$")
+        install(FILES ${_SPIYC_SOURCES} DESTINATION ${CMAKE_INSTALL_DATADIR}/spicy/${NAME_LOWER})
+
     elseif (SPICY_ANALYZER_LEGACY)
         message(
             STATUS
