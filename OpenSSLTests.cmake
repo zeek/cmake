@@ -22,21 +22,7 @@ check_c_source_compiles(
     including_ssl_h_works)
 
 if (NOT including_ssl_h_works)
-    # On Red Hat we may need to include Kerberos header.
-    set(CMAKE_REQUIRED_INCLUDES ${includes} /usr/kerberos/include)
-    check_c_source_compiles(
-        "
-        #include <krb5.h>
-        #include <openssl/ssl.h>
-        int main() { return 0; }
-    "
-        NEED_KRB5_H)
-    if (NOT NEED_KRB5_H)
-        message(FATAL_ERROR "OpenSSL test failure.  See CmakeError.log for details.")
-    else ()
-        message(STATUS "OpenSSL requires Kerberos header")
-        include_directories("/usr/kerberos/include")
-    endif ()
+    message(FATAL_ERROR "OpenSSL test failure.  See CmakeError.log for details.")
 endif ()
 
 if (OPENSSL_VERSION VERSION_LESS "0.9.7")
