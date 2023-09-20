@@ -5,7 +5,11 @@
 #     spicy_add_analyzer(
 #         NAME <analyzer_name>
 #         SOURCES <source files for spicyz>...
+#         [MODULES <module names>...]
 #     )
+#
+# `MODULES` can be used to specify which modules are part of this this
+# analyzer. If not specified, its values is assumed to be identical to `NAME`.
 
 set(ZEEK_LEGACY_ANALYZERS CACHE INTERNAL "")
 set(ZEEK_SKIPPED_ANALYZERS CACHE INTERNAL "")
@@ -30,7 +34,7 @@ endfunction ()
 function (spicy_add_analyzer)
     set(options)
     set(oneValueArgs NAME LEGACY)
-    set(multiValueArgs SOURCES)
+    set(multiValueArgs SOURCES MODULES)
 
     cmake_parse_arguments(PARSE_ARGV 0 SPICY_ANALYZER "${options}" "${oneValueArgs}"
                           "${multiValueArgs}")
@@ -44,10 +48,19 @@ function (spicy_add_analyzer)
         string(TOLOWER "${SPICY_ANALYZER_NAME}" NAME_LOWER)
 
         set(generated_sources
-            ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${SPICY_ANALYZER_NAME}.cc
             ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}___linker__.cc
             ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_init.cc
             ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_hooks_${SPICY_ANALYZER_NAME}.cc)
+
+        if (NOT DEFINED SPICY_ANALYZER_MODULES)
+            list(APPEND generated_sources
+                 ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${SPICY_ANALYZER_NAME}.cc)
+        else ()
+            foreach (module ${SPICY_ANALYZER_MODULES})
+                list(APPEND generated_sources
+                     ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${module}.cc)
+            endforeach ()
+        endif ()
 
         add_custom_command(
             OUTPUT ${generated_sources}
