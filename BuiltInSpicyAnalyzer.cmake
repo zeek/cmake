@@ -52,6 +52,11 @@ function (spicy_add_analyzer)
             ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_init.cc
             ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_hooks_${SPICY_ANALYZER_NAME}.cc)
 
+        # CXX files given to SOURCES are added to the lib target
+        # separately from generated_sources.
+        set(cxx_sources ${SPICY_ANALYZER_SOURCES})
+        list(FILTER cxx_sources INCLUDE REGEX ".*\.cc$")
+
         if (NOT DEFINED SPICY_ANALYZER_MODULES)
             list(APPEND generated_sources
                  ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${SPICY_ANALYZER_NAME}.cc)
@@ -75,7 +80,7 @@ function (spicy_add_analyzer)
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
         set(lib "spicy_${SPICY_ANALYZER_NAME}")
-        add_library(${lib} OBJECT ${generated_sources})
+        add_library(${lib} OBJECT ${generated_sources} ${cxx_sources})
         target_compile_features(${lib} PRIVATE cxx_std_17)
         set_target_properties(${lib} PROPERTIES CXX_EXTENSIONS OFF)
 
