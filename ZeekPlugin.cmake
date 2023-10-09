@@ -139,8 +139,8 @@ include(ZeekPluginDynamic)
 
 if (NOT ZEEK_PLUGIN_INTERNAL_BUILD AND ${CMAKE_MINIMUM_REQUIRED_VERSION} VERSION_LESS 3.15.0)
     message(
-        WARNING
-            "Package requires CMake ${CMAKE_MINIMUM_REQUIRED_VERSION} which is less than Zeek's requirement (3.15.0). This will likely cause build failures and should be fixed."
+        FATAL_ERROR
+            "Plugin requires CMake ${CMAKE_MINIMUM_REQUIRED_VERSION} which is less than Zeek's requirement (3.15.0). Please update cmake_minimum_required VERSION to 3.15 or higher."
     )
 endif ()
 
