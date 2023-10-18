@@ -51,5 +51,7 @@ endforeach ()
 set_target_properties(hilti-rt-tests hilti-rt-configuration-tests spicy-rt-tests
                       hilti-toolchain-tests spicy-toolchain-tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
+get_directory_property(SPICY_VERSION_LONG DIRECTORY ${PROJECT_SOURCE_DIR}/auxil/spicy/spicy
+                      DEFINITION SPICY_VERSION_LONG)
 get_directory_property(SPICY_VERSION_NUMBER DIRECTORY ${PROJECT_SOURCE_DIR}/auxil/spicy/spicy
                                                       DEFINITION SPICY_VERSION_NUMBER)
