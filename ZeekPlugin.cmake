@@ -6,7 +6,7 @@ function (zeek_plugin_bootstrapping)
     # Plugins that build against the source tree set ZEEK_DIST. Here, we have our
     # package file plus ZeekPluginConfig.cmake to help out.
     if (ZEEK_DIST)
-        message("USING ZEEK_DIST: ${ZEEK_DIST}")
+        message("-- Using ZEEK_DIST: ${ZEEK_DIST}")
         find_package(Zeek REQUIRED CONFIG NO_DEFAULT_PATH PATHS "${ZEEK_DIST}/build")
         return()
     endif ()
@@ -64,10 +64,8 @@ function (zeek_plugin_bootstrapping)
 endfunction ()
 
 # Make sure BifCl and BinPAC are available.
-if (NOT ZEEK_PLUGIN_INTERNAL_BUILD AND NOT ZEEK_PLUGIN_HAD_BOOTSTRAPPING)
+if (NOT ZEEK_PLUGIN_INTERNAL_BUILD)
     zeek_plugin_bootstrapping()
-    # Remember that we have called the function to not call it again.
-    set(ZEEK_PLUGIN_HAD_BOOTSTRAPPING ON CACHE BOOL "Plugin bootstrapping has completed." FORCE)
 endif ()
 
 include(BifCl)
