@@ -63,6 +63,11 @@ function (zeek_add_static_plugin ns name)
         target_include_directories(${target_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     endif ()
 
+    # Add user-defined extra include directories.
+    if (FN_ARGS_INCLUDE_DIRS)
+        target_include_directories(${target_name} PRIVATE ${FN_ARGS_INCLUDE_DIRS})
+    endif ()
+
     # Add extra dependencies.
     if (FN_ARGS_DEPENDENCIES)
         target_link_libraries(${target_name} PUBLIC ${FN_ARGS_DEPENDENCIES})

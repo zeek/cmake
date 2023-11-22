@@ -81,6 +81,11 @@ function (zeek_add_dynamic_plugin ns name)
         zeek_next_pac_block(at_end pacInputs pacRemainder ${pacRemainder})
     endwhile ()
 
+    # Add user-defined extra include directories.
+    if (FN_ARGS_INCLUDE_DIRS)
+        target_include_directories(${target_name} PRIVATE ${FN_ARGS_INCLUDE_DIRS})
+    endif ()
+
     # Add user-defined extra dependencies.
     if (FN_ARGS_DEPENDENCIES)
         target_link_libraries(${target_name} PUBLIC ${FN_ARGS_DEPENDENCIES})
