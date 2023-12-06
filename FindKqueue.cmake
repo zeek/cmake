@@ -25,9 +25,6 @@ if (NOT HAVE_KQUEUE)
         mark_as_advanced(LIBKQUEUE_ROOT_DIR LIBKQUEUE_LIBRARIES LIBKQUEUE_INCLUDE_DIRS)
 
         set(HAVE_KQUEUE true)
-        set(zeekdeps ${zeekdeps} ${LIBKQUEUE_LIBRARIES})
-        include_directories(BEFORE ${LIBKQUEUE_INCLUDE_DIRS})
-
     else ()
 
         set(kqueue_build "${CMAKE_CURRENT_BINARY_DIR}/libkqueue-build")
@@ -130,10 +127,6 @@ if (NOT HAVE_KQUEUE)
         set(LIBKQUEUE_LIBRARIES libkqueue_a CACHE STRING "libkqueue libs" FORCE)
         set(LIBKQUEUE_INCLUDE_DIRS "${kqueue_src}/include;${kqueue_build}/include"
             CACHE INTERNAL "libkqueue includes" FORCE)
-
-        include_directories(BEFORE ${LIBKQUEUE_INCLUDE_DIRS})
-        set(zeekdeps ${zeekdeps} ${LIBKQUEUE_LIBRARIES})
-
     endif ()
 endif ()
 
