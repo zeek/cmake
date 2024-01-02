@@ -52,9 +52,20 @@ function (zeek_add_static_plugin ns name)
         zeek_next_pac_block(at_end pacInputs pacRemainder ${pacRemainder})
     endwhile ()
 
+    if (BUILD_WITH_WERROR)
+        if (MSVC)
+            # TODO: This is disabled for now because there a bunch of known
+            # compiler warnings on Windows that we don't have good fixes for.
+            #set(WERROR_FLAG "/WX")
+        else ()
+            set(WERROR_FLAG "-Werror")
+        endif ()
+    endif ()
+
     # Pass compiler flags, paths and dependencies to the target.
     target_link_libraries(${target_name} PRIVATE $<BUILD_INTERFACE:zeek_internal>)
     target_include_directories(${target_name} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_compile_options(${target_name} PRIVATE ${WERROR_FLAG})
 
     # Per convention, plugins have their headers and sources under src/ and
     # legacy/external plugins expect this to auto-magically be available as
