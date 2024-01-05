@@ -57,7 +57,7 @@ function (spicy_add_analyzer)
 
     add_custom_command(
         OUTPUT ${OUTPUT}
-        DEPENDS ${SPICY_ANALYZER_SOURCES} spicyz
+        DEPENDS ${SPICY_ANALYZER_SOURCES} spicyz ${SPICY_ANALYZER_CXX_LINK}
         COMMENT "Compiling ${SPICY_ANALYZER_NAME} analyzer"
         COMMAND
             ${CMAKE_COMMAND} -E env ASAN_OPTIONS=$ENV{ASAN_OPTIONS}:detect_leaks=0
