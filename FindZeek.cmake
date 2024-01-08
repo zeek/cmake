@@ -107,7 +107,7 @@ else ()
     run_zeek_config(ZEEK_VERSION "--version")
     run_zeek_config(ZEEK_BUILD_TYPE "--build_type")
 
-    string(REPLACE " " ";" ZEEK_INCLUDE_DIRS "${ZEEK_INCLUDE_DIRS}")
+    string(REPLACE ":" ";" ZEEK_INCLUDE_DIRS "${ZEEK_INCLUDE_DIRS}")
 
     # Copied from Zeek to generate numeric version number.
     string(REGEX REPLACE "[.-]" " " version_numbers "${ZEEK_VERSION}")
