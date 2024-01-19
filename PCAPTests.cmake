@@ -21,11 +21,15 @@ check_include_files(pcap-int.h HAVE_PCAP_INT_H)
 
 cmake_policy(POP)
 
-check_function_exists(pcap_freecode HAVE_LIBPCAP_PCAP_FREECODE)
+check_symbol_exists(pcap_freecode pcap.h HAVE_LIBPCAP_PCAP_FREECODE)
 if (NOT HAVE_LIBPCAP_PCAP_FREECODE)
     set(DONT_HAVE_LIBPCAP_PCAP_FREECODE true)
     message(STATUS "No implementation for pcap_freecode()")
 endif ()
+
+if (DONT_HAVE_LIBPCAP_PCAP_FREECODE AND NOT HAVE_PCAP_INT_H)
+    message(FATAL_ERROR "pcap-int.h required to implement pcap_freecode() internally")
+endif()
 
 check_symbol_exists(DLT_PPP_SERIAL pcap.h HAVE_DLT_PPP_SERIAL)
 if (NOT HAVE_DLT_PPP_SERIAL)
