@@ -29,7 +29,11 @@ else ()
     set(_pcap_lib_hint_path ${PCAP_ROOT_DIR}/lib)
 endif ()
 
-find_library(PCAP_LIBRARY NAMES pcap wpcap HINTS ${_pcap_lib_hint_path})
+if (MSVC)
+  find_library(PCAP_LIBRARY NAMES pcap_static wpcap HINTS ${_pcap_lib_hint_path})
+else ()
+  find_library(PCAP_LIBRARY NAMES pcap wpcap HINTS ${_pcap_lib_hint_path})
+endif ()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(PCAP DEFAULT_MSG PCAP_LIBRARY PCAP_INCLUDE_DIR)
