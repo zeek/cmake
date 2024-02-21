@@ -16,15 +16,20 @@ set(ZEEK_SKIPPED_ANALYZERS CACHE INTERNAL "")
 
 # Force Spicy include directories to the front of the include paths.
 #
-# While we can use normal CMake target-based dependencies to inherit Spicy
-# include directories, this still only appends include directories to the end
-# of the list of include paths. This means that if any include prefix added
-# before also contains another Spicy installation (possible if e.g., a required
-# dependency was installed into a prefix which contains another Spicy
-# installation) we prefer picking up that one when searching for a Spicy
-# header. This functions explicitly pushes Spicy include directories to the
-# front.
+# While in principal we could use normal CMake target-based dependencies to
+# inherit Spicy include directories if not building against an external Spicy,
+# this still only appends include directories to the end of the list of include
+# paths. This means that if any include prefix added before also contains
+# another Spicy installation (possible if e.g., a required dependency was
+# installed into a prefix which contains another Spicy installation) we prefer
+# picking up that one when searching for a Spicy header. This functions
+# explicitly pushes Spicy include directories to the front.
 function (prefer_configured_spicy_include_dirs target)
+    # Nothing to do if we are building against an externally built Spicy.
+    if (SPICY_ROOT_DIR)
+        return()
+    endif ()
+
     foreach (_lib IN ITEMS hilti-rt-objects spicy-rt-objects hilti-objects spicy-objects)
         get_target_property(_inc_dirs ${_lib} INCLUDE_DIRECTORIES)
         target_include_directories(${target} BEFORE PRIVATE ${_inc_dirs})
