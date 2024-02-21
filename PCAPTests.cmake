@@ -29,7 +29,7 @@ endif ()
 
 if (DONT_HAVE_LIBPCAP_PCAP_FREECODE AND NOT HAVE_PCAP_INT_H)
     message(FATAL_ERROR "pcap-int.h required to implement pcap_freecode() internally")
-endif()
+endif ()
 
 check_symbol_exists(DLT_PPP_SERIAL pcap.h HAVE_DLT_PPP_SERIAL)
 if (NOT HAVE_DLT_PPP_SERIAL)

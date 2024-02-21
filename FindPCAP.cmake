@@ -30,9 +30,9 @@ else ()
 endif ()
 
 if (MSVC)
-  find_library(PCAP_LIBRARY NAMES pcap_static wpcap HINTS ${_pcap_lib_hint_path})
+    find_library(PCAP_LIBRARY NAMES pcap_static wpcap HINTS ${_pcap_lib_hint_path})
 else ()
-  find_library(PCAP_LIBRARY NAMES pcap wpcap HINTS ${_pcap_lib_hint_path})
+    find_library(PCAP_LIBRARY NAMES pcap wpcap HINTS ${_pcap_lib_hint_path})
 endif ()
 
 include(FindPackageHandleStandardArgs)
