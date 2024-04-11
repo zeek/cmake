@@ -21,7 +21,18 @@
 
 find_path(PCAP_ROOT_DIR NAMES include/pcap.h Include/pcap.h)
 
-find_path(PCAP_INCLUDE_DIR NAMES pcap.h HINTS ${PCAP_ROOT_DIR}/include)
+# If this is MSVC and a different root path was provided to cmake, add the vcpkg paths to
+# the list of ignored paths for the rest of this file. This prevents cmake from preferring
+# vcpkg over the path requested.
+set(_old_cmake_ignore_path ${CMAKE_IGNORE_PATH})
+string(FIND "${PCAP_ROOT_DIR}" "vcpkg" _is_vcpkg_root)
+if (MSVC AND _is_vcpkg_root LESS 0)
+    set(CMAKE_IGNORE_PATH ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include)
+    list(APPEND CMAKE_IGNORE_PATH ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib)
+    list(APPEND CMAKE_IGNORE_PATH ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib)
+endif ()
+
+find_path(PCAP_INCLUDE_DIR NAMES pcap.h HINTS ${PCAP_ROOT_DIR}/include ${PCAP_ROOT_DIR}/Include)
 
 if (MSVC AND COMPILER_ARCHITECTURE STREQUAL "x86_64")
     set(_pcap_lib_hint_path ${PCAP_ROOT_DIR}/lib/x64)
@@ -72,3 +83,4 @@ check_function_exists(pcap_dump_open_append HAVE_PCAP_DUMP_OPEN_APPEND)
 set(CMAKE_REQUIRED_LIBRARIES)
 
 mark_as_advanced(PCAP_ROOT_DIR PCAP_INCLUDE_DIR PCAP_LIBRARY)
+set(CMAKE_IGNORE_PATH ${_old_cmake_ignore_path})
