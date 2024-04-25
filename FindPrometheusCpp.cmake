@@ -1,5 +1,5 @@
 set(prometheuscpp_build "${CMAKE_CURRENT_BINARY_DIR}/auxil/prometheus-cpp")
-set(prometheuscpp_src   "${CMAKE_CURRENT_SOURCE_DIR}/auxil/prometheus-cpp")
+set(prometheuscpp_src "${CMAKE_CURRENT_SOURCE_DIR}/auxil/prometheus-cpp")
 
 # Reset this to prevent Prometheus from using the internal zeek value and thus building
 # shared libraries instead of static ones.
