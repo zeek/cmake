@@ -92,7 +92,7 @@ function (spicy_add_analyzer)
 
         set(lib "spicy_${SPICY_ANALYZER_NAME}")
         add_library(${lib} OBJECT ${generated_sources} ${cxx_sources})
-        target_compile_features(${lib} PRIVATE cxx_std_17)
+        target_compile_features(${lib} PRIVATE cxx_std_20)
         set_target_properties(${lib} PROPERTIES CXX_EXTENSIONS OFF)
 
         target_include_directories(${lib} PRIVATE ${SPICY_PLUGIN_PATH}/include

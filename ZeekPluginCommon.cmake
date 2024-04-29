@@ -23,7 +23,7 @@ macro (zeek_plugin_begin ns name)
     set(_plugin_bif_files "")
     set(_plugin_pac_args "")
 
-    target_compile_features(${_plugin_lib} PRIVATE cxx_std_17)
+    target_compile_features(${_plugin_lib} PRIVATE cxx_std_20)
     set_target_properties(${_plugin_lib} PROPERTIES CXX_EXTENSIONS OFF)
 endmacro ()
 

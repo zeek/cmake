@@ -29,7 +29,7 @@ function (zeek_add_dynamic_plugin ns name)
     if (NOT TARGET ${target_name})
         add_library(${target_name} MODULE)
 
-        target_compile_features(${target_name} PRIVATE cxx_std_17)
+        target_compile_features(${target_name} PRIVATE cxx_std_20)
         set_target_properties(${target_name} PROPERTIES CXX_EXTENSIONS OFF)
     endif ()
 

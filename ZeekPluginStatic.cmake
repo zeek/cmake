@@ -17,7 +17,7 @@ function (zeek_add_static_plugin ns name)
     if (NOT TARGET ${target_name})
         add_library(${target_name} OBJECT)
 
-        target_compile_features(${target_name} PRIVATE cxx_std_17)
+        target_compile_features(${target_name} PRIVATE cxx_std_20)
         set_target_properties(${target_name} PROPERTIES CXX_EXTENSIONS OFF)
     endif ()
     add_dependencies(${target_name} zeek_autogen_files)
