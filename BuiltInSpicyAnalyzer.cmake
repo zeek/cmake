@@ -13,6 +13,7 @@
 
 set(ZEEK_LEGACY_ANALYZERS CACHE INTERNAL "")
 set(ZEEK_SKIPPED_ANALYZERS CACHE INTERNAL "")
+include(RequireCXXStd)
 
 # Force Spicy include directories to the front of the include paths.
 #
@@ -92,7 +93,7 @@ function (spicy_add_analyzer)
 
         set(lib "spicy_${SPICY_ANALYZER_NAME}")
         add_library(${lib} OBJECT ${generated_sources} ${cxx_sources})
-        target_compile_features(${lib} PRIVATE cxx_std_20)
+        target_compile_features(${lib} PRIVATE ${ZEEK_CXX_STD})
         set_target_properties(${lib} PROPERTIES CXX_EXTENSIONS OFF)
 
         target_include_directories(${lib} PRIVATE ${SPICY_PLUGIN_PATH}/include

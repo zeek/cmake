@@ -3,6 +3,8 @@
 ## This set is used by both static and dynamic plugins via
 ## ZeekPluginStatic and ZeekPluginDynamic, respectively.
 
+include(RequireCXXStd)
+
 # Begins a plugin definition, giving its namespace and name as the arguments.
 # The DISABLE_CPP_TESTS option disables unit test support. When not provided,
 # unit-testing is enabled when Zeek supports it, and disabled otherwise.
@@ -23,7 +25,7 @@ macro (zeek_plugin_begin ns name)
     set(_plugin_bif_files "")
     set(_plugin_pac_args "")
 
-    target_compile_features(${_plugin_lib} PRIVATE cxx_std_20)
+    target_compile_features(${_plugin_lib} PRIVATE ${ZEEK_CXX_STD})
     set_target_properties(${_plugin_lib} PROPERTIES CXX_EXTENSIONS OFF)
 endmacro ()
 
