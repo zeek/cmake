@@ -1,6 +1,7 @@
 include(BifCl)
 include(BinPAC)
 include(FindClangTidy)
+include(RequireCXXStd)
 
 # Sets `target` to contain the CMake target name for a static plugin.
 macro (zeek_get_static_plugin_target target ns name)
@@ -18,7 +19,7 @@ function (zeek_add_static_plugin ns name)
     if (NOT TARGET ${target_name})
         add_library(${target_name} OBJECT)
 
-        target_compile_features(${target_name} PRIVATE cxx_std_20)
+        target_compile_features(${target_name} PRIVATE ${ZEEK_CXX_STD})
         set_target_properties(${target_name} PROPERTIES CXX_EXTENSIONS OFF)
     endif ()
     add_dependencies(${target_name} zeek_autogen_files)

@@ -1,5 +1,6 @@
 include(FindClangTidy)
 include(GetArchitecture)
+include(RequireCXXStd)
 
 # Sets `target` to contain the CMake target name for a dynamic plugin.
 macro (zeek_get_dynamic_plugin_target target ns name)
@@ -30,7 +31,7 @@ function (zeek_add_dynamic_plugin ns name)
     if (NOT TARGET ${target_name})
         add_library(${target_name} MODULE)
 
-        target_compile_features(${target_name} PRIVATE cxx_std_20)
+        target_compile_features(${target_name} PRIVATE ${ZEEK_CXX_STD})
         set_target_properties(${target_name} PROPERTIES CXX_EXTENSIONS OFF)
     endif ()
 
