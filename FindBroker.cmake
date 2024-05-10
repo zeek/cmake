@@ -21,8 +21,10 @@ if (NOT BROKER_ROOT_DIR)
     find_path(BROKER_ROOT_DIR NAMES include/broker/broker.hh)
     set(header_hints "${BROKER_ROOT_DIR}/include")
 else ()
-    set(header_hints "${BROKER_ROOT_DIR}/include" "${BROKER_ROOT_DIR}/../include"
-                     "${BROKER_ROOT_DIR}/../../include")
+    set(header_hints
+        "${BROKER_ROOT_DIR}/include" "${BROKER_ROOT_DIR}/../include"
+        "${BROKER_ROOT_DIR}/../../include" "${BROKER_ROOT_DIR}/libbroker"
+        "${BROKER_ROOT_DIR}/../libbroker" "${BROKER_ROOT_DIR}/../../libbroker")
 endif ()
 
 find_library(BROKER_LIBRARY NAMES broker HINTS ${BROKER_ROOT_DIR}/lib)
