@@ -21,7 +21,7 @@ if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
 
     if ("${_build_type_upper}" STREQUAL "DEBUG")
         if (ENABLE_COVERAGE)
-            set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} --coverage")
+            set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} --coverage -fprofile-update=atomic")
         endif ()
         # manual add of -g works around its omission in FreeBSD's CMake port
         set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -g -DDEBUG -DBRO_DEBUG")
