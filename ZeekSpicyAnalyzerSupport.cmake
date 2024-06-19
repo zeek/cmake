@@ -14,7 +14,6 @@ include(GNUInstallDirs)
 #         NAME <analyzer_name>
 #         [SOURCES <source files for spicyz>...]
 #         [PACKAGE_NAME <package_name>]
-#         [SCRIPTS <additional script files to install>...]
 #         [CXX_LINK <libraries to link>...]
 #         [ENV <environment variable=value>...]
 #     )
@@ -72,14 +71,10 @@ function (spicy_add_analyzer)
         install(FILES ${OUTPUT} DESTINATION "${SPICY_MODULE_OUTPUT_DIR_INSTALL}")
     endif ()
 
-    if (SPICY_SCRIPTS_OUTPUT_DIR_INSTALL AND DEFINED SPICY_ANALYZER_SCRIPTS)
-        if (NOT DEFINED SPICY_ANALYZER_PACKAGE_NAME)
-            message(FATAL_ERROR "SCRIPTS argument requires PACKAGE_NAME")
-        endif ()
-        install(
-            FILES ${SPICY_ANALYZER_SCRIPTS}
-            DESTINATION
-                "${SPICY_SCRIPTS_OUTPUT_DIR_INSTALL}/${SPICY_ANALYZER_PACKAGE_NAME}/${NAME_LOWER}")
+    if (DEFINED SPICY_ANALYZER_SCRIPTS)
+        message(WARNING "The SCRIPTS argument for spicy_add_analyzer() has "
+                        "been non-functional. Please install extra Zeek scripts  "
+                        "using zkg or site-specific mechanisms.")
     endif ()
 
     get_property(tmp GLOBAL PROPERTY __spicy_included_analyzers)
