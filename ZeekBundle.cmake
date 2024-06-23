@@ -48,6 +48,7 @@ endfunction ()
 
 # Builds an external project at configure time.
 function (ZeekBundle_Build name srcDir binDir)
+    get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     # Extra arguments are passed as CMake options to the external project.
     set(cmakeArgs "")
     foreach (arg IN LISTS ARGN)
@@ -55,6 +56,14 @@ function (ZeekBundle_Build name srcDir binDir)
     endforeach ()
     # Make sure we can build debug and release versions of the project separately.
     list(APPEND cmakeArgs "-DCMAKE_DEBUG_POSTFIX=d")
+    if (NOT isMultiConfig)
+        #On Windows, we cannot mix debug and release libraries.
+        if (WIN32)
+            list(APPEND cmakeArgs "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
+        else ()
+            list(APPEND cmakeArgs "-DCMAKE_BUILD_TYPE=Release")
+        endif ()
+    endif ()
     # Run CMake for the external project.
     message(STATUS "Configuring bundled project: ${name}")
     execute_process(
@@ -70,7 +79,6 @@ function (ZeekBundle_Build name srcDir binDir)
         file(READ "${binDir}/cmake.err" cmakeErr)
         message(FATAL_ERROR "Failed to configure external project ${name}:\n\n${cmakeErr}")
     endif ()
-    get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     if (isMultiConfig)
         zeekbundle_buildstep(${name} Debug ${binDir})
         zeekbundle_buildstep(${name} Release ${binDir})
