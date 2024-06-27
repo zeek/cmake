@@ -143,17 +143,48 @@ function (zeek_add_dynamic_plugin ns name)
     endif ()
 
     # Create the binary install package.
+    set(dist_tarball_dir ${CMAKE_CURRENT_BINARY_DIR}/dist/${canon_name})
     set(dist_tarball_name ${canon_name}.tgz)
     set(dist_tarball_path ${CMAKE_CURRENT_BINARY_DIR}/${dist_tarball_name})
     message(STATUS "Install prefix for plugin ${canon_name}: ${install_dir}")
     message(STATUS "Tarball path for plugin ${canon_name}: ${dist_tarball_path}")
+    add_custom_command(OUTPUT ${dist_tarball_path} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                       COMMENT "Building binary plugin package: ${dist_tarball_path}")
+
+    # Handle dist files: Pre-place user provided dist files into the
+    # directory that zeek-plugin-create-package.sh will tar up. Previously,
+    # the zeek-plugin-create-package.sh script had done this itself.
+    #
+    # This computes the relative path of individual DIST_FILES to the
+    # PROJECT_SOURCE_DIR (last project() invocation) and uses the
+    # resulting path in the tarball.
+    foreach (df ${FN_ARGS_DIST_FILES})
+        # set(df_src ${CMAKE_CURRENT_SOURCE_DIR}/${df})
+        get_filename_component(df_src "${df}" REALPATH)
+
+        if (NOT EXISTS "${df_src}")
+            # This was silently ignored previously.
+            message(WARNING "The file ${df} (${df_src}) given to DIST_FILES does not exist")
+            continue()
+        endif ()
+
+        file(RELATIVE_PATH df_dist ${PROJECT_SOURCE_DIR} ${df_src})
+
+        add_custom_command(
+            OUTPUT ${dist_tarball_path}
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${df}
+                    ${dist_tarball_dir}/${df_dist}
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${df}
+            APPEND)
+    endforeach ()
+
     add_custom_command(
         OUTPUT ${dist_tarball_path}
         COMMAND ${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-create-package.sh ${canon_name}
-                ${FN_ARGS_DIST_FILES}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS ${target_name} ${FN_ARGS_SCRIPT_FILES}
-        COMMENT "Building binary plugin package: ${dist_tarball_path}")
+        APPEND)
+
     add_custom_target(${target_name}_tarball ALL DEPENDS ${dist_tarball_path})
 
     # Tell CMake to install our tarball. Note: This usually runs from our
