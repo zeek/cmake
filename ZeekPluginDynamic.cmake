@@ -159,8 +159,7 @@ function (zeek_add_dynamic_plugin ns name)
     # PROJECT_SOURCE_DIR (last project() invocation) and uses the
     # resulting path in the tarball.
     foreach (df ${FN_ARGS_DIST_FILES})
-        # set(df_src ${CMAKE_CURRENT_SOURCE_DIR}/${df})
-        get_filename_component(df_src "${df}" REALPATH)
+        get_filename_component(df_src "${df}" ABSOLUTE)
 
         if (NOT EXISTS "${df_src}")
             # This was silently ignored previously.
