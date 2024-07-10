@@ -9,3 +9,14 @@ endif ()
 if (NOT CMAKE_CXX_COMPILER AND DEFINED CMAKE_CXX_COMPILER)
     message(FATAL_ERROR "Could not find prerequisite C++ compiler")
 endif ()
+
+if (WIN32 AND NOT CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+    message(
+        FATAL_ERROR "Could not find prerequisite C compiler for Windows platform. MSVC is required")
+endif ()
+
+if (WIN32 AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    message(
+        FATAL_ERROR
+            "Could not find prerequisite C++ compiler for Windows platform. MSVC is required")
+endif ()
