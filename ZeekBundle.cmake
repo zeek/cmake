@@ -123,7 +123,7 @@ function (ZeekBundle_Add)
     # Fetch the package by delegating to FetchContent.
     FetchContent_Declare(dl_${arg_NAME} ${arg_FETCH})
     string(TOLOWER "dl_${arg_NAME}" internalName)
-    FetchContent_Populate(${internalName})
+    FetchContent_Populate(${internalName} SOURCE_DIR ${arg_FETCH})
     file(MAKE_DIRECTORY "${${internalName}_BINARY_DIR}")
     # Build the package and verify that it was found.
     zeekbundle_build(${arg_NAME} "${${internalName}_SOURCE_DIR}" "${${internalName}_BINARY_DIR}"
