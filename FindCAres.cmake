@@ -12,8 +12,10 @@ if (NOT HAVE_CARES)
         find_path(CARES_ROOT_DIR NAMES "include/ares.h")
 
         # Prefer linking statically but look for a shared library version too.
-        find_library(CARES_LIBRARIES NAMES libcares_static.a libcares.so
-                     HINTS ${CARES_ROOT_DIR}/lib)
+        find_library(
+            CARES_LIBRARIES NAMES "libcares_static${CMAKE_STATIC_LIBRARY_SUFFIX}"
+                                  "libcares${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            HINTS ${CARES_ROOT_DIR}/lib)
 
         find_path(CARES_INCLUDE_DIRS NAMES "ares.h" HINTS ${CARES_ROOT_DIR}/include)
 
