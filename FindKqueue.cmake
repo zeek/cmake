@@ -12,8 +12,10 @@ if (NOT HAVE_KQUEUE)
         find_path(LIBKQUEUE_ROOT_DIR NAMES "include/sys/event.h")
 
         # Prefer linking statically but look for a shared library version too.
-        find_library(LIBKQUEUE_LIBRARIES NAMES libkqueue.a libkqueue.so
-                     HINTS ${LIBKQUEUE_ROOT_DIR}/lib)
+        find_library(
+            LIBKQUEUE_LIBRARIES NAMES "libkqueue${CMAKE_STATIC_LIBRARY_SUFFIX}"
+                                      "libkqueue${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            HINTS ${LIBKQUEUE_ROOT_DIR}/lib)
 
         find_path(LIBKQUEUE_INCLUDE_DIRS NAMES "sys/event.h"
                   HINTS ${LIBKQUEUE_ROOT_DIR}/include/kqueue)
