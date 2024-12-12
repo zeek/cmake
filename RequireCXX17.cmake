@@ -9,10 +9,10 @@ if (DEFINED HAVE_CXX17)
     return()
 endif ()
 
-set(required_gcc_version 7.0)
-set(required_clang_version 4.0)
+set(required_gcc_version 8.0)
+set(required_clang_version 9.0)
 set(required_msvc_version 19.14)
-set(required_apple_clang_version 6.0)
+set(required_apple_clang_version 11.4)
 
 if (MSVC)
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${required_msvc_version})
