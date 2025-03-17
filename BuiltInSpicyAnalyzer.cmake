@@ -52,10 +52,8 @@ function (spicy_add_analyzer)
         set(SPICYZ_FLAGS "")
         string(TOLOWER "${SPICY_ANALYZER_NAME}" NAME_LOWER)
 
-        set(generated_sources
-            ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}___linker__.cc
-            ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_init.cc
-            ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_hooks_${SPICY_ANALYZER_NAME}.cc)
+        set(generated_sources ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}___linker__.cc
+                              ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_init.cc)
 
         # CXX files given to SOURCES are added to the lib target
         # separately from generated_sources.
@@ -65,10 +63,14 @@ function (spicy_add_analyzer)
         if (NOT DEFINED SPICY_ANALYZER_MODULES)
             list(APPEND generated_sources
                  ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${SPICY_ANALYZER_NAME}.cc)
+            list(APPEND generated_sources
+                 ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_hooks_${SPICY_ANALYZER_NAME}.cc)
         else ()
             foreach (module ${SPICY_ANALYZER_MODULES})
                 list(APPEND generated_sources
                      ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${module}.cc)
+                list(APPEND generated_sources
+                     ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_hooks_${module}.cc)
             endforeach ()
         endif ()
 
