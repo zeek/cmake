@@ -107,7 +107,7 @@ function (zeek_add_static_plugin ns name)
     if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
         install(
             DIRECTORY ./scripts/
-            DESTINATION "${ZEEK_SCRIPT_INSTALL_PATH}/builtin-plugins/${_plugin_name_canon}"
+            DESTINATION "${ZEEK_SCRIPT_INSTALL_PATH}/builtin-plugins/${canon_name}"
             FILES_MATCHING
             PATTERN "*.zeek"
             PATTERN "*.sig"
@@ -118,7 +118,7 @@ function (zeek_add_static_plugin ns name)
         file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/scripts/builtin-plugins)
         execute_process(
             COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/scripts"
-                    "${CMAKE_BINARY_DIR}/scripts/builtin-plugins/${_plugin_name_canon}")
+                    "${CMAKE_BINARY_DIR}/scripts/builtin-plugins/${canon_name}")
     endif ()
 
     # Feed into the main Zeek target(s).
