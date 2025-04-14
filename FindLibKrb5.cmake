@@ -23,7 +23,7 @@ endif ()
 
 find_library(LibKrb5_LIBRARY NAMES krb5 HINTS ${LibKrb5_ROOT_DIR}/lib)
 
-find_path(LibKrb5_INCLUDE_DIR NAMES krb5.h HINTS ${LibKrb5_ROOT_DIR}/include)
+find_path(LibKrb5_INCLUDE_DIR NAMES krb5/krb5.h HINTS ${LibKrb5_ROOT_DIR}/include)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LibKrb5 DEFAULT_MSG LibKrb5_LIBRARY LibKrb5_INCLUDE_DIR)
