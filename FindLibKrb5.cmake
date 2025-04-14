@@ -17,7 +17,9 @@
 #  LibKrb5_LIBRARY                 The Krb5 library
 #  LibKrb5_INCLUDE_DIR             The location of Krb5 headers
 
-find_path(LibKrb5_ROOT_DIR NAMES include/krb5.h)
+if (NOT LibKrb5_ROOT_DIR)
+    find_path(LibKrb5_ROOT_DIR NAMES include/krb5.h)
+endif ()
 
 find_library(LibKrb5_LIBRARY NAMES krb5 HINTS ${LibKrb5_ROOT_DIR}/lib)
 
