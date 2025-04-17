@@ -74,6 +74,10 @@ function (spicy_add_analyzer)
             endforeach ()
         endif ()
 
+        if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.27")
+            set_source_files_properties(${generated_sources} PROPERTIES SKIP_LINTING ON)
+        endif ()
+
         add_custom_command(
             OUTPUT ${generated_sources}
             DEPENDS ${SPICY_ANALYZER_SOURCES} spicyz
