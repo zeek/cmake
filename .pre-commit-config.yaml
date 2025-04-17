@@ -9,13 +9,13 @@ repos:
     exclude: '^(FindBISON|FindOpenSSL|FindPackageHandleStandardArgs|FindPackageMessage|SelectLibraryConfigurations|conan).cmake$'
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v5.0.0
   hooks:
   - id: trailing-whitespace
     exclude: '^(FindOpenSSL|conan).cmake$'
 
 - repo: https://github.com/maxwinterstein/shfmt-py
-  rev: 3.3.1.8
+  rev: v3.11.0.2
   hooks:
     - id: shfmt
       args: ["-w", "-i", "4", "-ci"]
