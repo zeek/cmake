@@ -28,7 +28,8 @@ find_path(LibKrb5_INCLUDE_DIR NAMES krb5/krb5.h HINTS ${LibKrb5_ROOT_DIR}/includ
 # If using macOS, make sure that we're not finding the system's libkrb5. It
 # an old version, which points you at GSS.framework, which is also deprecated.
 if (LibKrb5_LIBRARY AND "${CMAKE_SYSTEM_NAME}" MATCHES "Darwin")
-    if ("${LibKrb5_LIBRARY}" MATCHES "^/Library/Developer/CommandLineTools/SDKs/.*")
+    if ("${LibKrb5_LIBRARY}" MATCHES "^/Library/Developer/CommandLineTools/SDKs/.*"
+        OR "${LibKrb5_LIBRARY}" MATCHES ".*/Developer/Platforms/MacOSX.platform/Developer/SDKs/.*")
         message(
             FATAL_ERROR
                 "Found macOS system version of libkrb5 at ${LibKrb5_LIBRARY}. Please use the version from Homebrew instead, which is known to be more stable."
