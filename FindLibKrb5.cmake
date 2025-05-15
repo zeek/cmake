@@ -18,8 +18,21 @@
 #  LibKrb5_INCLUDE_DIR             The location of Krb5 headers
 
 if (NOT LibKrb5_ROOT_DIR)
-    find_path(LibKrb5_ROOT_DIR NAMES include/krb5/krb5.h)
+    if ("${CMAKE_SYSTEM_NAME}" MATCHES "Darwin")
+        # If we're on macOS, try using the brew binary potentially set by
+        # MacDependencyPaths.cmake to search for a krb5 installation. Use that as a hint
+        # to find the library.
+        if (MAC_HBREW_BIN)
+            execute_process(COMMAND ${MAC_HBREW_BIN} "--prefix" "krb5" OUTPUT_VARIABLE MAC_KRB5_HINT
+                            OUTPUT_STRIP_TRAILING_WHITESPACE)
+        endif ()
+        find_path(LibKrb5_ROOT_DIR NAMES include/krb5/krb5.h HINTS "${MAC_KRB5_HINT}")
+    else ()
+        find_path(LibKrb5_ROOT_DIR NAMES include/krb5/krb5.h)
+    endif ()
 endif ()
+
+message(STATUS "#### ${LibKrb5_ROOT_DIR}")
 
 find_library(LibKrb5_LIBRARY NAMES krb5 HINTS ${LibKrb5_ROOT_DIR}/lib)
 
@@ -31,13 +44,16 @@ if (LibKrb5_LIBRARY AND "${CMAKE_SYSTEM_NAME}" MATCHES "Darwin")
     if ("${LibKrb5_LIBRARY}" MATCHES "^/Library/Developer/CommandLineTools/SDKs/.*"
         OR "${LibKrb5_LIBRARY}" MATCHES ".*/Developer/Platforms/MacOSX.platform/Developer/SDKs/.*")
         message(
-            FATAL_ERROR
-                "Found macOS system version of libkrb5 at ${LibKrb5_LIBRARY}. Please use the version from Homebrew instead, which is known to be more stable."
-        )
+            WARNING "Found macOS system version of libkrb5 at ${LibKrb5_LIBRARY}, which is known "
+                    "to be unstable. Use a newer version, such as the one from Homebrew.")
+        unset(LibKrb5_LIBRARY CACHE)
+        unset(LibKrb5_INCLUDE_DIR CACHE)
     endif ()
 endif ()
 
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(LibKrb5 DEFAULT_MSG LibKrb5_LIBRARY LibKrb5_INCLUDE_DIR)
+if (LibKrb5_LIBRARY AND LibKrb5_INCLUDE_DIR)
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(LibKrb5 DEFAULT_MSG LibKrb5_LIBRARY LibKrb5_INCLUDE_DIR)
 
-mark_as_advanced(LibKrb5_ROOT_DIR LibKrb5_LIBRARY LibKrb5_INCLUDE_DIR)
+    mark_as_advanced(LibKrb5_ROOT_DIR LibKrb5_LIBRARY LibKrb5_INCLUDE_DIR)
+endif ()
