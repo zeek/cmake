@@ -32,8 +32,6 @@ if (NOT LibKrb5_ROOT_DIR)
     endif ()
 endif ()
 
-message(STATUS "#### ${LibKrb5_ROOT_DIR}")
-
 find_library(LibKrb5_LIBRARY NAMES krb5 HINTS ${LibKrb5_ROOT_DIR}/lib)
 
 find_path(LibKrb5_INCLUDE_DIR NAMES krb5/krb5.h HINTS ${LibKrb5_ROOT_DIR}/include)
