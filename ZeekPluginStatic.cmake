@@ -81,7 +81,7 @@ function (zeek_add_static_plugin ns name)
 
     # Add extra dependencies.
     if (FN_ARGS_DEPENDENCIES)
-        target_link_libraries(${target_name} PUBLIC ${FN_ARGS_DEPENDENCIES})
+        target_link_libraries(${target_name} PRIVATE ${FN_ARGS_DEPENDENCIES})
     endif ()
 
     # Add the sources for the plugin.
