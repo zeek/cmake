@@ -122,6 +122,8 @@ function (zeek_add_static_plugin ns name)
     # Feed into the main Zeek target(s).
     zeek_target_link_libraries(${target_name})
 
-    # Add IWYU and clang-tidy to the target if enabled.
-    zeek_target_add_linters(${target_name})
+    if (NOT ZEEK_BUILDING_EXTRA_PLUGINS)
+        # Add IWYU and clang-tidy to the target if enabled.
+        zeek_target_add_linters(${target_name})
+    endif ()
 endfunction ()
