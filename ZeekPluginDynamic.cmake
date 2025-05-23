@@ -1,4 +1,3 @@
-include(FindClangTidy)
 include(GetArchitecture)
 
 # Sets `target` to contain the CMake target name for a dynamic plugin.

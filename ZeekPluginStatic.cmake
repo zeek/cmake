@@ -1,6 +1,5 @@
 include(BifCl)
 include(BinPAC)
-include(FindClangTidy)
 
 # Sets `target` to contain the CMake target name for a static plugin.
 macro (zeek_get_static_plugin_target target ns name)
@@ -87,7 +86,6 @@ function (zeek_add_static_plugin ns name)
     # Add the sources for the plugin.
     if (FN_ARGS_SOURCES)
         target_sources(${target_name} PRIVATE ${FN_ARGS_SOURCES})
-        add_clang_tidy_files(${FN_ARGS_SOURCES})
     endif ()
 
     # Setup for the load/preload scripts.
@@ -124,6 +122,8 @@ function (zeek_add_static_plugin ns name)
     # Feed into the main Zeek target(s).
     zeek_target_link_libraries(${target_name})
 
-    # Add IWYU and clang-tidy to the target if enabled.
-    zeek_target_add_linters(${target_name})
+    if (NOT ZEEK_BUILDING_EXTRA_PLUGINS)
+        # Add IWYU and clang-tidy to the target if enabled.
+        zeek_target_add_linters(${target_name})
+    endif ()
 endfunction ()

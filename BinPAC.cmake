@@ -51,8 +51,6 @@ function (binpac_target pacFile)
                                                                "-Wno-tautological-compare")
     endif ()
 
-    add_clang_tidy_files(${CMAKE_CURRENT_BINARY_DIR}/${basename}_pac.cc)
-
     set(target "pac-${CMAKE_CURRENT_BINARY_DIR}/${pacFile}")
 
     # Make sure to escape a bunch of special characters in the path before trying to use it as a
