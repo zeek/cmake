@@ -12,7 +12,6 @@ set(_spicy_targets
     hilti-rt-objects
     hiltic
     jrx-objects
-    retest
     spicy-batch-extract
     spicy-config
     spicy-driver
@@ -20,7 +19,6 @@ set(_spicy_targets
     spicy-rt-debug-objects
     spicy-rt-objects
     spicyc
-    testregex
     spicy-doc
     spicy-dump)
 
