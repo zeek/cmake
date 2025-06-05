@@ -59,6 +59,19 @@ function (zeek_add_static_plugin ns name)
             #set(WERROR_FLAG "/WX")
         else ()
             set(WERROR_FLAG "-Werror")
+
+            # With versions >=13.0 GCC gained `-Warray-bounds` which reports false
+            # positives, see e.g., https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111273.
+            if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)
+                list(APPEND WERROR_FLAG "-Wno-error=array-bounds")
+            endif ()
+
+            # With versions >=11.0 GCC is retruning false positives for -Wrestrict. See
+            # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100366. It's more prevalent
+            # building with -std=c++20.
+            if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 11.0)
+                list(APPEND WERROR_FLAG "-Wno-error=restrict")
+            endif ()
         endif ()
     endif ()
 
