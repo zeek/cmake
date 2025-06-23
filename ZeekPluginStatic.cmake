@@ -73,9 +73,19 @@ function (zeek_add_static_plugin ns name)
         target_include_directories(${target_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     endif ()
 
-    # Add user-defined extra include directories.
+    # Add user-defined extra include directories. If a path is outside of the current
+    # project source dir, add it as a system path so that clang-tidy can easily ignore
+    # it.
     if (FN_ARGS_INCLUDE_DIRS)
-        target_include_directories(${target_name} PRIVATE ${FN_ARGS_INCLUDE_DIRS})
+        foreach (_include_dir ${FN_ARGS_INCLUDE_DIRS})
+            # In CMake 3.20, this can use cmake_path(IS_PREFIX).
+            string(FIND "${PROJECT_SOURCE_DIR}" "${_include_dir}" _is_project_prefixed)
+            if (_is_project_prefixed EQUAL 0)
+                target_include_directories(${target_name} PRIVATE ${_include_dir})
+            else ()
+                target_include_directories(${target_name} SYSTEM PRIVATE ${_include_dir})
+            endif ()
+        endforeach ()
     endif ()
 
     # Add extra dependencies.
