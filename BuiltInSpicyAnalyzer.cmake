@@ -84,7 +84,7 @@ function (spicy_add_analyzer)
             COMMENT "Compiling ${SPICY_ANALYZER_NAME} analyzer"
             COMMAND
                 ${CMAKE_COMMAND} -E env
-                "ZEEK_SPICY_LIBRARY_PATH=${PROJECT_SOURCE_DIR}/scripts/spicy"
+                "ZEEK_SPICY_LIBRARY_PATH=${PROJECT_BINARY_DIR}/scripts/spicy"
                 ASAN_OPTIONS=$ENV{ASAN_OPTIONS}:detect_leaks=0 $<TARGET_FILE:spicyz> -L
                 ${spicy_SOURCE_DIR}/hilti/lib -L ${spicy_SOURCE_DIR}/spicy/lib -x
                 ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER} ${SPICYZ_FLAGS} ${SPICY_ANALYZER_SOURCES}
