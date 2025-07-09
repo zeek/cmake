@@ -1,5 +1,6 @@
 include(BifCl)
 include(BinPAC)
+include(RequireCXXStd)
 
 # Sets `target` to contain the CMake target name for a static plugin.
 macro (zeek_get_static_plugin_target target ns name)
@@ -17,7 +18,7 @@ function (zeek_add_static_plugin ns name)
     if (NOT TARGET ${target_name})
         add_library(${target_name} OBJECT)
 
-        target_compile_features(${target_name} PRIVATE cxx_std_17)
+        target_compile_features(${target_name} PRIVATE ${ZEEK_CXX_STD})
         set_target_properties(${target_name} PROPERTIES CXX_EXTENSIONS OFF)
     endif ()
     add_dependencies(${target_name} zeek_autogen_files)
@@ -58,6 +59,19 @@ function (zeek_add_static_plugin ns name)
             #set(WERROR_FLAG "/WX")
         else ()
             set(WERROR_FLAG "-Werror")
+
+            # With versions >=13.0 GCC gained `-Warray-bounds` which reports false
+            # positives, see e.g., https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111273.
+            if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)
+                list(APPEND WERROR_FLAG "-Wno-error=array-bounds")
+            endif ()
+
+            # With versions >=11.0 GCC is retruning false positives for -Wrestrict. See
+            # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100366. It's more prevalent
+            # building with -std=c++20.
+            if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 11.0)
+                list(APPEND WERROR_FLAG "-Wno-error=restrict")
+            endif ()
         endif ()
     endif ()
 
