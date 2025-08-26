@@ -24,7 +24,11 @@ message("\n==================|  prometheus-cpp Config Summary  |================
 add_subdirectory(auxil/prometheus-cpp EXCLUDE_FROM_ALL)
 message("=========================================================================\n ")
 
-set(zeekdeps ${zeekdeps} prometheus-cpp::core prometheus-cpp::pull)
+# The prometheus symbols are brought by broker, which links the libraries in statically
+# before Zeek links. We can skip linking them in ourselves as long as we are linking
+# against broker.
+#set(zeekdeps ${zeekdeps} prometheus-cpp::core prometheus-cpp::pull)
+
 include_directories(BEFORE ${prometheuscpp_src}/pull/include ${prometheuscpp_src}/core/include)
 include_directories(BEFORE ${prometheuscpp_build}/pull/include ${prometheuscpp_build}/core/include)
 
