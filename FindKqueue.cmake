@@ -37,8 +37,9 @@ if (NOT HAVE_KQUEUE)
             set(LIBKQUEUE_NAME "kqueue_static")
             set(WIN_CONFIG -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
                            -DCMAKE_MSVC_RUNTIME_LIBRARY=${CMAKE_MSVC_RUNTIME_LIBRARY})
+            # Visual Studio generator uses config-specific subdirectories
             set(kqueue_static_lib
-                "${kqueue_build}/kqueueStatic/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+                "${kqueue_build}/kqueueStatic/$<CONFIG>/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
         else ()
             set(LIBKQUEUE_NAME "libkqueue")
             set(kqueue_static_lib "${kqueue_build}/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -73,13 +74,24 @@ if (NOT HAVE_KQUEUE)
             set(use_terminal_arg USES_TERMINAL 1)
         endif ()
 
-        ExternalProject_Add_Step(
-            project_kqueue project_kqueue_build_step
-            COMMAND ${CMAKE_MAKE_PROGRAM}
-            COMMENT "Building libkqueue"
-            WORKING_DIRECTORY ${kqueue_build}
-            ALWAYS 1
-            ${use_terminal_arg})
+        if (MSVC)
+            # MSBuild requires specifying the solution or project file
+            ExternalProject_Add_Step(
+                project_kqueue project_kqueue_build_step
+                COMMAND ${CMAKE_MAKE_PROGRAM} libkqueue.sln /p:Configuration=$<CONFIG>
+                COMMENT "Building libkqueue"
+                WORKING_DIRECTORY ${kqueue_build}
+                ALWAYS 1
+                ${use_terminal_arg})
+        else ()
+            ExternalProject_Add_Step(
+                project_kqueue project_kqueue_build_step
+                COMMAND ${CMAKE_MAKE_PROGRAM}
+                COMMENT "Building libkqueue"
+                WORKING_DIRECTORY ${kqueue_build}
+                ALWAYS 1
+                ${use_terminal_arg})
+        endif ()
 
         if (CMAKE_TOOLCHAIN_FILE)
             set(toolchain_arg -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
@@ -122,7 +134,19 @@ if (NOT HAVE_KQUEUE)
         endif ()
 
         add_library(libkqueue_a STATIC IMPORTED)
-        set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION ${kqueue_static_lib})
+        if (MSVC)
+            # For multi-config generators, set location per configuration
+            set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION_DEBUG
+                         "${kqueue_build}/kqueueStatic/Debug/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+            set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION_RELEASE
+                         "${kqueue_build}/kqueueStatic/Release/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+            set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION_RELWITHDEBINFO
+                         "${kqueue_build}/kqueueStatic/RelWithDebInfo/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+            set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION_MINSIZEREL
+                         "${kqueue_build}/kqueueStatic/MinSizeRel/${LIBKQUEUE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        else ()
+            set_property(TARGET libkqueue_a PROPERTY IMPORTED_LOCATION ${kqueue_static_lib})
+        endif ()
         add_dependencies(libkqueue_a project_kqueue)
 
         set(HAVE_KQUEUE true)
