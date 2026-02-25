@@ -21,7 +21,18 @@ check_include_files(pcap-int.h HAVE_PCAP_INT_H)
 
 cmake_policy(POP)
 
-check_symbol_exists(pcap_freecode pcap.h HAVE_LIBPCAP_PCAP_FREECODE)
+check_c_source_compiles(
+    "\
+#include <pcap.h>\n\
+int main(void) {\n\
+    struct bpf_program program;\n\
+    program.bf_len = 0;\n\
+    program.bf_insns = 0;\n\
+    pcap_freecode(&program);\n\
+    return 0;\n\
+}\n\
+"
+    HAVE_LIBPCAP_PCAP_FREECODE)
 if (NOT HAVE_LIBPCAP_PCAP_FREECODE)
     set(DONT_HAVE_LIBPCAP_PCAP_FREECODE true)
     message(STATUS "No implementation for pcap_freecode()")
