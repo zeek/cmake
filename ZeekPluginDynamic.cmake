@@ -98,7 +98,7 @@ function (zeek_add_dynamic_plugin ns name)
 
     # Add extra dependencies when compiling with MSVC.
     if (MSVC)
-        target_link_libraries(${target_name} ws2_32)
+        target_link_libraries(${target_name} PRIVATE ws2_32)
     endif ()
 
     # Pass compiler flags, paths and dependencies to the target.

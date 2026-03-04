@@ -7,7 +7,11 @@ function (zeek_plugin_bootstrapping)
     # package file plus ZeekPluginConfig.cmake to help out.
     if (ZEEK_DIST)
         message("-- Using ZEEK_DIST: ${ZEEK_DIST}")
-        find_package(Zeek REQUIRED CONFIG NO_DEFAULT_PATH PATHS "${ZEEK_DIST}/build")
+        set(_zeek_build_dir "${ZEEK_DIST}/build")
+        if (DEFINED ENV{ZEEK_BUILD_DIR})
+            set(_zeek_build_dir "$ENV{ZEEK_BUILD_DIR}")
+        endif ()
+        find_package(Zeek REQUIRED CONFIG NO_DEFAULT_PATH PATHS "${_zeek_build_dir}")
         return()
     endif ()
     # When building plugins against an installed Zeek, this file must be installed
