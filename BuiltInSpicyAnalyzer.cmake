@@ -96,6 +96,10 @@ function (spicy_add_analyzer)
         target_compile_features(${lib} PRIVATE ${ZEEK_CXX_STD})
         set_target_properties(${lib} PROPERTIES CXX_EXTENSIONS OFF)
 
+        if (MSVC)
+            target_compile_options(${lib} PRIVATE /bigobj /wd4716)
+        endif ()
+
         target_include_directories(${lib} PRIVATE ${SPICY_PLUGIN_PATH}/include
                                                   ${SPICY_PLUGIN_BINARY_PATH}/include)
         target_compile_definitions(${lib} PRIVATE HILTI_MANUAL_PREINIT)

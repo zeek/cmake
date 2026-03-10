@@ -23,13 +23,18 @@ set(_spicy_targets
     spicy-dump)
 
 include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag("-Wno-changes-meaning" _has_no_changes_meaning_flag)
+if (NOT MSVC)
+    check_cxx_compiler_flag("-Wno-changes-meaning" _has_no_changes_meaning_flag)
+endif ()
 
 foreach (_target ${_spicy_targets})
     # Spicy uses slightly less strict warnings than Zeek proper. Mute a few
     # warnings for Spicy.
-    target_compile_options(${_target} PRIVATE -Wno-missing-braces -Wno-vla)
-    if (_has_no_changes_meaning_flag)
+    if (NOT MSVC)
+        target_compile_options(${_target} PRIVATE -Wno-missing-braces -Wno-vla)
+    endif ()
+
+    if (NOT MSVC AND _has_no_changes_meaning_flag)
         # GCC 13 adds a new flag to check whether a symbol changes meaning. Due
         # to an issue in one of the dependencies used by Spicy, this causes
         # Zeek to fail to build on that compiler. Until this is fixed, ignore
