@@ -149,5 +149,7 @@ function (zeek_add_static_plugin ns name)
     if (NOT ZEEK_BUILDING_EXTRA_PLUGINS)
         # Add IWYU and clang-tidy to the target if enabled.
         zeek_target_add_linters(${target_name})
+
+        zeek_target_enable_sanitizers(${target_name})
     endif ()
 endfunction ()
