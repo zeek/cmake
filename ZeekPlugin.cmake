@@ -12,6 +12,15 @@ function (zeek_plugin_bootstrapping)
             set(_zeek_build_dir "$ENV{ZEEK_BUILD_DIR}")
         endif ()
         find_package(Zeek REQUIRED CONFIG NO_DEFAULT_PATH PATHS "${_zeek_build_dir}")
+
+        # Match the plugin build type to Zeek's. This ensures plugins link
+        # against the same CRT and are ABI-compatible with the Zeek binary.
+        if (ZEEK_CMAKE_BUILD_TYPE)
+            message(STATUS "Setting plugin CMAKE_BUILD_TYPE to ${ZEEK_CMAKE_BUILD_TYPE}")
+            set(CMAKE_BUILD_TYPE "${ZEEK_CMAKE_BUILD_TYPE}"
+                CACHE STRING "Configures the CMAKE_BUILD_TYPE for the plugin." FORCE)
+        endif ()
+
         return()
     endif ()
     # When building plugins against an installed Zeek, this file must be installed
@@ -59,8 +68,9 @@ function (zeek_plugin_bootstrapping)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON
         CACHE PATH "Configures whether to write a compile database." FORCE)
 
-    # When CMAKE_BUILD_TYPE is not set, use the one from Zeek.
-    if (NOT CMAKE_BUILD_TYPE)
+    # Match the plugin build type to Zeek's. This ensures plugins link against
+    # the same CRT and are ABI-compatible with the Zeek binary.
+    if (ZEEK_CMAKE_BUILD_TYPE)
         message(STATUS "Setting plugin CMAKE_BUILD_TYPE to ${ZEEK_CMAKE_BUILD_TYPE}")
         set(CMAKE_BUILD_TYPE "${ZEEK_CMAKE_BUILD_TYPE}"
             CACHE STRING "Configures the CMAKE_BUILD_TYPE for the plugin." FORCE)

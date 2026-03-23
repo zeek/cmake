@@ -1,6 +1,19 @@
 include(GetArchitecture)
 include(RequireCXXStd)
 
+# On Windows, shell scripts (.sh) need to be invoked through bash.
+if (WIN32 AND NOT ZEEK_PLUGIN_SHELL_PREFIX)
+    find_program(_bash_exe bash)
+    if (_bash_exe)
+        set(ZEEK_PLUGIN_SHELL_PREFIX "${_bash_exe}" CACHE INTERNAL "Shell prefix for .sh scripts")
+    else ()
+        set(ZEEK_PLUGIN_SHELL_PREFIX "" CACHE INTERNAL "Shell prefix for .sh scripts")
+    endif ()
+endif ()
+if (NOT DEFINED ZEEK_PLUGIN_SHELL_PREFIX)
+    set(ZEEK_PLUGIN_SHELL_PREFIX "" CACHE INTERNAL "Shell prefix for .sh scripts")
+endif ()
+
 # Sets `target` to contain the CMake target name for a dynamic plugin.
 macro (zeek_get_dynamic_plugin_target target ns name)
     set(${target} "${ns}_${name}")
@@ -32,6 +45,32 @@ function (zeek_add_dynamic_plugin ns name)
 
         target_compile_features(${target_name} PRIVATE ${ZEEK_CXX_STD})
         set_target_properties(${target_name} PROPERTIES CXX_EXTENSIONS OFF)
+    endif ()
+
+    # On MSVC with static CRT, each DLL has its own stdout buffer.
+    # Generate a DllMain that disables stdout buffering so plugin
+    # printf output appears in correct order when stdout is redirected.
+    if (MSVC)
+        set(_dllmain_src "${CMAKE_CURRENT_BINARY_DIR}/zeek_plugin_dllmain.cc")
+        if (NOT EXISTS "${_dllmain_src}")
+            file(
+                WRITE "${_dllmain_src}"
+                "#include <cstdio>\n"
+                "// With static CRT (/MT), each DLL has its own stdout.\n"
+                "// Set it to unbuffered so output is correctly ordered,\n"
+                "// and close it at shutdown to prevent the DLL CRT's\n"
+                "// atexit handler from corrupting the shared fd.\n"
+                "namespace { struct ZeekPluginStdoutInit {\n"
+                "    ZeekPluginStdoutInit() {\n"
+                "        setvbuf(stdout, nullptr, _IONBF, 0);\n"
+                "    }\n"
+                "    ~ZeekPluginStdoutInit() {\n"
+                "        fclose(stdout);\n"
+                "        fclose(stderr);\n"
+                "    }\n"
+                "} zeek_plugin_stdout_init; }\n")
+        endif ()
+        target_sources(${target_name} PRIVATE "${_dllmain_src}")
     endif ()
 
     # Place library file into the 'lib' directory, drop default-generated file
@@ -99,6 +138,20 @@ function (zeek_add_dynamic_plugin ns name)
     # Add extra dependencies when compiling with MSVC.
     if (MSVC)
         target_link_libraries(${target_name} PRIVATE ws2_32)
+        # Force the plugin DLL to import CRT allocation functions from
+        # zeek.exe. With /MT, each module has its own heap; importing
+        # operator new/delete ensures all allocations use the same heap,
+        # preventing cross-module heap mismatches when objects are created
+        # in plugin code and freed by zeek or vice versa.
+        target_link_options(
+            ${target_name}
+            PRIVATE
+            "/INCLUDE:??2@YAPEAX_K@Z"
+            "/INCLUDE:??_U@YAPEAX_K@Z"
+            "/INCLUDE:??3@YAXPEAX@Z"
+            "/INCLUDE:??3@YAXPEAX_K@Z"
+            "/INCLUDE:??_V@YAXPEAX@Z"
+            "/INCLUDE:??_V@YAXPEAX_K@Z")
     endif ()
 
     # Pass compiler flags, paths and dependencies to the target.
@@ -179,7 +232,8 @@ function (zeek_add_dynamic_plugin ns name)
 
     add_custom_command(
         OUTPUT ${dist_tarball_path}
-        COMMAND ${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-create-package.sh ${canon_name}
+        COMMAND ${ZEEK_PLUGIN_SHELL_PREFIX}
+                ${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-create-package.sh ${canon_name}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS ${target_name} ${FN_ARGS_SCRIPT_FILES}
         APPEND)
@@ -188,10 +242,25 @@ function (zeek_add_dynamic_plugin ns name)
 
     # Tell CMake to install our tarball. Note: This usually runs from our
     # plugin-support skeleton.
-    install(
-        CODE "execute_process(
-        COMMAND ${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-install-package.sh ${canon_name} \$ENV{DESTDIR}/${install_dir}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMAND_ECHO STDOUT
-    )")
+    if (ZEEK_PLUGIN_SHELL_PREFIX)
+        install(
+            CODE "
+            if (DEFINED ENV{DESTDIR})
+                set(_inst_dir \"\$ENV{DESTDIR}/${install_dir}\")
+            else ()
+                set(_inst_dir \"${install_dir}\")
+            endif ()
+            execute_process(
+                COMMAND \"${ZEEK_PLUGIN_SHELL_PREFIX}\" \"${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-install-package.sh\" ${canon_name} \"\${_inst_dir}\"
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                COMMAND_ECHO STDOUT
+            )")
+    else ()
+        install(
+            CODE "execute_process(
+            COMMAND ${ZEEK_PLUGIN_SCRIPTS_PATH}/zeek-plugin-install-package.sh ${canon_name} \$ENV{DESTDIR}/${install_dir}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            COMMAND_ECHO STDOUT
+        )")
+    endif ()
 endfunction ()
