@@ -6,8 +6,8 @@ if (MSVC)
 endif ()
 
 if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-    set(EXTRA_COMPILE_FLAGS "-Wall -Wno-unused -funsigned-char")
-    set(EXTRA_COMPILE_FLAGS_CXX "-Wno-register -Werror=vla -funsigned-char")
+    set(EXTRA_COMPILE_FLAGS "-Wall -Wno-unused -funsigned-char -Wno-c2y-extensions")
+    set(EXTRA_COMPILE_FLAGS_CXX "-Wno-register -Werror=vla -funsigned-char -Wno-c2y-extensions")
 
     if (NOT CMAKE_BUILD_TYPE)
         if (ENABLE_DEBUG)
