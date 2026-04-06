@@ -96,10 +96,28 @@ function (spicy_add_analyzer)
         target_compile_features(${lib} PRIVATE ${ZEEK_CXX_STD})
         set_target_properties(${lib} PROPERTIES CXX_EXTENSIONS OFF)
 
+        if (MSVC)
+            target_compile_options(${lib} PRIVATE /bigobj /wd4716)
+        endif ()
+
         target_include_directories(${lib} PRIVATE ${SPICY_PLUGIN_PATH}/include
                                                   ${SPICY_PLUGIN_BINARY_PATH}/include)
         target_compile_definitions(${lib} PRIVATE HILTI_MANUAL_PREINIT)
-        target_link_libraries(${lib} hilti spicy $<BUILD_INTERFACE:zeek_internal>)
+
+        if (SPICY_ROOT_DIR)
+            target_link_libraries(${lib} PRIVATE hilti spicy $<BUILD_INTERFACE:zeek_internal>)
+        else ()
+            target_link_libraries(${lib} PRIVATE $<BUILD_INTERFACE:zeek_internal>)
+
+            if (BINARY_PACKAGING_MODE)
+                hilti_link_object_libraries_in_tree(${lib} PRIVATE)
+                spicy_link_object_libraries_in_tree(${lib} PRIVATE)
+            else ()
+                hilti_link_libraries_in_tree(${lib} PRIVATE)
+                spicy_link_libraries_in_tree(${lib} PRIVATE)
+            endif ()
+        endif ()
+
         prefer_configured_spicy_include_dirs(${lib})
 
         # Feed into the main Zeek target(s).
