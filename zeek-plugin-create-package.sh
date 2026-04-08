@@ -28,4 +28,4 @@ tar czf "dist/${tgz}" -C dist "${name}"
 
 rm -rf "${DIST}"
 
-ln -s "dist/${tgz}" "${name}.tgz"
+ln -s "dist/${tgz}" "${name}.tgz" 2>/dev/null || cp "dist/${tgz}" "${name}.tgz"
