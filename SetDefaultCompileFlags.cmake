@@ -6,8 +6,19 @@ if (MSVC)
 endif ()
 
 if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-    set(EXTRA_COMPILE_FLAGS "-Wall -Wno-unused -funsigned-char -Wno-c2y-extensions")
-    set(EXTRA_COMPILE_FLAGS_CXX "-Wno-register -Werror=vla -funsigned-char -Wno-c2y-extensions")
+    set(EXTRA_COMPILE_FLAGS "-Wall -Wno-unused -funsigned-char")
+    set(EXTRA_COMPILE_FLAGS_CXX "-Wno-register -Werror=vla -funsigned-char")
+
+    # If we're using Clang >= 19, disable C2Y extensions to avoid a warning about
+    # __COUNTER__. This option doesn't exist in GCC and results in a bunch of additional
+    # warnings if enabled there.
+    if (CMAKE_C_COMPILER_ID STREQUAL "Clang" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 19)
+        set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -Wno-c2y-extensions")
+    endif ()
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL
+                                                   19)
+        set(EXTRA_COMPILE_FLAGS_CXX "${EXTRA_COMPILE_FLAGS_CXX} -Wno-c2y-extensions")
+    endif ()
 
     if (NOT CMAKE_BUILD_TYPE)
         if (ENABLE_DEBUG)
