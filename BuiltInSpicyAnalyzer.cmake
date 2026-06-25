@@ -95,6 +95,7 @@ function (spicy_add_analyzer)
         add_library(${lib} OBJECT ${generated_sources} ${cxx_sources})
         target_compile_features(${lib} PRIVATE ${ZEEK_CXX_STD})
         set_target_properties(${lib} PROPERTIES CXX_EXTENSIONS OFF)
+        zeek_target_enable_sanitizers(${lib})
 
         if (MSVC)
             target_compile_options(${lib} PRIVATE /bigobj /wd4716)

@@ -3,19 +3,19 @@
 #
 repos:
 - repo: https://github.com/cheshirekow/cmake-format-precommit
-  rev: v0.6.13
+  rev: e2c2116d86a80e72e7146a06e68b7c228afc6319  # frozen: v0.6.13
   hooks:
   - id: cmake-format
     exclude: '^(FindBISON|FindOpenSSL|FindPackageHandleStandardArgs|FindPackageMessage|SelectLibraryConfigurations|conan).cmake$'
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v5.0.0
+  rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
   hooks:
   - id: trailing-whitespace
     exclude: '^(FindOpenSSL|conan).cmake$'
 
 - repo: https://github.com/maxwinterstein/shfmt-py
-  rev: v3.11.0.2
+  rev: 85cc16bc0319e182d7b62b0a2de351358083ce4c  # frozen: v4.0.0
   hooks:
     - id: shfmt
       args: ["-w", "-i", "4", "-ci"]
