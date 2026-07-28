@@ -8,6 +8,15 @@ if (MSVC)
     set(OPENSSL_OS_LIBRARIES ws2_32.lib Crypt32.lib)
 endif ()
 
+cmake_policy(PUSH)
+
+if (POLICY CMP0219)
+    # for backwards compatibility - let's keep the old escaping behaviour till
+    # our minimum cmake version is 4.4.
+    # (escape handling in the below tests)
+    cmake_policy(SET CMP0219 OLD)
+endif ()
+
 set(_openssl_tests_saved_required_includes ${CMAKE_REQUIRED_INCLUDES})
 set(_openssl_tests_saved_required_libraries ${CMAKE_REQUIRED_LIBRARIES})
 
@@ -90,3 +99,5 @@ set(CMAKE_REQUIRED_INCLUDES ${_openssl_tests_saved_required_includes})
 set(CMAKE_REQUIRED_LIBRARIES ${_openssl_tests_saved_required_libraries})
 unset(_openssl_tests_saved_required_includes)
 unset(_openssl_tests_saved_required_libraries)
+
+cmake_policy(POP)
