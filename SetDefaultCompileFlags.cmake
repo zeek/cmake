@@ -40,6 +40,12 @@ if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
         set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -g -DDEBUG -DBRO_DEBUG")
     endif ()
 
+    if (APPLE)
+        # This is needed on macOS builds to ensure that the 'u_char', etc typedefs in
+        # sys/types.h are defined.
+        set(EXTRA_COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS} -D_DARWIN_C_SOURCE")
+    endif()
+
     # Compiler flags may already exist in CMake cache (e.g. when specifying
     # CFLAGS environment variable before running cmake for the the first time)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_COMPILE_FLAGS}")
