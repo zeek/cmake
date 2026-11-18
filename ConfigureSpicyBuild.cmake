@@ -20,28 +20,29 @@ set(_spicy_targets
     spicy-rt-objects
     spicyc
     spicy-doc
-    spicy-dump)
+    spicy-dump
+)
 
 include(CheckCXXCompilerFlag)
-if (NOT MSVC)
+if(NOT MSVC)
     check_cxx_compiler_flag("-Wno-changes-meaning" _has_no_changes_meaning_flag)
-endif ()
+endif()
 
-foreach (_target ${_spicy_targets})
+foreach(_target ${_spicy_targets})
     # Spicy uses slightly less strict warnings than Zeek proper. Mute a few
     # warnings for Spicy.
-    if (NOT MSVC)
+    if(NOT MSVC)
         target_compile_options(${_target} PRIVATE -Wno-missing-braces -Wno-vla)
-    endif ()
+    endif()
 
-    if (NOT MSVC AND _has_no_changes_meaning_flag)
+    if(NOT MSVC AND _has_no_changes_meaning_flag)
         # GCC 13 adds a new flag to check whether a symbol changes meaning. Due
         # to an issue in one of the dependencies used by Spicy, this causes
         # Zeek to fail to build on that compiler. Until this is fixed, ignore
         # that warning, but check to to make sure the flag exists first.
         target_compile_options(${_target} PRIVATE -Wno-changes-meaning)
-    endif ()
-endforeach ()
+    endif()
+endforeach()
 
 # Disable Spicy unit test targets.
 #
@@ -51,10 +52,22 @@ endforeach ()
 # inherited directly by Spicy which can cause issues, e.g., we set
 # `-DDOCTEST_CONFIG_DISABLE` if `ENABLE_ZEEK_UNIT_TESTS` is false, but Spicy
 # unit test do not anticipate this define being set.
-set_target_properties(hilti-rt-tests hilti-rt-configuration-tests spicy-rt-tests
-                      hilti-toolchain-tests spicy-toolchain-tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set_target_properties(
+    hilti-rt-tests
+    hilti-rt-configuration-tests
+    spicy-rt-tests
+    hilti-toolchain-tests
+    spicy-toolchain-tests
+    PROPERTIES EXCLUDE_FROM_ALL TRUE
+)
 
-get_directory_property(SPICY_VERSION_LONG DIRECTORY ${PROJECT_SOURCE_DIR}/auxil/spicy/spicy
-                                                    DEFINITION SPICY_VERSION_LONG)
-get_directory_property(SPICY_VERSION_NUMBER DIRECTORY ${PROJECT_SOURCE_DIR}/auxil/spicy/spicy
-                                                      DEFINITION SPICY_VERSION_NUMBER)
+get_directory_property(
+    SPICY_VERSION_LONG
+    DIRECTORY ${PROJECT_SOURCE_DIR}/auxil/spicy/spicy
+    DEFINITION SPICY_VERSION_LONG
+)
+get_directory_property(
+    SPICY_VERSION_NUMBER
+    DIRECTORY ${PROJECT_SOURCE_DIR}/auxil/spicy/spicy
+    DEFINITION SPICY_VERSION_NUMBER
+)

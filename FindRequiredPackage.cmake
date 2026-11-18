@@ -22,33 +22,35 @@
 #    message(FATAL_ERROR "Configuration aborted due to missing prerequisites")
 # endif ()
 
-macro (FindRequiredPackage packageName)
+macro(FindRequiredPackage packageName)
     message(DEPRECATION "Remove in v7.1. Use find_package's REQUIRED argument instead.")
 
     string(TOUPPER ${packageName} upperPackageName)
-    if ((DEFINED ${upperPackageName}_ROOT_DIR) AND (DEFINED CMAKE_PREFIX_PATH))
+    if((DEFINED ${upperPackageName}_ROOT_DIR) AND (DEFINED CMAKE_PREFIX_PATH))
         set(CMAKE_PREFIX_SAVE ${CMAKE_PREFIX_PATH})
         unset(CMAKE_PREFIX_PATH)
         find_package(${packageName})
         set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_SAVE})
-    else ()
+    else()
         find_package(${packageName})
-    endif ()
+    endif()
     string(TOUPPER ${packageName} canonPackageName)
-    if (NOT ${canonPackageName}_FOUND)
+    if(NOT ${canonPackageName}_FOUND)
         set(MISSING_PREREQS true)
 
         set(customDesc)
-        foreach (descArg ${ARGN})
+        foreach(descArg ${ARGN})
             set(customDesc "${customDesc} ${descArg}")
-        endforeach ()
+        endforeach()
 
-        if (customDesc)
+        if(customDesc)
             # append the custom error message that was provided as an argument
             list(APPEND MISSING_PREREQ_DESCS ${customDesc})
-        else ()
-            list(APPEND MISSING_PREREQ_DESCS
-                 " Could not find prerequisite package '${packageName}'")
-        endif ()
-    endif ()
-endmacro (FindRequiredPackage)
+        else()
+            list(
+                APPEND MISSING_PREREQ_DESCS
+                " Could not find prerequisite package '${packageName}'"
+            )
+        endif()
+    endif()
+endmacro(FindRequiredPackage)

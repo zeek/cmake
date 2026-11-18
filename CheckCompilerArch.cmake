@@ -11,7 +11,8 @@ check_c_source_compiles(
 	#error wrongarch
 	#endif
 "
-    test_arch_x64)
+    test_arch_x64
+)
 check_c_source_compiles(
     "
 	#if defined(__aarch64__) || defined(__arm64__)
@@ -20,7 +21,8 @@ check_c_source_compiles(
 	#error wrongarch
 	#endif
 "
-    test_arch_aarch64)
+    test_arch_aarch64
+)
 check_c_source_compiles(
     "
 	#if defined(__arm__) || defined(__ARM_NEON__) || defined(__ARM_NEON)
@@ -29,7 +31,8 @@ check_c_source_compiles(
 	#error wrongarch
 	#endif
 "
-    test_arch_arm)
+    test_arch_arm
+)
 check_c_source_compiles(
     "
 	#if defined(__powerpc64__) || defined(_M_PPC)
@@ -38,18 +41,19 @@ check_c_source_compiles(
 	#error wrongarch
 	#endif
 "
-    test_arch_power)
+    test_arch_power
+)
 
-if (test_arch_x64)
+if(test_arch_x64)
     set(COMPILER_ARCHITECTURE "x86_64")
-elseif (test_arch_aarch64)
+elseif(test_arch_aarch64)
     set(COMPILER_ARCHITECTURE "aarch64")
-elseif (test_arch_arm)
+elseif(test_arch_arm)
     set(COMPILER_ARCHITECTURE "arm")
-elseif (test_arch_power)
+elseif(test_arch_power)
     set(COMPILER_ARCHITECTURE "power")
-else ()
+else()
     set(COMPILER_ARCHITECTURE "portable")
-endif ()
+endif()
 
 message(STATUS "Determined target architecture (for hashing): ${COMPILER_ARCHITECTURE}")

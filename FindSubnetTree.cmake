@@ -9,17 +9,19 @@
 #
 #  SUBNETTREE_FOUND             Python successfully imports SubnetTree module
 
-if (NOT SUBNETTREE_FOUND)
-    execute_process(COMMAND "${Python_EXECUTABLE}" -c "import SubnetTree"
-                    RESULT_VARIABLE SUBNETTREE_IMPORT_RESULT)
+if(NOT SUBNETTREE_FOUND)
+    execute_process(
+        COMMAND "${Python_EXECUTABLE}" -c "import SubnetTree"
+        RESULT_VARIABLE SUBNETTREE_IMPORT_RESULT
+    )
 
-    if (SUBNETTREE_IMPORT_RESULT)
+    if(SUBNETTREE_IMPORT_RESULT)
         # python returned non-zero exit status
         set(SUBNETTREE_PYTHON_MODULE false)
-    else ()
+    else()
         set(SUBNETTREE_PYTHON_MODULE true)
-    endif ()
-endif ()
+    endif()
+endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(SubnetTree DEFAULT_MSG SUBNETTREE_PYTHON_MODULE)

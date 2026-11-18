@@ -4,18 +4,18 @@ include(CheckCSourceRuns)
 include(CheckIncludeFiles)
 
 set(OPENSSL_OS_LIBRARIES)
-if (MSVC)
+if(MSVC)
     set(OPENSSL_OS_LIBRARIES ws2_32.lib Crypt32.lib)
-endif ()
+endif()
 
 cmake_policy(PUSH)
 
-if (POLICY CMP0219)
+if(POLICY CMP0219)
     # for backwards compatibility - let's keep the old escaping behaviour till
     # our minimum cmake version is 4.4.
     # (escape handling in the below tests)
     cmake_policy(SET CMP0219 OLD)
-endif ()
+endif()
 
 set(_openssl_tests_saved_required_includes ${CMAKE_REQUIRED_INCLUDES})
 set(_openssl_tests_saved_required_libraries ${CMAKE_REQUIRED_LIBRARIES})
@@ -31,15 +31,16 @@ check_c_source_compiles(
     #include <openssl/ssl.h>
     int main() { return 0; }
 "
-    including_ssl_h_works)
+    including_ssl_h_works
+)
 
-if (NOT including_ssl_h_works)
+if(NOT including_ssl_h_works)
     message(FATAL_ERROR "OpenSSL test failure.  See CmakeError.log for details.")
-endif ()
+endif()
 
-if (OPENSSL_VERSION VERSION_LESS "0.9.7")
+if(OPENSSL_VERSION VERSION_LESS "0.9.7")
     message(FATAL_ERROR "OpenSSL >= v0.9.7 required")
-endif ()
+endif()
 
 check_include_files(openssl/kdf.h OPENSSL_HAVE_KDF_H)
 
@@ -53,9 +54,10 @@ check_cxx_source_compiles(
         return 0;
     }
 "
-    OPENSSL_D2I_X509_USES_CONST_CHAR)
+    OPENSSL_D2I_X509_USES_CONST_CHAR
+)
 
-if (NOT OPENSSL_D2I_X509_USES_CONST_CHAR)
+if(NOT OPENSSL_D2I_X509_USES_CONST_CHAR)
     # double check that it compiles without const
     check_cxx_source_compiles(
         "
@@ -67,13 +69,14 @@ if (NOT OPENSSL_D2I_X509_USES_CONST_CHAR)
             return 0;
         }
         "
-        OPENSSL_D2I_X509_USES_CHAR)
-    if (NOT OPENSSL_D2I_X509_USES_CHAR)
+        OPENSSL_D2I_X509_USES_CHAR
+    )
+    if(NOT OPENSSL_D2I_X509_USES_CHAR)
         message(FATAL_ERROR "Can't determine if openssl_d2i_x509() takes const char parameter")
-    endif ()
-endif ()
+    endif()
+endif()
 
-if (NOT CMAKE_CROSSCOMPILING AND NOT MSVC)
+if(NOT CMAKE_CROSSCOMPILING AND NOT MSVC)
     check_c_source_runs(
         "
         #include <stdio.h>
@@ -88,12 +91,13 @@ if (NOT CMAKE_CROSSCOMPILING AND NOT MSVC)
             return -1;
         }
     "
-        OPENSSL_CORRECT_VERSION_NUMBER)
+        OPENSSL_CORRECT_VERSION_NUMBER
+    )
 
-    if (NOT OPENSSL_CORRECT_VERSION_NUMBER)
+    if(NOT OPENSSL_CORRECT_VERSION_NUMBER)
         message(FATAL_ERROR "OpenSSL library version does not match headers")
-    endif ()
-endif ()
+    endif()
+endif()
 
 set(CMAKE_REQUIRED_INCLUDES ${_openssl_tests_saved_required_includes})
 set(CMAKE_REQUIRED_LIBRARIES ${_openssl_tests_saved_required_libraries})

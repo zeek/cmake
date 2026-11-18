@@ -14,12 +14,12 @@
 # [_dstfilename]: an optional argument for how to (re)name the file as
 #     it's installed inside _dstdir
 
-macro (InstallShellScript _dstdir _srcfile)
-    if (NOT "${ARGN}" STREQUAL "")
+macro(InstallShellScript _dstdir _srcfile)
+    if(NOT "${ARGN}" STREQUAL "")
         set(_dstfilename ${ARGN})
-    else ()
+    else()
         get_filename_component(_dstfilename ${_srcfile} NAME)
-    endif ()
+    endif()
 
     set(orig_file ${CMAKE_CURRENT_SOURCE_DIR}/${_srcfile})
     set(configed_file ${CMAKE_CURRENT_BINARY_DIR}/${_srcfile})
@@ -30,26 +30,29 @@ macro (InstallShellScript _dstdir _srcfile)
     file(READ ${configed_file} _srclines)
     file(WRITE ${dehashbanged_file} "")
 
-    if (NOT BINARY_PACKAGING_MODE AND NOT CMAKE_CROSSCOMPILING)
+    if(NOT BINARY_PACKAGING_MODE AND NOT CMAKE_CROSSCOMPILING)
         set(_regex "^#![ ]*/usr/bin/env[ ]+([^\n ]*)")
         string(REGEX MATCH ${_regex} _match ${_srclines})
-        if (_match)
+        if(_match)
             set(_shell ${CMAKE_MATCH_1})
-            if ((${_shell} STREQUAL "python" OR ${_shell} STREQUAL "python3") AND PYTHON_EXECUTABLE)
+            if((${_shell} STREQUAL "python" OR ${_shell} STREQUAL "python3") AND PYTHON_EXECUTABLE)
                 set(${_shell}_interp ${PYTHON_EXECUTABLE})
-            else ()
+            else()
                 find_program(${_shell}_interp ${_shell})
-            endif ()
-            if (NOT ${_shell}_interp)
-                message(FATAL_ERROR "Absolute path to interpreter '${_shell}' not found, "
-                                    "failed to configure shell script: ${orig_file}")
-            endif ()
+            endif()
+            if(NOT ${_shell}_interp)
+                message(
+                    FATAL_ERROR
+                    "Absolute path to interpreter '${_shell}' not found, "
+                    "failed to configure shell script: ${orig_file}"
+                )
+            endif()
 
             string(REGEX REPLACE ${_regex} "#!${${_shell}_interp}" _srclines "${_srclines}")
-        endif ()
-    endif ()
+        endif()
+    endif()
 
     file(WRITE ${dehashbanged_file} "${_srclines}")
 
     install(PROGRAMS ${dehashbanged_file} DESTINATION ${_dstdir} RENAME ${_dstfilename})
-endmacro (InstallShellScript)
+endmacro(InstallShellScript)

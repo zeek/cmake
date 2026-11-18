@@ -3,19 +3,20 @@ include(CheckFunctionExists)
 # First check whether the system has cares built-in. Prefer that over everything else.
 check_function_exists(ares_init HAVE_CARES)
 
-if (NOT HAVE_CARES)
-
+if(NOT HAVE_CARES)
     # If the user passed in a path for cares, see if we can find a copy of it there.
     # If they didn't pass one, build our local copy of it.
-    if (CARES_ROOT_DIR)
-
+    if(CARES_ROOT_DIR)
         find_path(CARES_ROOT_DIR NAMES "include/ares.h")
 
         # Prefer linking statically but look for a shared library version too.
         find_library(
-            CARES_LIBRARIES NAMES "libcares_static${CMAKE_STATIC_LIBRARY_SUFFIX}"
-                                  "libcares${CMAKE_SHARED_LIBRARY_SUFFIX}"
-            HINTS ${CARES_ROOT_DIR}/lib)
+            CARES_LIBRARIES
+            NAMES
+                "libcares_static${CMAKE_STATIC_LIBRARY_SUFFIX}"
+                "libcares${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            HINTS ${CARES_ROOT_DIR}/lib
+        )
 
         find_path(CARES_INCLUDE_DIRS NAMES "ares.h" HINTS ${CARES_ROOT_DIR}/include)
 
@@ -28,7 +29,7 @@ if (NOT HAVE_CARES)
         set(zeekdeps ${zeekdeps} ${CARES_LIBRARIES})
         include_directories(BEFORE ${CARES_INCLUDE_DIRS})
 
-    else ()
+    else()
 
         option(CARES_STATIC "" ON)
         option(CARES_SHARED "" OFF)
@@ -56,10 +57,9 @@ if (NOT HAVE_CARES)
 
         set(HAVE_CARES true)
         set(zeekdeps ${zeekdeps} ${cares_lib})
+    endif()
+endif()
 
-    endif ()
-endif ()
-
-if (NOT HAVE_CARES)
+if(NOT HAVE_CARES)
     message(FATAL_ERROR "Failed to find a working version of c-ares.")
-endif ()
+endif()

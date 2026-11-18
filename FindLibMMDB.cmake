@@ -19,13 +19,13 @@
 
 find_path(LibMMDB_ROOT_DIR NAMES include/maxminddb.h)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # the static version of the library is preferred on OS X for the
     # purposes of making packages (libmaxminddb doesn't ship w/ OS X)
     set(libmmdb_names libmaxminddb.a maxminddb)
-else ()
+else()
     set(libmmdb_names maxminddb)
-endif ()
+endif()
 
 find_library(LibMMDB_LIBRARY NAMES ${libmmdb_names} HINTS ${LibMMDB_ROOT_DIR}/lib)
 
