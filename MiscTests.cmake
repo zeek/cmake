@@ -16,10 +16,11 @@ check_c_source_compiles(
     extern int recvfrom(int, void *, int, int, struct sockaddr *, int *);
     int main() { return 0; }
 "
-    DO_SOCK_DECL)
-if (DO_SOCK_DECL)
+    DO_SOCK_DECL
+)
+if(DO_SOCK_DECL)
     message(STATUS "socket() and friends need explicit declaration")
-endif ()
+endif()
 
 check_cxx_source_compiles(
     "
@@ -32,7 +33,8 @@ check_cxx_source_compiles(
     }
     int main() { return 0; }
 "
-    SYSLOG_INT)
-if (SYSLOG_INT)
+    SYSLOG_INT
+)
+if(SYSLOG_INT)
     message(STATUS "syslog prototypes need declaration")
-endif ()
+endif()

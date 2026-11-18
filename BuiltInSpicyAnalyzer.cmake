@@ -25,59 +25,74 @@ include(RequireCXXStd)
 # installed into a prefix which contains another Spicy installation) we prefer
 # picking up that one when searching for a Spicy header. This functions
 # explicitly pushes Spicy include directories to the front.
-function (prefer_configured_spicy_include_dirs target)
+function(prefer_configured_spicy_include_dirs target)
     # Nothing to do if we are building against an externally built Spicy.
-    if (SPICY_ROOT_DIR)
+    if(SPICY_ROOT_DIR)
         return()
-    endif ()
+    endif()
 
-    foreach (_lib IN ITEMS hilti-rt-objects spicy-rt-objects hilti-objects spicy-objects)
+    foreach(_lib IN ITEMS hilti-rt-objects spicy-rt-objects hilti-objects spicy-objects)
         get_target_property(_inc_dirs ${_lib} INCLUDE_DIRECTORIES)
         target_include_directories(${target} BEFORE PRIVATE ${_inc_dirs})
-    endforeach ()
-endfunction ()
+    endforeach()
+endfunction()
 
-function (spicy_add_analyzer)
+function(spicy_add_analyzer)
     set(options)
-    set(oneValueArgs NAME LEGACY)
+    set(oneValueArgs NAME PACKAGE_NAME LEGACY)
     set(multiValueArgs SOURCES MODULES)
 
-    cmake_parse_arguments(PARSE_ARGV 0 SPICY_ANALYZER "${options}" "${oneValueArgs}"
-                          "${multiValueArgs}")
+    cmake_parse_arguments(
+        PARSE_ARGV 0
+        SPICY_ANALYZER
+        "${options}"
+        "${oneValueArgs}"
+        "${multiValueArgs}"
+    )
 
-    if (NOT DEFINED SPICY_ANALYZER_NAME)
+    if(NOT DEFINED SPICY_ANALYZER_NAME)
         message(FATAL_ERROR "NAME is required")
-    endif ()
+    endif()
 
-    if (USE_SPICY_ANALYZERS)
+    if(USE_SPICY_ANALYZERS)
         set(SPICYZ_FLAGS "")
         string(TOLOWER "${SPICY_ANALYZER_NAME}" NAME_LOWER)
 
-        set(generated_sources ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}___linker__.cc
-                              ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_init.cc)
+        set(generated_sources
+            ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}___linker__.cc
+            ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_init.cc
+        )
 
         # CXX files given to SOURCES are added to the lib target
         # separately from generated_sources.
         set(cxx_sources ${SPICY_ANALYZER_SOURCES})
         list(FILTER cxx_sources INCLUDE REGEX ".*\.cc$")
 
-        if (NOT DEFINED SPICY_ANALYZER_MODULES)
-            list(APPEND generated_sources
-                 ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${SPICY_ANALYZER_NAME}.cc)
-            list(APPEND generated_sources
-                 ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_hooks_${SPICY_ANALYZER_NAME}.cc)
-        else ()
-            foreach (module ${SPICY_ANALYZER_MODULES})
-                list(APPEND generated_sources
-                     ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${module}.cc)
-                list(APPEND generated_sources
-                     ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_hooks_${module}.cc)
-            endforeach ()
-        endif ()
+        if(NOT DEFINED SPICY_ANALYZER_MODULES)
+            list(
+                APPEND generated_sources
+                ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${SPICY_ANALYZER_NAME}.cc
+            )
+            list(
+                APPEND generated_sources
+                ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_hooks_${SPICY_ANALYZER_NAME}.cc
+            )
+        else()
+            foreach(module ${SPICY_ANALYZER_MODULES})
+                list(
+                    APPEND generated_sources
+                    ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_${module}.cc
+                )
+                list(
+                    APPEND generated_sources
+                    ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER}_spicy_hooks_${module}.cc
+                )
+            endforeach()
+        endif()
 
-        if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.27")
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.27")
             set_source_files_properties(${generated_sources} PROPERTIES SKIP_LINTING ON)
-        endif ()
+        endif()
 
         add_custom_command(
             OUTPUT ${generated_sources}
@@ -89,7 +104,8 @@ function (spicy_add_analyzer)
                 ASAN_OPTIONS=$ENV{ASAN_OPTIONS}:detect_leaks=0 $<TARGET_FILE:spicyz> -L
                 ${spicy_SOURCE_DIR}/hilti/lib -L ${spicy_SOURCE_DIR}/spicy/lib -x
                 ${CMAKE_CURRENT_BINARY_DIR}/${NAME_LOWER} ${SPICYZ_FLAGS} ${SPICY_ANALYZER_SOURCES}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        )
 
         set(lib "spicy_${SPICY_ANALYZER_NAME}")
         add_library(${lib} OBJECT ${generated_sources} ${cxx_sources})
@@ -97,36 +113,38 @@ function (spicy_add_analyzer)
         set_target_properties(${lib} PROPERTIES CXX_EXTENSIONS OFF)
         zeek_target_enable_sanitizers(${lib})
 
-        if (MSVC)
+        if(MSVC)
             target_compile_options(${lib} PRIVATE /bigobj /wd4716)
-        endif ()
+        endif()
 
-        target_include_directories(${lib} PRIVATE ${SPICY_PLUGIN_PATH}/include
-                                                  ${SPICY_PLUGIN_BINARY_PATH}/include)
+        target_include_directories(
+            ${lib}
+            PRIVATE ${SPICY_PLUGIN_PATH}/include ${SPICY_PLUGIN_BINARY_PATH}/include
+        )
         target_compile_definitions(${lib} PRIVATE HILTI_MANUAL_PREINIT)
 
-        if (SPICY_ROOT_DIR)
+        if(SPICY_ROOT_DIR)
             target_link_libraries(${lib} PRIVATE hilti spicy $<BUILD_INTERFACE:zeek_internal>)
-        else ()
+        else()
             target_link_libraries(${lib} PRIVATE $<BUILD_INTERFACE:zeek_internal>)
 
-            if (BINARY_PACKAGING_MODE)
+            if(BINARY_PACKAGING_MODE)
                 hilti_link_object_libraries_in_tree(${lib} PRIVATE)
                 spicy_link_object_libraries_in_tree(${lib} PRIVATE)
-            else ()
+            else()
                 hilti_link_libraries_in_tree(${lib} PRIVATE)
                 spicy_link_libraries_in_tree(${lib} PRIVATE)
-            endif ()
-        endif ()
+            endif()
+        endif()
 
         prefer_configured_spicy_include_dirs(${lib})
 
         # Feed into the main Zeek target(s).
         zeek_target_link_libraries(${lib})
 
-        if (SPICY_ROOT_DIR)
+        if(SPICY_ROOT_DIR)
             target_include_directories(${lib} PRIVATE ${SPICY_ROOT_DIR}/include)
-        endif ()
+        endif()
 
         # Install Spicy grammars into a default search path of Spicy.
         # This allows users importing the file relatively easily.
@@ -134,21 +152,20 @@ function (spicy_add_analyzer)
         list(FILTER _SPIYC_SOURCES INCLUDE REGEX "\.spicy$")
         install(FILES ${_SPIYC_SOURCES} DESTINATION ${CMAKE_INSTALL_DATADIR}/spicy/${NAME_LOWER})
 
-    elseif (SPICY_ANALYZER_LEGACY)
+    elseif(SPICY_ANALYZER_LEGACY)
         message(
             STATUS
-                "Warning: Using unmaintained legacy analyzer for ${SPICY_ANALYZER_NAME} because Spicy is not available"
+            "Warning: Using unmaintained legacy analyzer for ${SPICY_ANALYZER_NAME} because Spicy is not available"
         )
         list(APPEND ZEEK_LEGACY_ANALYZERS "${SPICY_ANALYZER_NAME}")
         set(ZEEK_LEGACY_ANALYZERS "${ZEEK_LEGACY_ANALYZERS}" CACHE INTERNAL "")
         add_subdirectory(legacy)
-    else ()
+    else()
         message(
             STATUS
-                "Warning: Disabling analyzer for ${SPICY_ANALYZER_NAME} because Spicy is not available"
+            "Warning: Disabling analyzer for ${SPICY_ANALYZER_NAME} because Spicy is not available"
         )
         list(APPEND ZEEK_SKIPPED_ANALYZERS "${SPICY_ANALYZER_NAME}")
         set(ZEEK_SKIPPED_ANALYZERS "${ZEEK_SKIPPED_ANALYZERS}" CACHE INTERNAL "")
-    endif ()
-
-endfunction ()
+    endif()
+endfunction()

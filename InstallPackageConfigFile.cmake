@@ -19,10 +19,10 @@ include(InstallClobberImmune)
 #   _dstdir: absolute path to the directory in which to install the file
 #   _dstfilename: how to (re)name the file inside _dstdir
 
-macro (InstallPackageConfigFile _srcfile _dstdir _dstfilename)
+macro(InstallPackageConfigFile _srcfile _dstdir _dstfilename)
     set(_dstfile ${_dstdir}/${_dstfilename})
 
-    if (BINARY_PACKAGING_MODE)
+    if(BINARY_PACKAGING_MODE)
         # If packaging mode is enabled, always install the distribution's
         # version of the file.  The Mac package's pre/post install scripts
         # or native functionality of RPMs will take care of not clobbering it.
@@ -34,17 +34,17 @@ macro (InstallPackageConfigFile _srcfile _dstdir _dstfilename)
         # Additionally, the Mac PackageMaker packages don't have any automatic
         # handling of configuration file conflicts so install an example file
         # that the post install script will cleanup in the case it's extraneous
-        if (APPLE)
+        if(APPLE)
             install(FILES ${_srcfile} DESTINATION ${_dstdir} RENAME ${_dstfilename}.example)
-        endif ()
-    else ()
+        endif()
+    else()
         # Have `make install` check at run time whether the file does not exist
         InstallClobberImmune(${_srcfile} ${_dstfile})
-    endif ()
+    endif()
 
-    if (NOT TARGET install-example-configs)
+    if(NOT TARGET install-example-configs)
         add_custom_target(install-example-configs COMMENT "Installed example configuration files")
-    endif ()
+    endif()
 
     # Replace characters disallowed in target names (per CMP0037) with '.'.
     string(REGEX REPLACE "[^A-Za-z0-9_.+-]" "." _flatsrc ${_srcfile})
@@ -52,10 +52,10 @@ macro (InstallPackageConfigFile _srcfile _dstdir _dstfilename)
     set(_example ${_dstfile}.example)
 
     add_custom_target(
-        install-example-config-${_flatsrc} COMMAND "${CMAKE_COMMAND}" -E copy ${_srcfile}
-                                                   \${DESTDIR}${_example}
-        COMMENT "Installing ${_example}")
+        install-example-config-${_flatsrc}
+        COMMAND "${CMAKE_COMMAND}" -E copy ${_srcfile} \${DESTDIR}${_example}
+        COMMENT "Installing ${_example}"
+    )
 
     add_dependencies(install-example-configs install-example-config-${_flatsrc})
-
-endmacro (InstallPackageConfigFile)
+endmacro(InstallPackageConfigFile)
