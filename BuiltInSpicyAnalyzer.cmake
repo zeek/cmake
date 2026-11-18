@@ -39,7 +39,7 @@ endfunction ()
 
 function (spicy_add_analyzer)
     set(options)
-    set(oneValueArgs NAME LEGACY)
+    set(oneValueArgs NAME PACKAGE_NAME LEGACY)
     set(multiValueArgs SOURCES MODULES)
 
     cmake_parse_arguments(PARSE_ARGV 0 SPICY_ANALYZER "${options}" "${oneValueArgs}"

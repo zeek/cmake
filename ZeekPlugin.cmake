@@ -204,6 +204,9 @@ endmacro ()
 #   Adds a BinPAC parser to the plugin. The function accepts multiple `PAC`
 #   blocks. Each block defines a single BinPAC parser.
 function (zeek_add_plugin ns name)
+    # Declare the keyword interface so gersemi can format call sites.
+    cmake_parse_arguments(FN_ARGS "" "" "INCLUDE_DIRS;DEPENDENCIES;SOURCES;BIFS;DIST_FILES;SCRIPT_FILES;PAC" ${ARGN})
+
     if (ZEEK_PLUGIN_BUILD_DYNAMIC)
         zeek_add_dynamic_plugin(${ns} ${name} ${ARGV})
     else ()
